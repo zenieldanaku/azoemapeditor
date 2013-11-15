@@ -20,11 +20,7 @@ class Cursor(BaseWidget):
         else:
             self.nombre = 'cursor_V'
     
-    def reposisionar(self,var):
-        if self.barra.w > self.barra.h:
-            self.rect.x = var
-        else:
-            self.rect.y = var
-        self.image.fill(verde) # cuadro negro, issue 1
+    def reposisionar(self,x,y):
+        self.rect.topleft = x,y
         self.dirty = 2
         return self.rect.x,self.rect.y 
