@@ -8,7 +8,7 @@ class Renderer:
         self.contents = LayeredDirty()
         self.widgets = {}
         
-    def addWidget(self,widget,layer=0):
+    def addWidget(self,widget,layer=1):
         self.contents.add(widget,layer=layer)
         self.widgets[widget.nombre] = widget
         return widget
