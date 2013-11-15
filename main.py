@@ -42,13 +42,15 @@ while True:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mousepos = mouse.get_pos()
+                foundWidget = None
                 for widget in render_engine.contents:
                     if widget.rect.collidepoint(mousepos):
-                        if widget!=currentFocus and widget.focusable:
-                            currentFocus.onFocusOut()
-                            currentFocus = widget
-                            currentFocus.onFocusIn()
-                            print(currentFocus.nombre)
+                        foundWidget = widget
+                if foundWidget!=currentFocus and foundWidget.focusable:
+                    currentFocus.onFocusOut()
+                    currentFocus = foundWidget
+                    currentFocus.onFocusIn()
+                    print(currentFocus.nombre)
     
     cambios = render_engine.update(events,fondo)
     pantalla.update(cambios)
