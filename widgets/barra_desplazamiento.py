@@ -1,4 +1,4 @@
-from pygame import Rect,Surface,MOUSEBUTTONUP,MOUSEBUTTONDOWN,mouse
+from pygame import Rect,Surface,mouse
 from .basewidget import BaseWidget
 from .cursor_barra import Cursor
 from constantes import *
@@ -13,54 +13,55 @@ class Barra(BaseWidget):
         self.image.fill(blanco)
         self.x,self.y = x,y
         self.w,self.h = h,w
-
+        if self.w > self.h:
+            self.nombre = 'barra_H'
+        else:
+            self.nombre = 'barra_V'
         self.cursor = Cursor(self)
         self.crear_cursor()
         self.dirty = 2
         
     def crear_cursor(self):
         if self.w > self.h: # horizontal
-            pos = (0,int(self.w/2))
-            topleft = (15*C)+5,10*C
+            pos = (0,self.w/2)
+            tl = self.x,self.w/2+2*C
         else: # vertical
-            pos = (int(self.h/2),0)
-            topleft = 10*C,(15*C)+5
+            pos = (self.h/2,0)
+            tl = self.h/2+2*C+2,self.y
+            #no sé porque tiene que ser tan complicada esa función...
         
         cursor_rect = Rect(pos,self.cursor.rect.size)
         self.image.blit(self.cursor.image,cursor_rect)
-        self.cursor.rect.topleft = topleft
+        self.cursor.rect.topleft = tl
     
-    def redibujar(self):
-        x,y = self.cursor.rect.topleft
-        #print(y) # y-69 = 256
+    def redibujar(self,x,y):
+        size = self.cursor.rect.size
         self.image.fill(blanco)
-        self.image.fill(verde,((0,y-69),self.cursor.rect.size))
+        if self.w > self.h:
+            dx,dy = 0,y-(self.y+8)
+        else:
+            dx,dy = x-(self.x+8),0
+        self.image.blit(self.cursor.image,((dx,dy),size))
         self.dirty = 2
     
-    def event_handler(self,events):
-        for event in events:                    
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    x,y = mouse.get_pos()
-                    x = int(x/32)*C+5
-                    y = int(y/32)*C+5
-                    if self.cursor.rect.collidepoint(x,y): 
-                        self.cursor.pressed = True
-            
-            elif event.type == MOUSEBUTTONUP:
-                if event.button == 1:
-                    x,y = mouse.get_pos()
-                    x = int(x/32)*C+5
-                    y = int(y/32)*C+5
-                    if self.rect.collidepoint(x,y):
-                        if self.cursor.pressed:
-                            self.cursor.pressed = False
-                            if self.w > self.h:
-                                self.cursor.reposisionar(x-5)
-                            else:
-                                self.cursor.reposisionar(y-5)
-                            
-                            self.redibujar()
-                            #_cursor_V = pygame.Rect((x,y),cursor_V.size)
-                            #fondo.fill((125,0,125),(_cursor_V))
-                            #cursor_V = _cursor_V
+    def onMouseDown(self,event):
+        if event.button == 1:
+            x,y = mouse.get_pos()
+            if self.cursor.rect.collidepoint(x,y):
+                self.cursor.pressed = True
+    
+    def onMouseUp(self,event):
+        if event.button == 1:
+            x,y = mouse.get_pos()
+            if self.rect.collidepoint(x,y):
+                if self.cursor.pressed:
+                    #self.cursor.pressed = False # esta linea va.
+                    if self.w > self.h:
+                        pos = self.cursor.reposisionar(x)
+                    else:
+                        pos = self.cursor.reposisionar(y)
+                    rect = Rect(pos,(16,16)) # cuadro negro, issue 1
+                    img = Surface(rect.size)# cuadro negro, issue 1
+                    self.redibujar(x,y)
+                    return img,rect # cuadro negro, issue 1
+                    

@@ -1,6 +1,7 @@
 import pygame,sys
-from pygame import display as pantalla,draw,time
-from widgets import Barra,Grilla,Ventana
+from pygame import display as pantalla,time,mouse
+from widgets import *
+from renderer import render_engine
 from constantes import *
 
 pygame.init()
@@ -8,30 +9,24 @@ tamanio = 24*C,20*C
 pantalla.set_caption("MapGen")
 fondo = pantalla.set_mode(tamanio)
 
-ventana = pygame.Rect((0,0),fondo.get_size())
-grilla = Grilla((2*C)+2,2*C,15*C,15*C)
-barra_V = Barra((17*C)+5, 2*C, 1/2*C, grilla.h)
-barra_H = Barra((2*C)+2, (17*C)+5, grilla.w, 1/2*C)
+ventana = render_engine.addWidget(Ventana(fondo.get_size()),0)
+grilla = render_engine.addWidget(Grilla((2*C)+2,2*C,15*C,15*C),1)
+barra_H = render_engine.addWidget(Barra((17*C)+8, 2*C, 1/2*C, grilla.h),1)
+barra_V = render_engine.addWidget(Barra((2*C)+2, (17*C)+8, grilla.w, 1/2*C),1)
+herramientas = render_engine.addWidget(Herramientas(0,2*C,2*C,16*C))
+panel = render_engine.addWidget(PanelSimbolos(18*C-1,2*C,6*C,16*C-1))
+estado = render_engine.addWidget(Menu_barra('estado',0,(19*C),24*C,1*C))
+menu_1 = render_engine.addWidget(Menu_barra('Menu_1',0,0,24*C,1*C))
+menu_2 = render_engine.addWidget(Menu_barra('Menu_2',0,C,24*C,1*C))
+menu_3 = render_engine.addWidget(Menu_barra('Menu_3',0,18*C,24*C,1*C))
 
-herramientas = pygame.Rect((0,2*C),(2*C,16*C))
-panel = pygame.Rect(((18*C),2*C),(6*C,16*C))
-
-estado = pygame.Rect((0,(19*C)-2),(24*C,1*C))
-menu_1 = pygame.Rect((0,0),(24*C,1*C))
-menu_2 = pygame.Rect((0,C),(24*C,1*C))
-menu_3 = pygame.Rect((0,(18*C)),(24*C,1*C))
+currentFocus = ventana
+ventana.onFocusIn()
 
 FPS = time.Clock()
-
-fondo.fill(gris)
-
 while True:
     FPS.tick(60)
     events = pygame.event.get()
-    
-    
-    barra_H.event_handler(events)
-    barra_V.event_handler(events)
     for event in events:
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -40,18 +35,15 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                mousepos = mouse.get_pos()
+                for widget in render_engine.contents:
+                    if widget.rect.collidepoint(mousepos):
+                        if widget!=currentFocus and widget.focusable:
+                            currentFocus.onFocusOut()
+                            currentFocus = widget
+                            currentFocus.onFocusIn()
     
-    fondo.blit(grilla.image,(64,64))
-    fondo.blit(barra_V.image,barra_V.rect)
-    fondo.blit(barra_H.image,barra_H.rect)
-    
-    draw.rect(fondo,(0,0,0), herramientas, 2)
-    draw.rect(fondo,(0,0,0), panel, 2)
-    draw.rect(fondo,(0,0,0), estado, 2)
-    draw.rect(fondo,(0,0,0),menu_1,2)
-    draw.rect(fondo,(0,0,0),menu_2,2)
-    draw.rect(fondo,(0,0,0),menu_3,2)
-    pantalla.update()
-    #cambios = 
-    #pantalla.update(cambios)
-    
+    cambios = render_engine.update(events,fondo)
+    pantalla.update(cambios)
