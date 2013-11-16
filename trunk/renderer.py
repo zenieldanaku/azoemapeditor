@@ -1,26 +1,27 @@
 from pygame.sprite import LayeredDirty
 
 class Renderer:
-    contents = None
+    contents = LayeredDirty()
     widgets = {}
-    
-    def __init__(self):
-        self.contents = LayeredDirty()
-        self.widgets = {}
-        
-    def addWidget(self,widget,layer=1):
-        self.contents.add(widget,layer=layer)
-        self.widgets[widget.nombre] = widget
+    currentFocus = None
+          
+    def addWidget(widget,layer=1):
+        Renderer.contents.add(widget,layer=layer)
+        Renderer.widgets[widget.nombre] = widget
         return widget
     
-    def update(self,events,fondo):
-        for widget in self.contents:
+    def setFocus(widget):
+        if widget!=Renderer.currentFocus and widget.focusable:
+            Renderer.currentFocus.onFocusOut()
+            Renderer.currentFocus = widget
+            Renderer.currentFocus.onFocusIn()
+    
+    def update(events,fondo):
+        for widget in Renderer.contents:
             if widget.hasFocus:
                 args = widget.update(events)
 
-        ret = self.contents.draw(fondo)
+        ret = Renderer.contents.draw(fondo)
         if args != None:
             ret.append(fondo.blit(*args))
         return ret
-
-render_engine = Renderer()

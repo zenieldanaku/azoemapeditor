@@ -21,6 +21,7 @@ class Cursor(BaseWidget):
             self.nombre = 'cursor_V'
     
     def reposisionar(self,x,y):
-        self.rect.topleft = x,y
+        self.rect.x = x
+        self.rect.y = y
         self.dirty = 2
         return self.rect.x,self.rect.y 
