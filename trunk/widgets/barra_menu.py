@@ -17,10 +17,12 @@ class Menu_barra(BaseWidget):
         self.image = Surface(self.rect.size)
         self.image.fill(gris)
         draw.rect(self.image,negro,(0,0,w-2,h-2),2)
-    
-        for b in range(len(botones)):
-            boton = boton_menu(botones[b])
-            boton.rect.topleft = ((boton.image.get_width()+20)*b)+4,6
+        
+        prev  = 0
+        for btn in botones:
+            boton = boton_menu(btn)
+            boton.rect.topleft = prev+4,6
+            prev = boton.rect.right
             self.botones.add(boton)
             Renderer.addWidget(boton,2)
         
