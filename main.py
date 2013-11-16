@@ -18,7 +18,7 @@ barra_V = add(Barra((2*C)+2, (17*C)+8, grilla.w, 1/2*C))
 herramientas = add(Herramientas(0,2*C,2*C,16*C))
 panel = add(PanelSimbolos(18*C-1,2*C,6*C,16*C-1))
 
-botones_1 = ['Archivo','Editar','Mapa']
+botones_1 = ['Archivo','Editar','Mapa','Simbolo','Ejemplo']
 menu_1 = add(Menu_barra('Menu_1',0,0,24*C,1*C,botones_1))
 menu_2 = add(Menu_barra('Menu_2',0,C,24*C,1*C,[]))
 menu_3 = add(Menu_barra('Menu_3',0,18*C,24*C,1*C,[]))
