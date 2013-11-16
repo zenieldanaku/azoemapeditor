@@ -22,9 +22,6 @@ class BaseWidget(DirtySprite):
     def onFocusOut(self):
         self.hasFocus = False
     
-    def onClick(self, mousedata):
-        pass
-    
     def onMouseDown(self,mousedata):
         pass
     
@@ -32,9 +29,6 @@ class BaseWidget(DirtySprite):
         pass
     
     def onKeyDown(self, keydata):
-        pass
-    
-    def onKeyPress(self, keydata):
         pass
     
     def onKeyUp(self, keydata):

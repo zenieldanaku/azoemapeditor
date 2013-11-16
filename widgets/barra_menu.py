@@ -3,7 +3,7 @@ from constantes import *
 from pygame import Rect,Surface,draw,font
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
-from renderer import render_engine
+from renderer import Renderer
 
 
 class Menu_barra(BaseWidget):
@@ -22,7 +22,7 @@ class Menu_barra(BaseWidget):
             boton = boton_menu(botones[b])
             boton.rect.topleft = ((boton.image.get_width()+20)*b)+4,6
             self.botones.add(boton)
-            render_engine.addWidget(boton,2)
+            Renderer.addWidget(boton,2)
         
         self.botones.draw(self.image)
             
@@ -33,9 +33,12 @@ class boton_menu(BaseWidget):
         super().__init__()
         self.nombre = nombre
         self.layer = 2
+        self.image = self.crear_boton()
+        self.rect = self.image.get_rect()
+    
+    def crear_boton(self):
         fuente = font.SysFont('Verdana',14)
-        w,h = fuente.size(nombre)
+        w,h = fuente.size(self.nombre)
         rect = Rect(-1,-1,w,h+1)
-        render = render_textrect(nombre,fuente,rect,negro,gris,1)
-        self.image = render
-        self.rect = render.get_rect()
+        render = render_textrect(self.nombre,fuente,rect,negro,gris,1)
+        return render

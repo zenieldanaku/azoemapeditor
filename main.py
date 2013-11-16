@@ -1,7 +1,7 @@
 import pygame,sys
 from pygame import display as pantalla,time,mouse
 from widgets import *
-from renderer import render_engine
+from renderer import Renderer
 from constantes import *
 
 pygame.init()
@@ -9,7 +9,7 @@ tamanio = 24*C,20*C
 pantalla.set_caption("MapGen")
 fondo = pantalla.set_mode(tamanio)
 
-add = render_engine.addWidget # function alias
+add = Renderer.addWidget # function alias
 
 ventana = add(Ventana(fondo.get_size()),0)
 grilla = add(Grilla((2*C)+2,2*C,15*C,15*C))
@@ -24,7 +24,7 @@ menu_2 = add(Menu_barra('Menu_2',0,C,24*C,1*C,[]))
 menu_3 = add(Menu_barra('Menu_3',0,18*C,24*C,1*C,[]))
 estado = add(Menu_barra('estado',0,(19*C),24*C,1*C,[]))
 
-currentFocus = ventana
+Renderer.currentFocus = ventana
 ventana.onFocusIn()
 
 FPS = time.Clock()
@@ -43,14 +43,10 @@ while True:
             if event.button == 1:
                 mousepos = mouse.get_pos()
                 foundWidget = None
-                for widget in render_engine.contents:
+                for widget in Renderer.contents:
                     if widget.rect.collidepoint(mousepos):
                         foundWidget = widget
-                if foundWidget!=currentFocus and foundWidget.focusable:
-                    currentFocus.onFocusOut()
-                    currentFocus = foundWidget
-                    currentFocus.onFocusIn()
-                    print(currentFocus.nombre)
+                Renderer.setFocus(foundWidget)
     
-    cambios = render_engine.update(events,fondo)
+    cambios = Renderer.update(events,fondo)
     pantalla.update(cambios)

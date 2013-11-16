@@ -39,22 +39,13 @@ class Barra(BaseWidget):
         self.image.fill(blanco)
         if self.w > self.h:
             dx,dy = 0,y-(self.y+8)
+            x,y = self.x,y-8
         else:
             dx,dy = x-(self.x+8),0
-        rect = self.image.blit(self.cursor.image,((dx,dy),size))
-        
-        # Estoy seguro de que esto se puede escribir más limpio
-        # pero así funciona.
-        rect.x,rect.y = x,y
-        if self.w > self.h:
-            rect.x = self.x
-            rect.y -= 8
-        else:
-            rect.x -= 8
-            rect.y = self.y
-        #######################################################
+            x,y = x-8,self.y
+        self.image.blit(self.cursor.image,((dx,dy),size))
         self.dirty = 2
-        return rect
+        return x,y
     
     def onMouseDown(self,event):
         if event.button == 1:
@@ -68,5 +59,5 @@ class Barra(BaseWidget):
             if self.rect.collidepoint(x,y):
                 if self.cursor.pressed:
                     self.cursor.pressed = False
-                    rect = self.redibujar(x,y)
-                    self.cursor.reposisionar(*rect.topleft)
+                    dx,dy = self.redibujar(x,y)
+                    self.cursor.reposisionar(dx,dy)
