@@ -5,7 +5,6 @@ from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
 from renderer import Renderer
 
-
 class Menu_barra(BaseWidget):
     botones = None
     
@@ -67,15 +66,18 @@ class boton_menu(BaseWidget):
         if event.button == 1:
             x,y = mouse.get_pos()
             if self.rect.collidepoint(x,y):
-                self.menu.draw(self.image)
-                Renderer.addWidget(self.menu)
+                if self.menu.visible != True:
+                    self.menu.visible = True
+                    self.menu.draw(self.image)
+                else:
+                    self.menu.visible = False
     
     def onFocusOut(self):
         super().onFocusOut()
-        Renderer.delWidget(self.menu)
+        self.menu.visible = False
     
     
-class PullDownMenu (boton_menu,BaseWidget):
+class PullDownMenu (BaseWidget):
     botones = None
     def __init__(self,nombres,x,y):
         self.botones = LayeredDirty()
@@ -88,7 +90,7 @@ class PullDownMenu (boton_menu,BaseWidget):
                 ancho = w
             self.botones.add(boton)
         
-        BaseWidget.__init__(self)
+        super().__init__()
         image = Surface((ancho,alto))
         image.fill(gris)
         i = -1
@@ -101,6 +103,11 @@ class PullDownMenu (boton_menu,BaseWidget):
         self.botones.draw(image)
         self.image = image
         self.rect = self.image.get_rect(topleft = (x,C-4))
+        Renderer.addWidget(self,2)
+        self.visible = False
         
     def draw (self,surface):
         self.botones.draw(surface)
+        
+    def onMouseOn(self,events):
+        pass
