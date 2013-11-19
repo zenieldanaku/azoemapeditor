@@ -48,8 +48,9 @@ class Renderer:
                         if widget.rect.collidepoint(event.pos):
                             foundWidget = widget
                     Renderer.setFocus(foundWidget)
-                    
-                args = Renderer.currentFocus.onMouseDown(event)
+                
+                if Renderer.currentFocus.enabled:
+                    args = Renderer.currentFocus.onMouseDown(event)
                 
             elif event.type == MOUSEBUTTONUP:    
                 args = Renderer.currentFocus.onMouseUp(event)
@@ -58,6 +59,8 @@ class Renderer:
                 for widget in Renderer.contents:
                     if widget.rect.collidepoint(event.pos):
                         widget.onMouseOver(event)
+                    else:
+                        widget.offMouseOver()
 
         ret = Renderer.contents.draw(fondo)
         #if args != None:
