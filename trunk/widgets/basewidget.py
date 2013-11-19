@@ -30,6 +30,9 @@ class BaseWidget(DirtySprite):
     def onMouseOver(self,mousedata):
         pass
     
+    def offMouseOver(self):
+        pass
+    
     def onKeyDown(self, keydata):
         pass
     
