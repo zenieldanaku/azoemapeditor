@@ -1,0 +1,31 @@
+{
+    "grilla":{"clase":"Grilla","dimensiones":[66,64,480,480]},
+    "barra_h":{"clase":"Barra","dimensiones":[552,64,16,480]},
+    "barra_v":{"clase":"Barra","dimensiones":[66,552,480,16]},
+    "herramientas":{"clase":"Herramientas","dimensiones":[0,32,32,512]},
+    "panel":{"clase":"PanelSimbolos","dimensiones":[575,32,192,511]},
+    
+    "menues":{"clase":"Menu_barra",
+        "widgets":[
+            {
+                "nombre":"Menu_1",
+                "dimensiones":[0,0,768,32],
+                "botones":["Archivo","Editar","Mapa","Símbolo"]
+            },
+            {
+                "nombre":"Menu_2",
+                "dimensiones":[0,32,768,32],
+                "botones":[]
+            },
+            {
+                "nombre":"Menu_3",
+                "dimensiones":[0,576,768,32],
+                "botones":[]
+            },
+            {
+                "nombre":"estado",
+                "dimensiones":[0,608,768,32],
+                "botones":[]
+            }]
+    }
+}

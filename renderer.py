@@ -7,7 +7,7 @@ class Renderer:
     widgets = {}
     currentFocus = None
     mouse_move_wigets = []
-          
+    
     def addWidget(widget,layer=1):
         Renderer.contents.add(widget,layer=layer)
         Renderer.widgets[widget.nombre] = widget
@@ -60,7 +60,7 @@ class Renderer:
                     if widget.rect.collidepoint(event.pos):
                         widget.onMouseOver(event)
                     else:
-                        widget.offMouseOver()
+                        widget.onMouseOut()
 
         ret = Renderer.contents.draw(fondo)
         #if args != None:
