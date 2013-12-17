@@ -5,10 +5,10 @@ from pygame.sprite import LayeredDirty
 from renderer import Renderer
 from .boton_menu import boton_menu
 
-class Menu_barra(BaseWidget):
+class BarraMenu(BaseWidget):
     botones = None
     
-    def __init__(self,nom_menu,x,y,w,h,botones):
+    def __init__(self,nom_menu,x,y,w,h,botones=[]):
         super().__init__()
         self.botones = LayeredDirty()
         self.nombre = nom_menu
