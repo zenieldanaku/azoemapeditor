@@ -3,7 +3,7 @@ from .basewidget import BaseWidget
 from .cursor_barra import Cursor
 from constantes import *
 
-class Barra(BaseWidget):
+class Scroll(BaseWidget):
     cursor = None
     
     def __init__(self,x,y,w,h):

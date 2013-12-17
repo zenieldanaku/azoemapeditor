@@ -18,7 +18,7 @@ class boton_menu(BaseWidget):
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
         self.menu = self.establecer_menus(nombre)
-        self.dirty = 2
+        self.dirty = 1
         
     def establecer_menus (self,nombre):
         # esto es chapuza
@@ -60,6 +60,7 @@ class boton_menu(BaseWidget):
                         for boton in self.menu.botones:
                             boton.visible = False
                             boton.enabled = False
+                    self.dirty = 1
     
     def onFocusOut(self):
         super().onFocusOut()
@@ -67,9 +68,12 @@ class boton_menu(BaseWidget):
             self.menu.visible = False
             for boton in self.menu.botones:
                 boton.visible = False
+            self.dirty = 1
     
     def onMouseOver(self,event):
         self.image = self.img_sel
+        self.dirty = 1
     
     def onMouseOut(self):
         self.image = self.img_des
+        self.dirty = 1
