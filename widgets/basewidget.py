@@ -14,7 +14,7 @@ class BaseWidget(DirtySprite):
     
     def __init__(self):
         super().__init__()
-    
+        
     def onFocusIn(self):
         self.hasFocus = True
     
