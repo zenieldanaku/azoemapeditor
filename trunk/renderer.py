@@ -1,6 +1,6 @@
 from pygame.sprite import LayeredDirty
 from pygame import KEYDOWN, KEYUP,\
-MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION,QUIT,mouse,K_ESCAPE
+MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION,QUIT,K_ESCAPE
 
 class Renderer:
     contents = LayeredDirty()
@@ -9,6 +9,7 @@ class Renderer:
     mouse_move_wigets = []
     
     def addWidget(widget,layer=1):
+        print(widget.nombre,type(widget),widget.visible)
         Renderer.contents.add(widget,layer=layer)
         Renderer.widgets[widget.nombre] = widget
         return widget

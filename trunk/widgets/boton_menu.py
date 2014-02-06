@@ -3,9 +3,10 @@ from libs.textrect import render_textrect
 from pygame import Rect,font,mouse
 from constantes import *
 
-class boton_menu(BaseWidget):
+class BotonMenu(BaseWidget):
     nombre = ''
     menu = None
+    command = None
     resaltado = False
     
     def __init__(self,nombre,x,y):
@@ -17,26 +18,7 @@ class boton_menu(BaseWidget):
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
-        self.menu = self.establecer_menus(nombre)
         self.dirty = 1
-        
-    def establecer_menus (self,nombre):
-        # esto es chapuza
-        if nombre == 'Archivo': 
-            menu_nom = ['Nuevo','Abrir...','Guardar','Guardar como...','Cerrar']
-        elif nombre == 'Editar':
-            menu_nom = ['Preferencias...']
-        elif nombre == 'Mapa':
-            menu_nom = ['Grilla...','Capas...']
-        elif nombre == 'Símbolo':
-            menu_nom = ['Mobs...','Props...']
-        else:
-            menu_nom = ['']
-        
-        if menu_nom != ['']:
-            from .pull_down_menu import PullDownMenu
-            # esto evita una referencia circular
-            return PullDownMenu(menu_nom,*self.rect.bottomleft)
     
     def crear_boton(self,nombre,color):
         fuente = font.SysFont('Verdana',14)
@@ -60,7 +42,9 @@ class boton_menu(BaseWidget):
                         for boton in self.menu.botones:
                             boton.visible = False
                             boton.enabled = False
-                    self.dirty = 1
+                elif self.command != None:
+                    print('command!')
+                self.dirty = 1
     
     def onFocusOut(self):
         super().onFocusOut()
