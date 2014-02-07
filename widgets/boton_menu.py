@@ -31,14 +31,15 @@ class BotonMenu(BaseWidget):
         if event.button == 1:
             x,y = mouse.get_pos()
             if self.rect.collidepoint(x,y):
+                # en este nivel va la acción
                 if self.menu != None:
-                    if self.menu.visible != True:
-                        self.menu.visible = True
+                    if self.menu._visible != True:
+                        self.menu._visible = True
                         for boton in self.menu.botones:
                             boton.visible = True
                             boton.enabled = True
                     else:
-                        self.menu.visible = False
+                        self.menu._visible = False
                         for boton in self.menu.botones:
                             boton.visible = False
                             boton.enabled = False
@@ -49,7 +50,7 @@ class BotonMenu(BaseWidget):
     def onFocusOut(self):
         super().onFocusOut()
         if self.menu != None:
-            self.menu.visible = False
+            self.menu._visible = False
             for boton in self.menu.botones:
                 boton.visible = False
             self.dirty = 1

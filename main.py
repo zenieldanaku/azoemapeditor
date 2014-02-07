@@ -7,7 +7,7 @@ from rundata import crear_widgets
 pygame.init()
 tamanio = 24*C,20*C
 pantalla.set_caption("MapGen")
-fondo = pantalla.set_mode(tamanio,pygame.RESIZABLE)
+fondo = pantalla.set_mode(tamanio)
 ventana = crear_widgets(fondo)
 Renderer.currentFocus = ventana
 ventana.onFocusIn()
