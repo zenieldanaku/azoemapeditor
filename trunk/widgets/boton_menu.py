@@ -6,12 +6,11 @@ from constantes import *
 class BotonMenu(BaseWidget):
     nombre = ''
     menu = None
-    command = None
-    resaltado = False
     
-    def __init__(self,nombre,x,y):
+    def __init__(self,menu,nombre,x,y):
         super().__init__()
         self.nombre = nombre
+        self.menu = menu
         self.layer = 2
         self.img_des = self.crear_boton(self.nombre,negro)
         self.img_sel = self.crear_boton(self.nombre,cian_claro)
@@ -26,39 +25,21 @@ class BotonMenu(BaseWidget):
         rect = Rect(-1,-1,w,h+1)
         render = render_textrect(nombre,fuente,rect,color,gris,1)
         return render
-
-    def onMouseDown (self,event):
-        if event.button == 1:
-            x,y = mouse.get_pos()
-            if self.rect.collidepoint(x,y):
-                # en este nivel va la acción
-                if self.menu != None:
-                    if self.menu._visible != True:
-                        self.menu._visible = True
-                        for boton in self.menu.botones:
-                            boton.visible = True
-                            boton.enabled = True
-                    else:
-                        self.menu._visible = False
-                        for boton in self.menu.botones:
-                            boton.visible = False
-                            boton.enabled = False
-                elif self.command != None:
-                    print('command!')
-                self.dirty = 1
-    
+        
+    def onMouseDown (self,button):
+        if button == 1:
+            self.menu.barra.onFocusIn(self.menu)
+            
     def onFocusOut(self):
+        self.menu.onFocusOut()
         super().onFocusOut()
-        if self.menu != None:
-            self.menu._visible = False
-            for boton in self.menu.botones:
-                boton.visible = False
-            self.dirty = 1
-    
-    def onMouseOver(self,event):
+   
+    def onMouseOver(self):
         self.image = self.img_sel
-        self.dirty = 1
     
     def onMouseOut(self):
         self.image = self.img_des
+    
+    def update(self):
         self.dirty = 1
+    

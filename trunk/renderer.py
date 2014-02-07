@@ -13,11 +13,6 @@ class Renderer:
         Renderer.widgets[widget.nombre] = widget
         return widget
     
-    #def delWidget(widget):
-    #    if widget in Renderer.contents:
-    #        Renderer.contents.remove(widget)
-    #        del Renderer.widgets[widget.nombre]
-    
     def registerForMouseMove(self,widget):
         self.mouse_move_wigets.append(widget)
     
@@ -50,16 +45,17 @@ class Renderer:
                     Renderer.setFocus(foundWidget)
                 
                 if Renderer.currentFocus.enabled:
-                    Renderer.currentFocus.onMouseDown(event)
+                    Renderer.currentFocus.onMouseDown(event.button)
                 
             elif event.type == MOUSEBUTTONUP:    
-                Renderer.currentFocus.onMouseUp(event)
+                Renderer.currentFocus.onMouseUp(event.button)
                 
             elif event.type == MOUSEMOTION:
                 for widget in Renderer.contents:
                     if widget.rect.collidepoint(event.pos):
-                        widget.onMouseOver(event)
+                        widget.onMouseOver()
                     else:
                         widget.onMouseOut()
-
+        
+        Renderer.contents.update()        
         return Renderer.contents.draw(fondo)

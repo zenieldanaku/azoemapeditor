@@ -27,7 +27,7 @@ class BaseWidget(DirtySprite):
     def onMouseUp(self, mousedata):
         pass
     
-    def onMouseOver(self,mousedata):
+    def onMouseOver(self):
         pass
     
     def onMouseOut(self):

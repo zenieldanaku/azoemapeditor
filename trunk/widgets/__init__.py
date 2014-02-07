@@ -7,3 +7,4 @@ from .panel import PanelSimbolos
 from .marco import Marco
 from .boton_menu import BotonMenu
 from .basewidget import BaseWidget
+from .opcion_menu import OpcionMenu
