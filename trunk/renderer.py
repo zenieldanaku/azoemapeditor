@@ -9,7 +9,6 @@ class Renderer:
     mouse_move_wigets = []
     
     def addWidget(widget,layer=1):
-        print(widget.nombre,type(widget),widget.visible)
         Renderer.contents.add(widget,layer=layer)
         Renderer.widgets[widget.nombre] = widget
         return widget
@@ -37,10 +36,10 @@ class Renderer:
                 if event.key == K_ESCAPE:
                     return False
                 else:
-                    args = Renderer.currentFocus.onKeyDown(event)
+                    Renderer.currentFocus.onKeyDown(event)
                 
             elif event.type == KEYUP:
-                args = Renderer.currentFocus.onKeyUp(event)
+                Renderer.currentFocus.onKeyUp(event)
                 
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -51,10 +50,10 @@ class Renderer:
                     Renderer.setFocus(foundWidget)
                 
                 if Renderer.currentFocus.enabled:
-                    args = Renderer.currentFocus.onMouseDown(event)
+                    Renderer.currentFocus.onMouseDown(event)
                 
             elif event.type == MOUSEBUTTONUP:    
-                args = Renderer.currentFocus.onMouseUp(event)
+                Renderer.currentFocus.onMouseUp(event)
                 
             elif event.type == MOUSEMOTION:
                 for widget in Renderer.contents:
@@ -63,7 +62,4 @@ class Renderer:
                     else:
                         widget.onMouseOut()
 
-        ret = Renderer.contents.draw(fondo)
-        #if args != None:
-        #    ret.append(fondo.blit(*args))
-        return ret
+        return Renderer.contents.draw(fondo)
