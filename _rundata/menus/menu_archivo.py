@@ -13,7 +13,8 @@ class Menu_Archivo(BaseMenu):
             {'nom':'Abrir...','cmd':self.Abrir},
             {'nom':'Guardar','cmd':self.Guardar},
             {'nom':'Guardar como...','cmd':self.Guardar_como},
-            {'nom':'Cerrar','cmd':self.Cerrar}]
+            {'nom':'Cerrar','cmd':self.Cerrar},
+            {'nom':'Salir','cmd':self.Salir}]
         super().__init__('Archivo',opciones,x,y)
         
     
@@ -25,7 +26,9 @@ class Menu_Archivo(BaseMenu):
         print('guardar archivo')
     def Guardar_como(self):
         print('guardar archivo con otro nombre')
-    
     def Cerrar(self):
+        print('cierra el archivo abierto')
+    
+    def Salir(self):
         pyquit()
         sysexit()
