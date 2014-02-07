@@ -1,12 +1,14 @@
 from .basemenu import BaseMenu
 
 class Menu_Simbolo (BaseMenu):
-    def  __init__(self,x,y):
+    def  __init__(self,x,y,barra):
+        self.barra = barra
         self.nombre = 'Menu Simbolo'
-        nombres = ['Mobs...','Props...']
-        super().__init__(nombres,x,y)
+        opciones = [{'nom':'Mobs...','cmd':self.Mobs},
+                   {'nom':'Props...','cmd':self.Props}]
+        super().__init__('Simbolo',opciones,x,y)
         
     def Mobs(self):
-        pass
+        print('mobs')
     def Props(self):
-        pass
+        print('props')

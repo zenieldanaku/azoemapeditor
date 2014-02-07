@@ -1,19 +1,31 @@
 from .basemenu import BaseMenu
+from widgets import BotonMenu
+from pygame import quit as pyquit
+from sys import exit as sysexit
+
 
 class Menu_Archivo(BaseMenu):
-    def  __init__(self,x,y):
+    def  __init__(self,x,y,barra):
         self.nombre = 'Menu Archivo'
-        nombres = ['Nuevo','Abrir...','Guardar','Guardar como...','Cerrar']
-        super().__init__(nombres,x,y)
+        self.barra = barra
+        opciones = [
+            {'nom':'Nuevo','cmd':self.Nuevo},
+            {'nom':'Abrir...','cmd':self.Abrir},
+            {'nom':'Guardar','cmd':self.Guardar},
+            {'nom':'Guardar como...','cmd':self.Guardar_como},
+            {'nom':'Cerrar','cmd':self.Cerrar}]
+        super().__init__('Archivo',opciones,x,y)
         
     
     def Nuevo(self):
-        pass
+        print('nuevo arhivo')
     def Abrir(self):
-        pass
+        print('abrir achivo')
     def Guardar(self):
-        pass
+        print('guardar archivo')
     def Guardar_como(self):
-        pass
+        print('guardar archivo con otro nombre')
+    
     def Cerrar(self):
-        pass
+        pyquit()
+        sysexit()

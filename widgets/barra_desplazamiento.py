@@ -47,14 +47,14 @@ class Scroll(BaseWidget):
         self.dirty = 2
         return x,y
     
-    def onMouseDown(self,event):
-        if event.button == 1:
+    def onMouseDown(self,button):
+        if button == 1:
             x,y = mouse.get_pos()
             if self.cursor.rect.collidepoint(x,y):
                 self.cursor.pressed = True
     
-    def onMouseUp(self,event):
-        if event.button == 1:
+    def onMouseUp(self,button):
+        if button == 1:
             x,y = mouse.get_pos()
             if self.rect.collidepoint(x,y):
                 if self.cursor.pressed:

@@ -1,12 +1,14 @@
 from .basemenu import BaseMenu
 
 class Menu_Mapa (BaseMenu):
-    def  __init__(self,x,y):
+    def  __init__(self,x,y,barra):
         self.nombre = 'Menu Mapa'
-        nombres = ['Grilla...','Capas...']
-        super().__init__(nombres,x,y)
+        self.barra = barra
+        opciones = [{'nom':'Grilla...','cmd':self.Grilla},
+                   {'nom':'Capas...','cmd':self.Capas}]
+        super().__init__('Mapa',opciones,x,y)
 
     def Grilla(self):
-        pass
+        print('grilla')
     def Capas(self):
-        pass
+        print('capas')
