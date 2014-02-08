@@ -49,15 +49,19 @@ class Scroll(BaseWidget):
     
     def onMouseDown(self,button):
         if button == 1:
-            x,y = mouse.get_pos()
-            if self.cursor.rect.collidepoint(x,y):
-                self.cursor.pressed = True
+            self.cursor.pressed = True
     
     def onMouseUp(self,button):
         if button == 1:
+            if self.cursor.pressed:
+                self.cursor.pressed = False
+                x,y = mouse.get_pos()
+                dx,dy = self.redibujar(x,y)
+                self.cursor.reposisionar(dx,dy)
+    
+    def onMouseOver(self):
+        if self.cursor.pressed:
             x,y = mouse.get_pos()
-            if self.rect.collidepoint(x,y):
-                if self.cursor.pressed:
-                    self.cursor.pressed = False
-                    dx,dy = self.redibujar(x,y)
-                    self.cursor.reposisionar(dx,dy)
+            dx,dy = self.redibujar(x,y)
+            self.cursor.reposisionar(dx,dy)
+    
