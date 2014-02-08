@@ -2,7 +2,7 @@ from .basemenu import BaseMenu
 from widgets import BotonMenu
 from pygame import quit as pyquit
 from sys import exit as sysexit
-
+from globales import GLOBALES as G
 
 class Menu_Archivo(BaseMenu):
     def  __init__(self,x,y,barra):
@@ -18,12 +18,10 @@ class Menu_Archivo(BaseMenu):
         super().__init__('Archivo',opciones,x,y)
         
     
-    def Nuevo(self):
-        print('nuevo arhivo')
+    def Nuevo(self): G.nuevo_mapa()
     def Abrir(self):
         print('abrir achivo')
-    def Guardar(self):
-        print('guardar archivo')
+    def Guardar(self): G.guardar_mapa()
     def Guardar_como(self):
         print('guardar archivo con otro nombre')
     def Cerrar(self):
