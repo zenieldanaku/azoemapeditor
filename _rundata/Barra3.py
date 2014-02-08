@@ -1,8 +1,8 @@
-from widgets import barra_menu
+from widgets import BarraMenu
 from renderer import Renderer
 from constantes import *
 
-class barra3 (barra_menu.BarraMenu):
+class barra3 (BarraMenu):
     def __init__(self):
         nombre = 'Menu_3'
         x,y = 0,18*C

@@ -29,9 +29,9 @@ class BaseMenu (BaseWidget):
         self.image = image
         self.rect = self.image.get_rect(topleft=(x,self.boton.h))
         self._visible = 0
-        Renderer.addWidget(self,2)
+        Renderer.addWidget(self,3)
         for op in self.opciones:
-            Renderer.addWidget(op,2)
+            Renderer.addWidget(op,3)
         self.dirty = 2
     
     def showMenu(self):

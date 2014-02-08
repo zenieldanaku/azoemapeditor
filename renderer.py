@@ -40,10 +40,11 @@ class Renderer:
                 if event.button == 1:
                     foundWidget = None
                     for widget in Renderer.contents:
-                        if widget.rect.collidepoint(event.pos):
-                            foundWidget = widget
+                        if widget._visible:
+                            if widget.rect.collidepoint(event.pos):
+                                foundWidget = widget
                     Renderer.setFocus(foundWidget)
-                
+
                 if Renderer.currentFocus.enabled:
                     Renderer.currentFocus.onMouseDown(event.button)
                 
