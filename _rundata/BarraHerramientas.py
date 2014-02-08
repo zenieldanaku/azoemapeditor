@@ -3,6 +3,7 @@ from renderer import Renderer
 from constantes import *
 from pygame.sprite import LayeredDirty
 from pygame import draw
+from globales import GLOBALES as G
 
 class barraHerramientas (BarraMenu):
     botones = None
@@ -30,16 +31,13 @@ class barraHerramientas (BarraMenu):
                 self.botones.add(boton)
                 Renderer.addWidget(boton,2)
             else:
-                #Surface, color, start_pos, end_pos, width=1
                 draw.line(self.image,negro,[x+4,3],[x+4,27],2)
                 x = x+5
     
-    def Nuevo(self):
-        print('boton nuevo')
+    def Nuevo(self): G.nuevo_mapa()
     def Abrir(self):
         print('boton abrir')
-    def Guardar(self):
-        print('boton guardar')
+    def Guardar(self): G.guardar_mapa()
     
     def Cortar(self):
         print('boton cortar')
