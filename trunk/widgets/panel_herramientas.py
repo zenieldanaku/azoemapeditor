@@ -2,7 +2,7 @@ from .basewidget import BaseWidget
 from constantes import *
 from pygame import Surface,draw
 
-class Herramientas(BaseWidget):
+class PanelHerramientas(BaseWidget):
     def __init__(self,x,y,w,h):
         super().__init__()
         self.nombre = 'herramientas'

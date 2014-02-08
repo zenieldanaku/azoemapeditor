@@ -9,3 +9,4 @@ class Ventana(BaseWidget):
         self.nombre = 'ventana'
         self.image = Surface(self.rect.size)
         self.image.fill(gris)
+        self.focusable = False

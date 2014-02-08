@@ -14,7 +14,6 @@ class OpcionMenu(BaseWidget):
         self.focusable = False
         self.command = cmd
         self.menu = menu
-        self.layer = 2
         self.img_des = self.crear(self.nombre,negro)
         self.img_sel = self.crear(self.nombre,cian_claro)
         self.image = self.img_des
