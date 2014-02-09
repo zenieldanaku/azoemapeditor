@@ -26,7 +26,7 @@ class barraHerramientas (BarraMenu):
         
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = BaseBoton(x+4,C+3,e['nom'],e['cmd'],e['scr'])
+                boton = BaseBoton(x+4,C+4,e['nom'],e['cmd'],e['scr'])
                 x = boton.rect.right-2
                 self.botones.add(boton)
                 Renderer.addWidget(boton,2)

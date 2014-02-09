@@ -1,0 +1,174 @@
+from .basewidget import BaseWidget
+from pygame import Rect,Surface,font,draw,mouse,cursors,key
+from pygame.constants import K_BACKSPACE, K_DELETE, K_RETURN, K_KP_ENTER
+from pygame.constants import  K_END, K_HOME, K_LEFT, K_RIGHT
+from constantes import *
+import os
+
+class Entry(BaseWidget):
+    texto = []
+    cur_x = 4
+    idx = 0
+    cur_visible = False
+    ticks,max_tick = 0,30
+    seleccionando = False
+    sel_start,sel_end = 0,0
+    seleccion = None
+    
+    def __init__(self,x,y,w):
+        super().__init__()
+        self.fuente = font.SysFont('courier new',14)
+        self.cursor =  ("        ",
+                        "ooo ooo ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "   o    ",
+                        "ooo ooo ")
+        h = 21
+        self.rect = Rect((x,y),(w,h))
+        self.image = Surface((w,h))
+        self.erase_area = Rect(2,2,self.rect.w-4,self.rect.h-4)
+        self.write_area = Rect(4,2,self.rect.w-4,self.rect.h-4)
+        self.dx = x+4
+        self.borrar_todo()
+        self.texto = list(os.getcwd())
+        self.imprimir()
+        
+    def ingresar_caracter(self,char):
+        index = self.cur_x//8
+        self.texto.insert(index,char)
+    
+    def borrar_caracter(self,dx):
+        if 0 <= self.idx+dx < len(self.texto):
+            del self.texto[self.idx+dx]
+    
+    def borrar_seleccion(self):
+        del self.texto[self.seleccion]
+        self.seleccion = None
+        
+    def borrar_todo(self):
+        self.image.fill(blanco,self.erase_area)
+    
+    def imprimir(self):
+        txt = ''.join(self.texto)
+        render = self.fuente.render(txt,True,gris,blanco)
+
+        if self.seleccion != None:
+            sel = ''.join(self.texto[self.seleccion])
+            render_sel = self.fuente.render(sel,True,negro,gris_claro)
+            x = self.seleccion.start*8
+            render.blit(render_sel,(x,0))
+
+        self.image.blit(render,self.write_area)
+    
+    def dibujar_cursor(self):
+        x = self.cur_x
+        if not self.cur_visible:
+            draw.line(self.image,negro,(x,3),(x,16),1)
+        else:
+            draw.line(self.image,blanco,(x,3),(x,16),1)
+    
+    def insertar_cursor(self):
+        self.set_x()
+        if self.idx > len(self.texto):
+            self.cur_x = len(self.texto)*8+4
+            self.idx = self.cur_x//8
+            
+    def mover_cursor(self,dx):
+        self.idx += dx
+        self.cur_x = self.idx*8+4
+        if self.idx > len(self.texto):
+            self.cur_x = len(self.texto)*8+4
+            self.idx = self.cur_x//8
+        elif self.idx < 0:
+            self.cur_x = 4
+            self.idx = 0
+    
+    def set_x(self):
+        absX,absY = mouse.get_pos()
+        self.cur_x = round((absX-self.dx)/8)*8+4
+        self.idx = (round((absX-self.dx)/8)*8+4)//8
+    
+    def get_x(self):
+        absX,absY = mouse.get_pos()
+        cur_x = round((absX-self.dx)/8)*8+4
+        idx = (round((absX-self.dx)/8)*8+4)//8
+        return cur_x,idx
+    
+    def seleccionar(self):
+        if self.sel_end != self.sel_start:
+            if self.sel_end > self.sel_start:
+                self.seleccion = slice(self.sel_start,self.sel_end,1)
+            else:
+                self.seleccion = slice(self.sel_end,self.sel_start,1)
+    
+    def onMouseOver(self):
+        text = self.cursor
+        curs,mask = cursors.compile(text,'','o')
+        mouse.set_cursor([8,16],[4,1],curs,mask)
+        if self.seleccionando:
+            self.sel_end = self.get_x()[1]
+            self.seleccionar()
+    
+    def onMouseOut(self):
+        mouse.set_cursor(*cursors.arrow)
+    
+    def onMouseDown(self,dummy):
+        self.insertar_cursor()
+        self.seleccionando = True
+        self.sel_start = self.get_x()[1]
+    
+    def onMouseUp(self,dummy):
+        self.insertar_cursor()
+        self.seleccionando = False
+        self.sel_end = self.get_x()[1]
+        self.seleccionar()
+        
+    def onKeyDown(self,event):    
+        if event.key == K_BACKSPACE:
+            if self.seleccion == None:
+                self.borrar_caracter(-1)
+                self.mover_cursor(-1)
+            else:
+                self.borrar_seleccion()
+        elif event.key == K_DELETE:
+            if self.seleccion == None:
+                self.borrar_caracter(+0)
+            else:
+                self.borrar_seleccion()
+        elif event.key == K_RETURN or event.key == K_KP_ENTER:
+            return self.texto # ????
+        elif event.key == K_END: self.mover_cursor(len(self.texto))
+        elif event.key == K_HOME: self.mover_cursor(-len(self.texto))
+        elif event.key == K_LEFT: self.mover_cursor(-1)
+        elif event.key == K_RIGHT: self.mover_cursor(+1)
+            
+        elif event.unicode != '':
+            self.ingresar_caracter(event.unicode)
+            self.mover_cursor(+1)
+        elif '[' in key.name(event.key):
+            self.ingresar_caracter(key.name(event.key).strip('[]'))
+            self.mover_cursor(+1)
+
+        self.imprimir()
+    
+    def update(self):
+        if self.hasFocus:
+            self.ticks += 1
+            if self.ticks == self.max_tick:
+                self.ticks = 0
+                self.cur_visible = not self.cur_visible
+            self.borrar_todo()
+            self.imprimir()
+            self.dibujar_cursor()
+        self.dirty = 1

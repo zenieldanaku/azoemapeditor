@@ -9,3 +9,4 @@ from .boton_menu import BotonMenu
 from .basewidget import BaseWidget
 from .opcion_menu import OpcionMenu
 from .baseboton import BaseBoton
+from .entry import Entry
