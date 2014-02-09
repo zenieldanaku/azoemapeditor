@@ -2,6 +2,7 @@ from pygame import Color
 
 # Colores
 gris = Color(125,125,125)
+gris_claro = Color(230,230,230)
 blanco = Color(255,255,255)
 negro = Color(0,0,0)
 violeta = Color(125,0,125)
