@@ -1,9 +1,8 @@
 from .basewidget import BaseWidget
 from pygame import Rect,Surface,font,draw,mouse,cursors,key
 from pygame.constants import K_BACKSPACE, K_DELETE, K_RETURN, K_KP_ENTER
-from pygame.constants import  K_END, K_HOME, K_LEFT, K_RIGHT
+from pygame.constants import  K_END, K_HOME, K_LEFT, K_RIGHT, KMOD_LSHIFT, KMOD_RSHIFT
 from constantes import *
-import os
 
 class Entry(BaseWidget):
     texto = []
@@ -15,7 +14,7 @@ class Entry(BaseWidget):
     sel_start,sel_end = 0,0
     seleccion = None
     
-    def __init__(self,x,y,w):
+    def __init__(self,x,y,w,texto):
         super().__init__()
         self.fuente = font.SysFont('courier new',14)
         self.cursor =  ("        ",
@@ -41,11 +40,13 @@ class Entry(BaseWidget):
         self.write_area = Rect(4,2,self.rect.w-4,self.rect.h-4)
         self.dx = x+4
         self.borrar_todo()
-        self.texto = list(os.getcwd())
+        self.texto = list(texto)
         self.imprimir()
         
     def ingresar_caracter(self,char):
-        index = self.cur_x//8
+        index = self.idx
+        if self.seleccion != None:
+            self.borrar_seleccion()
         self.texto.insert(index,char)
     
     def borrar_caracter(self,dx):
@@ -54,7 +55,8 @@ class Entry(BaseWidget):
     
     def borrar_seleccion(self):
         del self.texto[self.seleccion]
-        self.seleccion = None
+        self.deseleccionar()
+        #self.insertar_cursor()
         
     def borrar_todo(self):
         self.image.fill(blanco,self.erase_area)
@@ -111,7 +113,49 @@ class Entry(BaseWidget):
                 self.seleccion = slice(self.sel_start,self.sel_end,1)
             else:
                 self.seleccion = slice(self.sel_end,self.sel_start,1)
+        else:
+            self.deseleccionar()
     
+    def modificar_seleccion(self,dx):
+        cur = self.idx
+        if dx < 0:
+            if cur < self.sel_start:
+                self.sel_start += dx
+                if self.sel_start <= 0:
+                    self.sel_start = 0
+                #print('caso A,','start',self.sel_start,'end',self.sel_end,'cur',cur,'dx',dx)
+            elif cur > self.sel_start:
+                self.sel_end += dx
+                if self.sel_end > len(self.texto):
+                    self.sel_end = len(self.texto)
+                elif self.sel_end < 0:
+                    self.sel_end = 0
+                #print('caso B,','start',self.sel_start,'end',self.sel_end,'cur',cur,'dx',dx)
+            elif cur > 0: # cur == self.sel_start
+                self.sel_end += dx
+                #print('caso E','start',self.sel_start,'end',self.sel_end,'cur',cur,'dx',dx)
+        else:
+            if cur > self.sel_end:
+                self.sel_end += dx
+                if self.sel_end < 0:
+                    self.sel_end = 0
+                #print('caso C,','start',self.sel_start,'end',self.sel_end,'cur',cur,'dx',dx)
+            elif cur < self.sel_end:
+                self.sel_start += dx
+                if self.sel_start > len(self.texto):
+                    self.sel_start = len(self.texto)
+                #print('caso D,','start',self.sel_start,'end',self.sel_end,'cur',cur,'dx',dx)
+            elif cur < len(self.texto): # cur == self.sel_end
+                self.sel_start += dx
+                #print('caso F','start',self.sel_start,'end',self.sel_end,'cur',cur,'dx',dx)
+            
+        self.seleccionar()
+    
+    def deseleccionar(self):
+        self.seleccion = None
+        self.sel_start = self.idx
+        self.sel_end = self.idx
+        
     def onMouseOver(self):
         text = self.cursor
         curs,mask = cursors.compile(text,'','o')
@@ -126,36 +170,62 @@ class Entry(BaseWidget):
     def onMouseDown(self,dummy):
         self.insertar_cursor()
         self.seleccionando = True
-        self.sel_start = self.get_x()[1]
+        self.sel_start = self.idx
     
     def onMouseUp(self,dummy):
         self.insertar_cursor()
         self.seleccionando = False
-        self.sel_end = self.get_x()[1]
+        self.sel_end = self.idx
         self.seleccionar()
         
-    def onKeyDown(self,event):    
+    def onKeyDown(self,event):
+        mods = key.get_mods()
         if event.key == K_BACKSPACE:
             if self.seleccion == None:
                 self.borrar_caracter(-1)
                 self.mover_cursor(-1)
             else:
                 self.borrar_seleccion()
+        
         elif event.key == K_DELETE:
             if self.seleccion == None:
                 self.borrar_caracter(+0)
             else:
                 self.borrar_seleccion()
+        
         elif event.key == K_RETURN or event.key == K_KP_ENTER:
             return self.texto # ????
-        elif event.key == K_END: self.mover_cursor(len(self.texto))
-        elif event.key == K_HOME: self.mover_cursor(-len(self.texto))
-        elif event.key == K_LEFT: self.mover_cursor(-1)
-        elif event.key == K_RIGHT: self.mover_cursor(+1)
+        
+        elif event.key == K_END:
+            for i in range(len(self.texto)):
+                self.mover_cursor(+1)
+                if mods & KMOD_LSHIFT or mods & KMOD_RSHIFT:    
+                    self.modificar_seleccion(+1)
+                else: self.deseleccionar()
+                
+        elif event.key == K_HOME:
+            for i in range(len(self.texto)):
+                self.mover_cursor(-1)
+                if mods & KMOD_LSHIFT or mods & KMOD_RSHIFT:
+                    self.modificar_seleccion(+1)
+                else: self.deseleccionar()
+        
+        elif event.key == K_LEFT:
+            self.mover_cursor(-1)
+            if mods & KMOD_LSHIFT or mods & KMOD_RSHIFT:
+                self.modificar_seleccion(-1)
+            else: self.deseleccionar()
+        
+        elif event.key == K_RIGHT:
+            self.mover_cursor(+1)
+            if mods & KMOD_LSHIFT or mods & KMOD_RSHIFT:
+                self.modificar_seleccion(+1)
+            else: self.deseleccionar()
             
         elif event.unicode != '':
             self.ingresar_caracter(event.unicode)
             self.mover_cursor(+1)
+        
         elif '[' in key.name(event.key):
             self.ingresar_caracter(key.name(event.key).strip('[]'))
             self.mover_cursor(+1)
