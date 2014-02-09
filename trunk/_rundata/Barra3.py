@@ -27,6 +27,9 @@ class barra3 (BarraMenu):
             Renderer.addWidget(boton,2)
     
     def Abrir(self):
-        pass
+        try: G.cargar_mapa(''.join(self.entry.texto))
+        except: pass
+    
     def Guardar(self):
-        G.guardar_mapa(''.join(self.entry.texto))
+        try: G.guardar_mapa(''.join(self.entry.texto))
+        except: pass
