@@ -1,6 +1,8 @@
-from widgets import BarraMenu, Entry
+from widgets import BarraMenu, Entry, BaseBoton
 from renderer import Renderer
 from constantes import *
+from globales import GLOBALES as G
+import os
 
 class barra3 (BarraMenu):
     def __init__(self):
@@ -10,6 +12,21 @@ class barra3 (BarraMenu):
         
         super().__init__(nombre,x,y,w,h)
         self.focusable = False
-        self.entry = Entry(5,y+5,int(self.rect.w/3)*2)
+        texto = os.getcwd().split('\\')
+        self.entry = Entry(5,y+5,int(self.rect.w/3)*2,'/'.join(texto))
         Renderer.addWidget(self)
+        elementos = [
+            {"nom":'Abrir',"cmd":self.Abrir,"scr":"A"},
+            {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"}]
+        
         Renderer.addWidget(self.entry,1)
+        x = int(self.rect.w/3)*2+4
+        for e in elementos:
+            boton = BaseBoton(x+4,y+3,e['nom'],e['cmd'],e['scr'])
+            x = boton.rect.right-2
+            Renderer.addWidget(boton,2)
+    
+    def Abrir(self):
+        pass
+    def Guardar(self):
+        G.guardar_mapa(''.join(self.entry.texto))

@@ -7,10 +7,9 @@ class GLOBALES:
     def nuevo_mapa():
         GLOBALES.MAPA = Mapa()
     
-    def guardar_mapa():
+    def guardar_mapa(ruta):
         data = GLOBALES.MAPA.guardar()
-        archivo = 'ejemplo.json' #chapuza
-        Resources.guardar_json(archivo,data)
+        Resources.guardar_json(ruta,data)
 
 class Resources:
     def abrir_json (archivo):
