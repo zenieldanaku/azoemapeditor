@@ -27,9 +27,19 @@ class barra3 (BarraMenu):
             Renderer.addWidget(boton,2)
     
     def Abrir(self):
-        try: G.cargar_mapa(''.join(self.entry.texto))
-        except: pass
+        texto = self.entry.devolver_texto()
+        try:
+            G.cargar_mapa(texto)
+        except:
+            G.estado = 'Error: El archivo no existe.'
     
     def Guardar(self):
-        try: G.guardar_mapa(''.join(self.entry.texto))
-        except: pass
+        texto = self.entry.devolver_texto()
+        try:
+            G.guardar_mapa(texto)
+            G.estado = "Mapa '"+texto+"' guardado."
+        except: 
+            G.estado ='Error: Es necesario cargar un mapa.'
+    
+    def update(self):
+        G.ruta = self.entry.devolver_texto()

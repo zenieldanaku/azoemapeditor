@@ -1,8 +1,13 @@
 from mapa import Mapa
 import json
+from pygame import image
 
 class GLOBALES:
     MAPA = None
+    estado = ''
+    ruta = ''
+    IMG_fondo = None
+    IMG_colisiones = None
     
     def nuevo_mapa():
         GLOBALES.MAPA = Mapa()
@@ -15,7 +20,7 @@ class GLOBALES:
         data = Resources.abrir_json(ruta)
         GLOBALES.MAPA = Mapa()
         GLOBALES.MAPA.cargar(data)
-
+    
 class Resources:
     def abrir_json (archivo):
         ex = open(archivo,'r')
@@ -27,3 +32,7 @@ class Resources:
         ex = open(archivo,'w')
         json.dump(datos,ex, sort_keys=True,indent=4, separators=(',', ': '))
         ex.close()
+    
+    def cargar_imagen(ruta):
+        ar = image.load(ruta).convert_alpha()
+        return ar

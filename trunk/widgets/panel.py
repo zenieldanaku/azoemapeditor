@@ -4,6 +4,7 @@ from pygame import Rect,Surface,draw
 
 class PanelSimbolos(BaseWidget):
     x,y,w,h = 0,0,0,0
+    
     def __init__(self,x,y,w,h):
         super().__init__()
         self.nombre = 'panel_simbolos'

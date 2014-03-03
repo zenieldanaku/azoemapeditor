@@ -42,7 +42,10 @@ class Entry(BaseWidget):
         self.borrar_todo()
         self.texto = list(texto)
         self.imprimir()
-        
+    
+    def  devolver_texto(self):
+        return ''.join(self.texto)
+    
     def ingresar_caracter(self,char):
         index = self.idx
         if self.seleccion != None:

@@ -8,6 +8,11 @@ class Menu_Archivo(BaseMenu):
     def  __init__(self,x,y,barra):
         self.nombre = 'Menu Archivo'
         self.barra = barra
+        cascadas = {
+            'Nuevo':[
+                
+            ]
+        }
         opciones = [
             {'nom':'Nuevo','cmd':self.Nuevo},
             {'nom':'Abrir...','cmd':self.Abrir},

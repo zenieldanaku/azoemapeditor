@@ -29,13 +29,17 @@ class OpcionMenu(BaseWidget):
         return render
     
     def onMouseOver(self):
-        self.image = self.img_sel
+        from .cascada_menu import CascadaMenu
+        if self.enabled:
+            self.image = self.img_sel
+            if isinstance(self.command,CascadaMenu):
+                self.command.showMenu()
     
     def onMouseOut(self):
         self.image = self.img_des
     
     def onMouseDown(self,button):
-        self.command()
+        self.comando()
         self.menu.hideMenu()
     
     def onFocusOut(self):
@@ -44,6 +48,12 @@ class OpcionMenu(BaseWidget):
     
     def onFocusIn(self):
         super().onFocusIn()
-        self.command()
+        self.comando()
         self.menu.hideMenu()
-        
+    
+    def comando (self):
+        from .cascada_menu import CascadaMenu
+        if isinstance(self.command,CascadaMenu):
+            self.command.showMenu()
+        else:
+            self.command()
