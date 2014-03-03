@@ -5,7 +5,7 @@ from constantes import *
 
 class BaseBoton(BaseWidget):
     comando = None
-    def __init__(self,x,y,nombre,cmd,texto):
+    def __init__(self,x,y,nombre,cmd,texto,descripcion=''):
         super().__init__()
         self.x,self.y = x,y
         self.nombre = nombre
@@ -13,6 +13,7 @@ class BaseBoton(BaseWidget):
         self.img_uns = self._crear(texto,negro,negro)
         self.img_sel = self._crear(texto,cian_claro,negro)
         self.img_pre = self._crear(texto,cian_claro,blanco)
+        self.descripcion = descripcion
         
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(x,y))
