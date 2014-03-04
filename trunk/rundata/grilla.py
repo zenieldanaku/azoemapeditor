@@ -64,8 +64,7 @@ class grilla(BaseWidget):
         if G.IMG_actual != '':
             self.ver_posiciones = not self.ver_posiciones
     def cmdVerGr(self):
-        if G.IMG_actual != '':
-            self.ver_grilla = not self.ver_grilla
+        self.ver_grilla = not self.ver_grilla
     def cmdVerCapa(self):
         if G.IMG_actual == 'Fondo':
             G.IMG_actual = 'Colisiones'
