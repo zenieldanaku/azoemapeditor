@@ -1,15 +1,20 @@
-from renderer import Renderer
 from widgets import *
 from constantes import *
 from .BarraMenus import barraMenus
 from .BarraHerramientas import barraHerramientas
-from .Barra3 import barra3
+from .BarraEntry import barraEntry
 from .BarraEstado import barraEstado
-
+from .grilla import grilla
+from .simbolos import PanelSimbolos
+from .herramientas import PanelHerramientas
 from pygame import font
+
 font.init()
 ## no quiero hacer esto, pero no me sale resolverlos como clases estáticas
 BarraMenus = barraMenus()
 BarraHerramientas = barraHerramientas()
-Barra3 = barra3()
+BarraEntry = barraEntry()
 BarraEstado = barraEstado()
+Grilla = grilla()
+Herramientas = PanelHerramientas()
+Simbolos = PanelSimbolos()

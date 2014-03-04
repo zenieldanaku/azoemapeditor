@@ -3,38 +3,26 @@ from .basewidget import BaseWidget
 from constantes import *
 
 class Scroll(BaseWidget):
-    cursor = None
-    
-    def __init__(self,x,y,w,h):
+    parent = None
+    cursor = None    
+    def __init__(self,x,y,w,h,parent):
         super().__init__()
+        self.parent = parent
         self.image = Surface((w,h))
-        self.rect = self.image.get_rect(topleft=(x,y))
         self.image.fill(blanco)
+        self.rect = self.image.get_rect(topleft=(x,y))
         self.x,self.y = x,y
         self.w,self.h = h,w
         if self.w > self.h:
             self.nombre = 'barra_H'
+            rx,ry = 0,self.w//2
         else:
             self.nombre = 'barra_V'
-        self.cursor = Cursor(self)
-        self.crear_cursor()
-        self.dirty = 2
+            rx,ry = self.h//2,0
+            
+        self.cursor = Cursor(self,rx,ry)
         
-    def crear_cursor(self):
-        if self.w > self.h: # horizontal
-            pos = (0,self.w/2)
-            tl = self.x,self.w/2+2*C
-        else: # vertical
-            pos = (self.h/2,0)
-            tl = self.h/2+2*C+2,self.y
-            #no sé porque tiene que ser tan complicada esa función...
-        
-        cursor_rect = Rect(pos,self.cursor.rect.size)
-        self.image.blit(self.cursor.image,cursor_rect)
-        self.cursor.rect.topleft = tl
-    
     def redibujar(self,x,y):
-        size = self.cursor.rect.size
         self.image.fill(blanco)
         if self.w > self.h:
             dx,dy = 0,y-(self.y+8)
@@ -42,8 +30,8 @@ class Scroll(BaseWidget):
         else:
             dx,dy = x-(self.x+8),0
             x,y = x-8,self.y
-        self.image.blit(self.cursor.image,((dx,dy),size))
-        self.dirty = 2
+        self.image.blit(self.cursor.image,(dx,dy))
+        self.cursor.relx,self.cursor.rely = dx,dy
         return x,y
     
     def onMouseDown(self,button):
@@ -56,34 +44,39 @@ class Scroll(BaseWidget):
                 self.cursor.pressed = False
                 x,y = mouse.get_pos()
                 dx,dy = self.redibujar(x,y)
-                self.cursor.reposisionar(dx,dy)
+                self.cursor.reposicionar(dx,dy)
     
     def onMouseOver(self):
         if self.cursor.pressed:
             x,y = mouse.get_pos()
             dx,dy = self.redibujar(x,y)
-            self.cursor.reposisionar(dx,dy)
+            self.cursor.reposicionar(dx,dy)
+    
+    def update(self):
+        self.dirty = 1
 
 class Cursor(BaseWidget):
     size = 0,0
     pressed = False
-    def __init__(self,macro):
-        self.size = 1/2*C,1/2*C
+    relx,rely = 0,0
+    def __init__(self,macro,rx,ry):
         super().__init__()
+        self.size = 1/2*C,1/2*C
+        self.relx,self.rely = rx,ry
         self.image = Surface(self.size)
         self.image.fill(violeta)
         self.rect = self.image.get_rect()
         self.pressed = False
-        self.dirty = 2
+        self.dirty = 1
         self.barra = macro
+        self.barra.image.blit(self.image,[rx,ry])
         
         if self.barra.w > self.barra.h:
             self.nombre = 'cursor_H'
         else:
             self.nombre = 'cursor_V'
     
-    def reposisionar(self,x,y):
+    def reposicionar(self,x,y):
         self.rect.x = x
         self.rect.y = y
-        self.dirty = 2
-        return self.rect.x,self.rect.y 
+        self.dirty = 1

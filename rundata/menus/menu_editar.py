@@ -1,6 +1,6 @@
-from .basemenu import BaseMenu
+from widgets import Menu
 
-class Menu_Editar(BaseMenu):
+class Menu_Editar(Menu):
     def  __init__(self,x,y,barra):
         self.nombre = 'Menu Editar'
         self.barra = barra

@@ -8,9 +8,13 @@ class GLOBALES:
     ruta = ''
     IMG_fondo = None
     IMG_colisiones = None
+    IMG_actual = ''
     
     def nuevo_mapa():
         GLOBALES.MAPA = Mapa()
+        GLOBALES.IMG_fondo = None
+        GLOBALES.IMG_colisiones = None
+        GLOBALES.IMG_actual = ''
     
     def guardar_mapa(ruta):
         data = GLOBALES.MAPA.guardar()
