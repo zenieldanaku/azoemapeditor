@@ -1,8 +1,8 @@
-from widgets import BaseWidget, Scroll, BaseBoton
-from renderer import Renderer
+from widgets import BaseWidget, Scroll, Boton
 from pygame import Surface,Rect,draw,font
-from constantes import *
 from globales import GLOBALES as G
+from renderer import Renderer
+from constantes import *
 import os
 
 class grilla(BaseWidget):
@@ -23,9 +23,9 @@ class grilla(BaseWidget):
         
         self.ScrollX = Scroll((17*C)+8, self.y, 1/2*C, self.h, self)
         self.ScrollY = Scroll(self.x, (17*C)+8, self.w, 1/2*C, self)
-        self.BtnVerPos = BaseBoton(3,17*C+2,'Grilla.BtnVerPos',self.cmdVerPos,'V')
-        self.BtnVerGr = BaseBoton(C+1,17*C+2,'Grilla.BtnVerGr',self.cmdVerGr,'Gr')
-        self.BtnVerCapa = BaseBoton(17*C+3,17*C+4,'Grilla.BtnVerCapa',self.cmdVerCapa,'Cp')
+        self.BtnVerPos = Boton(3,17*C+2,'Grilla.BtnVerPos',self.cmdVerPos,'V')
+        self.BtnVerGr = Boton(C+1,17*C+2,'Grilla.BtnVerGr',self.cmdVerGr,'Gr')
+        self.BtnVerCapa = Boton(17*C+3,17*C+4,'Grilla.BtnVerCapa',self.cmdVerCapa,'Cp')
         
         Renderer.addWidget(self)
         Renderer.addWidget(self.ScrollX)

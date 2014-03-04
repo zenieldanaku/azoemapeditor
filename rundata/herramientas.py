@@ -1,7 +1,7 @@
-from widgets import BaseWidget
-from constantes import *
 from pygame import Surface,draw
+from widgets import BaseWidget
 from renderer import Renderer
+from constantes import *
 
 class PanelHerramientas(BaseWidget):
     x,y,w,h = 0,0,0,0

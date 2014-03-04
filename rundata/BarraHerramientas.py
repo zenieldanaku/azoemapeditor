@@ -1,9 +1,9 @@
-from widgets import BaseWidget,BaseBoton
+from pygame.sprite import LayeredDirty
+from widgets import BaseWidget,Boton
+from globales import GLOBALES as G
+from pygame import draw, Surface
 from renderer import Renderer
 from constantes import *
-from pygame.sprite import LayeredDirty
-from pygame import draw, Surface
-from globales import GLOBALES as G
 
 class barraHerramientas (BaseWidget):
     botones = None
@@ -27,7 +27,7 @@ class barraHerramientas (BaseWidget):
         x = self.x
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = BaseBoton(x+6,C+4,e['nom'],e['cmd'],e['scr'])
+                boton = Boton(x+6,C+4,e['nom'],e['cmd'],e['scr'])
                 x = boton.rect.right-2
                 self.botones.add(boton)
                 Renderer.addWidget(boton,2)

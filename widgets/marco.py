@@ -1,7 +1,7 @@
-from .basewidget import BaseWidget
-from constantes import *
-from pygame import Surface,draw
 from pygame.sprite import LayeredDirty
+from pygame import Surface,draw
+from . import BaseWidget
+from constantes import *
 
 class Marco(BaseWidget):
     contenido = None

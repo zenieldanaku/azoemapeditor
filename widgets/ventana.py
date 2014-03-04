@@ -1,5 +1,5 @@
-from .basewidget import BaseWidget
 from pygame import Rect,Surface
+from . import BaseWidget
 from constantes import *
 
 class Ventana(BaseWidget):

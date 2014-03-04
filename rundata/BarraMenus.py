@@ -1,8 +1,9 @@
+from pygame import Surface,draw
 from widgets import BaseWidget
 from renderer import Renderer
 from constantes import *
 from .menus import *
-from pygame import Surface,draw
+
 
 class barraMenus (BaseWidget):
     menus = {}

@@ -1,9 +1,9 @@
 from pygame import Surface,Rect,font,mouse
-from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
-from constantes import *
+from pygame.sprite import LayeredDirty
 from renderer import Renderer
-from .basewidget import BaseWidget
+from . import BaseWidget
+from constantes import *
 
 class Menu (BaseWidget):
     cascada = None

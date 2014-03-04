@@ -1,9 +1,9 @@
-from widgets import BaseWidget, Entry, BaseBoton
+from globales import GLOBALES as G, Resources as r
+from widgets import BaseWidget, Entry, Boton
+from pygame import Surface,draw
 from renderer import Renderer
 from constantes import *
-from globales import GLOBALES as G, Resources as r
 import os
-from pygame import Surface,draw
 
 class barraEntry (BaseWidget):
     def __init__(self):
@@ -28,7 +28,7 @@ class barraEntry (BaseWidget):
         Renderer.addWidget(self.entry,1)
         x = int(self.rect.w/3)*2+4
         for e in elementos:
-            boton = BaseBoton(x+4,self.y+3,e['nom'],e['cmd'],e['scr'])
+            boton = Boton(x+4,self.y+3,e['nom'],e['cmd'],e['scr'])
             x = boton.rect.right-2
             Renderer.addWidget(boton,2)
     
