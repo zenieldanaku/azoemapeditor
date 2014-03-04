@@ -22,15 +22,20 @@ class barraEntry (BaseWidget):
         elementos = [
             {"nom":'Abrir',"cmd":self.Abrir,"scr":"A"},
             {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},
+            {"nom":"barra"},
             {"nom":'Set_imagen_fondo',"cmd":self.Set_imagen_fondo,"scr":"Fd"},
             {"nom":'Set_imagen_colisiones',"cmd":self.Set_imagen_colisiones,"scr":"Cl"}]
         
         Renderer.addWidget(self.entry,1)
         x = int(self.rect.w/3)*2+4
         for e in elementos:
-            boton = Boton(x+4,self.y+3,e['nom'],e['cmd'],e['scr'])
-            x = boton.rect.right-2
-            Renderer.addWidget(boton,2)
+            if e['nom'] != 'barra':
+                boton = Boton(x+4,self.y+3,e['nom'],e['cmd'],e['scr'])
+                x = boton.rect.right-2
+                Renderer.addWidget(boton,2)
+            else:
+                draw.line(self.image,negro,[x+5,3],[x+5,27],2)
+                x = x+7
     
     def Abrir(self):
         texto = self.entry.devolver_texto()
