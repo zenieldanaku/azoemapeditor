@@ -1,6 +1,6 @@
-from .basemenu import BaseMenu
+from widgets import Menu
 
-class Menu_Simbolo (BaseMenu):
+class Menu_Simbolo (Menu):
     def  __init__(self,x,y,barra):
         self.barra = barra
         self.nombre = 'Menu Simbolo'

@@ -1,10 +1,9 @@
-from .basemenu import BaseMenu
-from widgets import BotonMenu
+from widgets import Menu
 from pygame import quit as pyquit
 from sys import exit as sysexit
 from globales import GLOBALES as G
 
-class Menu_Archivo(BaseMenu):
+class Menu_Archivo(Menu):
     def  __init__(self,x,y,barra):
         self.nombre = 'Menu Archivo'
         self.barra = barra

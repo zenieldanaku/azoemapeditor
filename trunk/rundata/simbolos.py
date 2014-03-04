@@ -1,17 +1,19 @@
-from .basewidget import BaseWidget
+from widgets import BaseWidget
 from constantes import *
 from pygame import Rect,Surface,draw
+from renderer import Renderer
 
 class PanelSimbolos(BaseWidget):
     x,y,w,h = 0,0,0,0
     
-    def __init__(self,x,y,w,h):
+    def __init__(self):
         super().__init__()
+        self.x,self.y = 18*C-1,2*C,
+        self.w,self.h = 6*C,16*C-1
         self.nombre = 'panel_simbolos'
-        self.rect = Rect(x,y,w,h)
-        self.x,self.y = x,y
-        self.w,self.h = w,h
         self.image = self.dibujar_grilla()
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        Renderer.addWidget(self)
     
     def dibujar_grilla(self):
         grilla_surf = Surface((self.w,self.h))

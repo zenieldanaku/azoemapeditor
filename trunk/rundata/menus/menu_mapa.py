@@ -1,7 +1,7 @@
-from .basemenu import BaseMenu
+from widgets import Menu
 from globales import GLOBALES as G, Resources as r
 
-class Menu_Mapa (BaseMenu):
+class Menu_Mapa (Menu):
     def  __init__(self,x,y,barra):
         self.nombre = 'Menu Mapa'
         self.barra = barra
@@ -30,10 +30,12 @@ class Menu_Mapa (BaseMenu):
     
     def Set_imagen_fondo(self):
         imagen = self._cargar_imagen()
+        G.IMG_actual = 'Fondo'
         G.IMG_fondo = imagen
         
     def Set_imagen_colisiones(self):
         imagen = self._cargar_imagen()
+        G.IMG_actual = 'Colisiones'
         G.IMG_colisiones = imagen
         
         
