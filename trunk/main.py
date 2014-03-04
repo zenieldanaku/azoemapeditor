@@ -1,9 +1,9 @@
-import pygame,sys,os
 from pygame import display as pantalla,time
 from renderer import Renderer
-from constantes import C
 from widgets import Ventana
+from constantes import C
 from rundata import *
+import pygame,sys,os
 
 pygame.init()
 tamanio = 24*C,20*C

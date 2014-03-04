@@ -1,5 +1,5 @@
 from pygame import Rect,Surface,mouse
-from .basewidget import BaseWidget
+from . import BaseWidget
 from constantes import *
 
 class Scroll(BaseWidget):

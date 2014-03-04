@@ -1,6 +1,6 @@
-from .basewidget import BaseWidget
 from libs.textrect import render_textrect
 from pygame import font,Rect
+from . import BaseWidget
 from constantes import *
 
 class Label (BaseWidget):

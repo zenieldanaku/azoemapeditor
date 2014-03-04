@@ -1,6 +1,6 @@
+from pygame import image
 from mapa import Mapa
 import json
-from pygame import image
 
 class GLOBALES:
     MAPA = None

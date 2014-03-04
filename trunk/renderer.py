@@ -1,21 +1,17 @@
+from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION
+from pygame import KEYDOWN,KEYUP,K_ESCAPE,QUIT
 from pygame.sprite import LayeredDirty
-from pygame import KEYDOWN, KEYUP,\
-MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION,QUIT,K_ESCAPE
 
 class Renderer:
     contents = LayeredDirty()
     widgets = {}
     currentFocus = None
-    mouse_move_wigets = []
     
     def addWidget(widget,layer=1):
         Renderer.contents.add(widget,layer=layer)
         Renderer.widgets[widget.nombre] = widget
         return widget
-    
-    def registerForMouseMove(self,widget):
-        self.mouse_move_wigets.append(widget)
-    
+
     def setFocus(widget):
         if widget!=Renderer.currentFocus and widget.focusable:
             Renderer.currentFocus.onFocusOut()

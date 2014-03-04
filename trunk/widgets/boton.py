@@ -1,9 +1,9 @@
-from . import BaseWidget
 from libs.textrect import render_textrect
 from pygame import font,Rect,draw
+from . import BaseWidget
 from constantes import *
 
-class BaseBoton(BaseWidget):
+class Boton(BaseWidget):
     comando = None
     def __init__(self,x,y,nombre,cmd,texto,descripcion=''):
         super().__init__()

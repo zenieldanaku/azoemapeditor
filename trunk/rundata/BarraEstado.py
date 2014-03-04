@@ -1,8 +1,8 @@
 from widgets import BaseWidget, Label
-from renderer import Renderer
-from constantes import *
 from pygame import Rect,Surface,draw
 from globales import GLOBALES as G
+from renderer import Renderer
+from constantes import *
 
 class barraEstado (BaseWidget):
     _estado = ''

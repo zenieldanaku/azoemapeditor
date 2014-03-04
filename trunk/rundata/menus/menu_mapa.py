@@ -1,5 +1,5 @@
-from widgets import Menu
 from globales import GLOBALES as G, Resources as r
+from widgets import Menu
 
 class Menu_Mapa (Menu):
     def  __init__(self,x,y,barra):

@@ -1,7 +1,7 @@
-from widgets import Menu
+from globales import GLOBALES as G
 from pygame import quit as pyquit
 from sys import exit as sysexit
-from globales import GLOBALES as G
+from widgets import Menu
 
 class Menu_Archivo(Menu):
     def  __init__(self,x,y,barra):
