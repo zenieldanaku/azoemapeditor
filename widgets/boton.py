@@ -10,15 +10,11 @@ class Boton(BaseWidget):
         self.x,self.y = x,y
         self.nombre = nombre
         self.comando = cmd
-        c1 = Color(100,100,100)
-        c2 = Color(150,150,150)
-        
-        self.img_uns = self._crear(texto,negro,gris, c1, c2)
-        self.img_sel = self._crear(texto,cian_claro,gris, c1, c2)
-        self.img_pre = self._crear(texto,cian_claro,gris, c2, c1)
-        
-        
         self.descripcion = descripcion
+        
+        self.img_uns = self._crear(texto,negro,gris, gris_oscuro_bisel,gris_claro_bisel)
+        self.img_sel = self._crear(texto,cian_claro,gris, gris_oscuro_bisel,gris_claro_bisel)
+        self.img_pre = self._crear(texto,cian_claro,gris, gris_claro_bisel,gris_oscuro_bisel)
         
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(x,y))
@@ -45,10 +41,12 @@ class Boton(BaseWidget):
     def update(self):
         self.dirty = 1
         
-    def onMouseOver(self):
+    def onMouseIn(self):
+        super().onMouseIn()
         self.serElegido()
 
     def onMouseOut(self):
+        super().onMouseOut()
         self.serDeselegido()
         
     def onMouseDown(self,button):

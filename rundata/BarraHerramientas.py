@@ -16,7 +16,6 @@ class barraHerramientas (BaseWidget):
         self.image = Surface((self.w,self.h))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.image.fill(gris)
-        draw.rect(self.image,negro,(0,0,self.w-2,self.h-2),2)
         Renderer.addWidget(self)
         elementos = [
             {"nom":'Nuevo',"cmd":self.Nuevo,"scr":"N"},
@@ -32,7 +31,8 @@ class barraHerramientas (BaseWidget):
                 self.botones.add(boton)
                 Renderer.addWidget(boton,2)
             else:
-                draw.line(self.image,negro,[x+6,3],[x+6,27],2)
+                draw.line(self.image,gris_oscuro_bisel,[x+6,3],[x+6,27],1)
+                draw.line(self.image,gris_claro_bisel,[x+7,3],[x+7,27],1)
                 x = x+7
     
     def Nuevo(self):

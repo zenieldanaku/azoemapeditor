@@ -7,18 +7,25 @@ class Menu_Archivo(Menu):
     def  __init__(self,x,y,barra):
         self.nombre = 'Menu Archivo'
         self.barra = barra
-        cascadas = {
-            'Nuevo':[
-                
-            ]
-        }
+        cmd = None
+        cascadas = {'Prueba':[
+            {'nom':'Opcion 2{}>','csc':[
+                {'nom':'Subopcion B{}>','csc':[
+                    {'nom':'Cosa N{}>','csc':[
+                        {'nom':'Alpha 1{}','cmd':cmd}]}]}]},
+            {'nom':'Opcion 3{}>','csc':[
+                {'nom':'Subopcion D{}','cmd':cmd},
+                {'nom':'Subopcion N{}','cmd':cmd}]}
+            ]}
+        
         opciones = [
-            {'nom':'Nuevo','cmd':self.Nuevo},
-            {'nom':'Abrir...','cmd':self.Abrir},
-            {'nom':'Guardar','cmd':self.Guardar},
-            {'nom':'Guardar como...','cmd':self.Guardar_como},
-            {'nom':'Cerrar','cmd':self.Cerrar},
-            {'nom':'Salir','cmd':self.Salir}]
+            {'nom':'Prueba{}>','csc':cascadas['Prueba']},
+            {'nom':'Nuevo{}','cmd':self.Nuevo},
+            {'nom':'Abrir...{}','cmd':self.Abrir},
+            {'nom':'Guardar{}','cmd':self.Guardar},
+            {'nom':'Guardar como...{}','cmd':self.Guardar_como},
+            {'nom':'Cerrar{}','cmd':self.Cerrar},
+            {'nom':'Salir{}','cmd':self.Salir}]
         super().__init__('Archivo',opciones,x,y)
         
     

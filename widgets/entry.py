@@ -70,7 +70,7 @@ class Entry(BaseWidget):
 
         if self.seleccion != None:
             sel = ''.join(self.texto[self.seleccion])
-            render_sel = self.fuente.render(sel,True,negro,gris_claro)
+            render_sel = self.fuente.render(sel,True,negro,gris_seleccion)
             x = self.seleccion.start*8
             render.blit(render_sel,(x,0))
 
@@ -168,6 +168,7 @@ class Entry(BaseWidget):
             self.seleccionar()
     
     def onMouseOut(self):
+        super().onMouseOut()
         mouse.set_cursor(*cursors.arrow)
     
     def onMouseDown(self,dummy):

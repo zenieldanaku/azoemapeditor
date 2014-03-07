@@ -40,7 +40,7 @@ class Renderer:
                             if widget.rect.collidepoint(event.pos):
                                 foundWidget = widget
                     Renderer.setFocus(foundWidget)
-
+                
                 if Renderer.currentFocus.enabled:
                     Renderer.currentFocus.onMouseDown(event.button)
                 
@@ -50,9 +50,15 @@ class Renderer:
             elif event.type == MOUSEMOTION:
                 for widget in Renderer.contents:
                     if widget.rect.collidepoint(event.pos):
-                        widget.onMouseOver()
+                        if not widget.hasMouseOver:
+                            widget.onMouseIn()
                     else:
-                        widget.onMouseOut()
-        
+                        if widget.hasMouseOver:
+                            widget.onMouseOut()
+                    
+        for widget in Renderer.contents:
+            if widget.hasMouseOver:
+                widget.onMouseOver()
+                
         Renderer.contents.update()        
         return Renderer.contents.draw(fondo)

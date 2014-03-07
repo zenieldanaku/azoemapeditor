@@ -1,4 +1,4 @@
-from widgets import BaseWidget, Scroll, Boton
+from widgets import BaseWidget, ScrollH, ScrollV, Boton
 from pygame import Surface,Rect,draw,font
 from globales import GLOBALES as G
 from renderer import Renderer
@@ -21,8 +21,8 @@ class grilla(BaseWidget):
         self.image = self.dibujar_base(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         
-        self.ScrollX = Scroll((17*C)+8, self.y, 1/2*C, self.h, self)
-        self.ScrollY = Scroll(self.x, (17*C)+8, self.w, 1/2*C, self)
+        self.ScrollX = ScrollH(self,self.x, (17*C)+8, self.w, 1/2*C)
+        self.ScrollY = ScrollV(self,(17*C)+8, self.y, 1/2*C, self.h)
         self.BtnVerPos = Boton(3,17*C+2,'Grilla.BtnVerPos',self.cmdVerPos,'V')
         self.BtnVerGr = Boton(C+1,17*C+2,'Grilla.BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(17*C+3,17*C+4,'Grilla.BtnVerCapa',self.cmdVerCapa,'Cp')
@@ -52,12 +52,13 @@ class grilla(BaseWidget):
     
     def dibujar_posiciones(self):
         pos = -1
-        fuente = font.SysFont('verdana',8)            
-        for y in range(0,self._imagen.get_height()//32):
-            for x in range(0,self._imagen.get_width()//32):    
-                pos += 1
-                render = fuente.render(str(pos),True,blanco)
-                self.image.blit(render,(x*C+2,y*C+2))
+        fuente = font.SysFont('verdana',8)
+        if self._imagen != None:
+            for y in range(0,self._imagen.get_height()//32):
+                for x in range(0,self._imagen.get_width()//32):    
+                    pos += 1
+                    render = fuente.render(str(pos),True,blanco)
+                    self.image.blit(render,(x*C+2,y*C+2))
     
     #Funciones de comando para los botones
     def cmdVerPos(self):

@@ -34,7 +34,8 @@ class barraEntry (BaseWidget):
                 x = boton.rect.right-2
                 Renderer.addWidget(boton,2)
             else:
-                draw.line(self.image,negro,[x+5,3],[x+5,27],2)
+                draw.line(self.image,gris_oscuro_bisel,[x+5,3],[x+5,27],1)
+                draw.line(self.image,gris_claro_bisel,[x+6,3],[x+6,27],1)
                 x = x+7
     
     def Abrir(self):
@@ -63,11 +64,17 @@ class barraEntry (BaseWidget):
         imagen = self._cargar_imagen()
         G.IMG_actual = 'Fondo'
         G.IMG_fondo = imagen
+        if G.MAPA != None:
+            ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
+            G.MAPA.actualizar({'key':'fondo','value':'maps/fondos/'+ruta})
         
     def Set_imagen_colisiones(self):
         imagen = self._cargar_imagen()
         G.IMG_actual = 'Colisiones'
         G.IMG_colisiones = imagen
+        if G.MAPA != None:
+            ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
+            G.MAPA.actualizar({'key':'colisiones','value':'maps/colisiones/'+ruta})
     
     def update(self):
         G.ruta = self.entry.devolver_texto()
