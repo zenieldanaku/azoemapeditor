@@ -4,7 +4,6 @@ from renderer import Renderer
 from constantes import *
 from .menus import *
 
-
 class barraMenus (BaseWidget):
     menus = {}
     def __init__(self):
@@ -16,7 +15,6 @@ class barraMenus (BaseWidget):
         self.image = Surface((self.w,self.h))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.image.fill(gris)
-        draw.rect(self.image,negro,(0,0,self.w-2,self.h-2),2)
         prev  = 0
         for menu_nom in ['Archivo','Editar','Mapa','Simbolo']:
             menu = eval('Menu_'+menu_nom+'(prev+4,6,self)')

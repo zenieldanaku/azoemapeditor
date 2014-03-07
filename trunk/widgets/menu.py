@@ -7,15 +7,17 @@ from constantes import *
 
 class Menu (BaseWidget):
     cascada = None
+    boton = None
     _visible = 0
     nombre = ''
     def __init__(self,nombre,ops,x,y):
+        self.cascada = None
+        self.boton = None
         super().__init__()
         self.boton = _Boton(self,nombre,x,y)
-        Renderer.addWidget(self.boton,4)
         h = self.boton.rect.h
-        self.cascada = _Cascada(ops,x,h,h)
-    
+        self.cascada = _Cascada(self,ops,x,h,h)
+        
     def showMenu(self):
         self.cascada.showMenu()
 
@@ -24,7 +26,7 @@ class Menu (BaseWidget):
     
     def onFocusOut(self):
         super().onFocusOut()
-        self.hideMenu()
+        self.cascada.hideMenu()
 
 class _Boton(BaseWidget):
     nombre = ''
@@ -41,6 +43,7 @@ class _Boton(BaseWidget):
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
         self.dirty = 1
+        Renderer.addWidget(self,4)
     
     def crear_boton(self,nombre,color):
         fuente = font.SysFont('Verdana',14)
@@ -54,13 +57,15 @@ class _Boton(BaseWidget):
             self.menu.barra.onFocusIn(self.menu)
             
     def onFocusOut(self):
-        self.menu.onFocusOut()
+        #self.menu.onFocusOut()
         super().onFocusOut()
    
-    def onMouseOver(self):
+    def onMouseIn(self):
+        super().onMouseIn()
         self.image = self.img_sel
     
     def onMouseOut(self):
+        super().onMouseOut()
         self.image = self.img_des
     
     def update(self):
@@ -68,28 +73,40 @@ class _Boton(BaseWidget):
 
 class _Cascada (BaseWidget):
     opciones = None
+    padre = None
     
-    def __init__(self,opciones,x,y,h,j=0):
+    def __init__(self,padre,opciones,x,y,j=19):
         super().__init__()
         self.opciones = LayeredDirty()
-        alto,ancho, = 0,0
+        self.padre = padre
+        self.nombre = padre.nombre
+        # Determinar el ancho de la opcion con mas caracteres
+        l = [opciones[n]['nom'] for n in range(len(opciones))]
+        w_max = len(max(l,key=lambda n:len(n)))
+        # Agregar una cantidad de espacios igual a la diferencia mediante format
+        # mocho, porque limita la fuente de la opcion a una de fixed width
+        # pero funciona
+        for n in range(len(opciones)):
+            if '{}' not in opciones[n]['nom']:
+                opciones[n]['nom'] += '{}'
+            opciones[n]['nom']= opciones[n]['nom'].format(' '*int(w_max-len(l[n])))            
+        
+        alto,ancho,h = 0,0,0
         for n in range(len(opciones)):
             _nom = opciones[n]['nom']
-            dy = (n+1)*h+5+j
-            if 'cmd' in opciones[n]:
-                opt = opciones[n]['cmd']
-            else:
-                opt = None
-            opcion = _Opcion(_nom,[x,dy],opt,self)
+            dy = j+(n*h)+5
+            opcion = _Opcion(self,_nom,[x,dy])
             w,h = opcion.image.get_size()
             if 'csc' in opciones[n]:
-                opcion.command = _Cascada(opciones[n]['csc'],x+w+1,dy,dy-5,h)
+                opcion.command = _Cascada(self,opciones[n]['csc'],x+w+1,dy,h*(n+1))
+            elif 'cmd' in opciones[n]:
+                opcion.command = opciones[n]['cmd']
             alto += h+1
             if w > ancho: ancho = w
             self.opciones.add(opcion)
 
-        image = Surface((ancho,alto-7))
-        image.fill(gris)
+        image = Surface((ancho,alto-8))
+        image.fill(negro)
         self.image = image
         self.rect = self.image.get_rect(topleft=(x,y+5))
         self._visible = 0
@@ -111,18 +128,36 @@ class _Cascada (BaseWidget):
             opcion._visible = False
             opcion.enabled = False
             opcion.focusable = False
+    
+    def onFocusIn(self):
+        super().onFocusIn()
+        self.showMenu()
+    
+    def onFocusOut(self):
+        super().onFocusOut()
+        recursion = True
+        padre = self.padre
+        while recursion:
+            if hasattr(padre,'padre'):
+                padre.hideMenu()
+                padre = padre.padre
+            else:
+                recursion = False
+        self.hideMenu()
+    
+    def onMouseIn(self):
+        if self._visible:
+            self.onFocusIn()
 
 class _Opcion(BaseWidget):
-    nombre = ''
+    command = None
     
-    def __init__(self,nombre,pos,cmd,menu):
+    def __init__(self,padre,nombre,pos):
         super().__init__()
         self.nombre = nombre
+        self.padre = padre
         self.visible = False
         self.enabled = False
-        self.focusable = False
-        self.command = cmd
-        self.menu = menu
         self.img_des = self.crear(self.nombre,negro)
         self.img_sel = self.crear(self.nombre,cian_claro)
         self.image = self.img_des
@@ -131,33 +166,44 @@ class _Opcion(BaseWidget):
         self.dirty = 1
     
     def crear(self,nombre,color):
-        fuente = font.SysFont('Verdana',14)
+        fuente = font.SysFont('Courier new',14)
         w,h = fuente.size(nombre)
         rect = Rect(-1,-1,w,h+1)
         render = render_textrect(nombre,fuente,rect,color,gris,1)
         return render
-    
-    def onMouseOver(self):
-        if self.enabled:
-            self.image = self.img_sel
-            if isinstance(self.command,_Cascada):
-                self.command.showMenu()
-    
-    def onMouseOut(self):
-        self.image = self.img_des
-    
+            
     def onMouseDown(self,button):
-        self.comando()
-        self.menu.hideMenu()
+        #self.comando()
+        self.padre.onFocusOut()
     
+    #def onFocusIn(self):
+    #    super().onFocusIn()
+        
     def onFocusOut(self):
         super().onFocusOut()
         self.enabled=False
+        self.padre.hideMenu()
+        
+    #def onMouseIn(self):
+    #    super().onMouseIn()
+    #    if self.enabled:
+    #        self.image = self.img_sel
+    #        if isinstance(self.command,_Cascada):
+    #            self.command.showMenu()
+                
+    def onMouseIn(self):
+        if self.enabled:
+            super().onMouseIn()
+            self.image = self.img_sel
+            self.onFocusIn()
     
-    def onFocusIn(self):
-        super().onFocusIn()
-        self.comando()
-        self.menu.hideMenu()
+    def onMouseOut(self):
+        super().onMouseOut()
+        self.image = self.img_des
+    
+    def onMouseOver(self):
+        if isinstance(self.command,_Cascada):
+            self.command.showMenu()
     
     def comando (self):
         if isinstance(self.command,_Cascada):

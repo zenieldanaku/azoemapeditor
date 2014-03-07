@@ -11,6 +11,8 @@ class BaseWidget(DirtySprite):
     #un widget con enabled==False no recibe ningun evento
     nombre = ''
     #identifica al widget en el renderer
+    hasMouseOver = False
+    #indica si el widget tuvo el mouse encima o no, por el onMouseOut
     
     def __init__(self):
         super().__init__()
@@ -30,8 +32,11 @@ class BaseWidget(DirtySprite):
     def onMouseOver(self):
         pass
     
+    def onMouseIn(self):
+        self.hasMouseOver = True
+    
     def onMouseOut(self):
-        pass
+        self.hasMouseOver = False
     
     def onKeyDown(self, keydata):
         pass
