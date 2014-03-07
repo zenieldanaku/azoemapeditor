@@ -39,8 +39,8 @@ class ScrollV(_baseScroll):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollV'
         self.cursor = CursorV(self,self.x,self.y+self.h//2,1/2*C,1/2*C)
-        self.BtnPos = _btnVer(self,self.x,self.y+self.h-12,'abajo')
-        self.BtnNeg = _btnVer(self,self.x,self.y,'arriba')
+        self.BtnPos = btnVer(self,self.x,self.y+self.h-12,'abajo')
+        self.BtnNeg = btnVer(self,self.x,self.y,'arriba')
         Renderer.addWidget(self.cursor,3)
         Renderer.addWidget(self.BtnPos,10)
         Renderer.addWidget(self.BtnNeg,10)
@@ -50,8 +50,8 @@ class ScrollH(_baseScroll):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollH'
         self.cursor = CursorH(self,self.x+self.w//2,self.y,1/2*C,1/2*C)
-        self.BtnPos = _btnHor(self,self.x+self.w-12,self.y,'derecha')
-        self.BtnNeg = _btnHor(self,self.x,self.y,'izquierda')
+        self.BtnPos = btnHor(self,self.x+self.w-12,self.y,'derecha')
+        self.BtnNeg = btnHor(self,self.x,self.y,'izquierda')
         Renderer.addWidget(self.cursor,3)
         Renderer.addWidget(self.BtnPos,10)
         Renderer.addWidget(self.BtnNeg,10)
@@ -120,7 +120,7 @@ class CursorV(_baseCursor):
             draw.line(imagen,color,(2,h//2+i),(w-4,h//2+i))
         return imagen
 
-class _baseBtn(BaseWidget):
+class baseBtn(BaseWidget):
     nombre = ''
     parent = None
     
@@ -140,23 +140,22 @@ class _baseBtn(BaseWidget):
     
     def serDeselegido(self):
         self.image = self.img_uns
-        self.dirty = 1
     
     def serPresionado(self):
         self.image = self.img_pre
-        self.dirty = 1
         
-    def OnMouseDown(self,dummy):
+    def onMouseDown(self,dummy):
         print(self.nombre,'OnMouseDown')
         self.serPresionado()
-        self.dirty = 1
     
     def onMouseUp(self,dummy):
         print(self.nombre,'OnMouseUp')
         self.serDeselegido()
+        
+    def update(self):
         self.dirty = 1
-
-class _btnVer(_baseBtn):
+    
+class btnVer(baseBtn):
     def __init__(self,parent,x,y,orientacion):
         super().__init__(parent,x,y)
         self.w,self.h = 1/2*C,12
@@ -178,7 +177,7 @@ class _btnVer(_baseBtn):
         draw.polygon(imagen, ([70]*3), points)
         return imagen
     
-class _btnHor(_baseBtn):
+class btnHor(baseBtn):
     def __init__(self,parent,x,y,orientacion):
         super().__init__(parent,x,y)
         self.w,self.h = 12,1/2*C
@@ -199,3 +198,9 @@ class _btnHor(_baseBtn):
         
         draw.polygon(imagen, ([70]*3), points)
         return imagen
+    
+
+    
+    def update (self):
+        self.dirty = 1
+    
