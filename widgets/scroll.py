@@ -16,7 +16,7 @@ class _baseScroll(BaseWidget):
         self.w,self.h = w,h
         self.image = self._crear(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        self.dirty = 2
+        self.dirty = 1
 
     def _crear(self,w,h):
         imagen = Surface((w,h))
@@ -31,34 +31,56 @@ class _baseScroll(BaseWidget):
         if not self.cursor.pressed:
             super().onMouseOut()
     
+    def moverCursor(self,x=0,y=0):
+        self.cursor.rect.move_ip(x,y)
+    
+    def setCursorSpeed(self,velocidad):
+        self.cursor.velocidad = velocidad
+    
     def update(self):
+        self.cursor.enabled = self.enabled
         self.dirty = 1
 
 class ScrollV(_baseScroll):
     def __init__(self,parent,x,y,w,h):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollV'
-        self.cursor = CursorV(self,self.x,self.y+self.h//2,1/2*C,1/2*C)
-        self.BtnPos = btnVer(self,self.x,self.y+self.h-12,'abajo')
-        self.BtnNeg = btnVer(self,self.x,self.y,'arriba')
+        self.cursor = CursorV(self,self.x,self.y+12,1/2*C,1/2*C)
+        self.BtnPos = _btnVer(self,self.x,self.y+self.h-12,'abajo')
+        self.BtnNeg = _btnVer(self,self.x,self.y,'arriba')
         Renderer.addWidget(self.cursor,3)
-        Renderer.addWidget(self.BtnPos,10)
-        Renderer.addWidget(self.BtnNeg,10)
+        Renderer.addWidget(self.BtnPos,4)
+        Renderer.addWidget(self.BtnNeg,4)
+    
+    def moverCursor(self,dy):
+        if 0 <= dy <= self.cursor.maxY-1:
+            super().moverCursor(y=dy)
+            return True
+        return False
 
 class ScrollH(_baseScroll):
     def __init__(self,parent,x,y,w,h):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollH'
-        self.cursor = CursorH(self,self.x+self.w//2,self.y,1/2*C,1/2*C)
-        self.BtnPos = btnHor(self,self.x+self.w-12,self.y,'derecha')
-        self.BtnNeg = btnHor(self,self.x,self.y,'izquierda')
+        self.cursor = CursorH(self,self.x+12,self.y,1/2*C,1/2*C)
+        self.BtnPos = _btnHor(self,self.x+self.w-12,self.y,'derecha')
+        self.BtnNeg = _btnHor(self,self.x,self.y,'izquierda')
         Renderer.addWidget(self.cursor,3)
         Renderer.addWidget(self.BtnPos,10)
         Renderer.addWidget(self.BtnNeg,10)
-        
+    
+    def moverCursor(self,dx):
+        if 0 <= dx <= self.cursor.maxX-1:
+            super().moverCursor(x=dx)
+            return True
+        return False
+
 class _baseCursor(BaseWidget):
     parent = None
     pressed = False
+    minX,minY = 0,0
+    maxX,maxY = 0,0
+    velocidad = 2
     def __init__(self,parent,x,y,w,h):
         super().__init__()
         self.parent = parent
@@ -89,15 +111,28 @@ class _baseCursor(BaseWidget):
         imagen = self.agregar_barras(imagen,w,h,c1,c2)
         return imagen
 
-    def OnMouseDown(self,button):
+    def onMouseDown(self,button):
         if button == 1:
             self.pressed = True
-
+    
+    def onMouseUp(self,button):
+        if button == 1:
+            self.pressed = False
+    
+    def onMouseOut(self):
+        if not self.pressed:
+            super().onMouseOut()
+    
+    def update(self):
+        self.visible = self.enabled
+        self.dirty = 1
+        
 class CursorH(_baseCursor):
     def __init__(self,parent,x,y,w,h):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorH'
-        Renderer.addWidget(self,3)
+        self.minX = int(parent.x+self.w+4)
+        self.maxX = parent.x+parent.w-19
         
     def agregar_barras(self,imagen,w,h,c1,c2):
         '''Agrega 6 barritas de "agarre" verticales'''
@@ -106,11 +141,20 @@ class CursorH(_baseCursor):
             else: color = c2
             draw.line(imagen,color,(w//2+i,2),(w//2+i,h-4))
         return imagen
-
+    
+    def onMouseOver(self):
+        if self.pressed:
+            x,y = mouse.get_pos()
+            if self.minX <= x <= self.maxX:
+                self.rect.x = x-8
+                self.parent.parent.slcX = (x-(self.parent.x)-20)*1.23
+        
 class CursorV(_baseCursor):
     def __init__(self,parent,x,y,w,h):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorV'
+        self.minY = int(parent.y+self.h+4)
+        self.maxY = parent.y+parent.h-19
         
     def agregar_barras(self,imagen,w,h,c1,c2):
         '''Agrega 6 barritas de "agarre" horizontales'''
@@ -119,14 +163,23 @@ class CursorV(_baseCursor):
             else: color = c2
             draw.line(imagen,color,(2,h//2+i),(w-4,h//2+i))
         return imagen
-
-class baseBtn(BaseWidget):
+    
+    def onMouseOver(self):
+        if self.pressed:
+            x,y = mouse.get_pos()
+            if self.minY <= y <= self.maxY:
+                self.rect.y = y-8
+                self.parent.parent.slcY = (y-(self.parent.y)-20)*1.23
+                
+class _baseBtn(BaseWidget):
     nombre = ''
     parent = None
+    pressed = False
     
     def __init__(self,parent,x,y):
         super().__init__()
         self.parent = parent
+        self.pressed = False
         self.x,self.y = x,y
         self.dirty = 1
     
@@ -140,28 +193,35 @@ class baseBtn(BaseWidget):
     
     def serDeselegido(self):
         self.image = self.img_uns
+        self.pressed = False
     
     def serPresionado(self):
         self.image = self.img_pre
+        self.pressed = True
         
     def onMouseDown(self,dummy):
-        print(self.nombre,'OnMouseDown')
-        self.serPresionado()
+        if self.enabled:
+            self.serPresionado()
     
     def onMouseUp(self,dummy):
-        print(self.nombre,'OnMouseUp')
         self.serDeselegido()
-        
+    
+    def onMouseOver(self):
+        if self.pressed:
+            self.serPresionado()
+    
     def update(self):
+        self.enabled = self.parent.enabled
         self.dirty = 1
     
-class btnVer(baseBtn):
+class _btnVer(_baseBtn):
     def __init__(self,parent,x,y,orientacion):
         super().__init__(parent,x,y)
         self.w,self.h = 1/2*C,12
-        self.nombre = self.parent.nombre+'.Btn.'+orientacion
-        self.img_pre = self._biselar(self._crear(self.w,self.h,orientacion),[190]*3,[140]*3)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,orientacion),[140]*3,[190]*3)
+        self.orientacion = orientacion
+        self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),[190]*3,[140]*3)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),[140]*3,[190]*3)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
@@ -177,13 +237,24 @@ class btnVer(baseBtn):
         draw.polygon(imagen, ([70]*3), points)
         return imagen
     
-class btnHor(baseBtn):
+    def serPresionado(self):
+        super().serPresionado()
+        dy = self.parent.cursor.velocidad
+        if self.orientacion == 'arriba':
+            if self.parent.moverCursor(dy= -dy):
+                self.parent.parent.slcY -= dy*1.23
+        elif self.orientacion == 'abajo':
+            if self.parent.moverCursor(dy= +dy):
+                self.parent.parent.slcY += dy*1.23
+
+class _btnHor(_baseBtn):
     def __init__(self,parent,x,y,orientacion):
         super().__init__(parent,x,y)
         self.w,self.h = 12,1/2*C
-        self.nombre = self.parent.nombre+'.Btn.'+orientacion
-        self.img_pre = self._biselar(self._crear(self.w,self.h,orientacion),[190]*3,[140]*3)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,orientacion),[140]*3,[190]*3)
+        self.orientacion = orientacion
+        self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),[190]*3,[140]*3)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),[140]*3,[190]*3)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
@@ -199,8 +270,13 @@ class btnHor(baseBtn):
         draw.polygon(imagen, ([70]*3), points)
         return imagen
     
+    def serPresionado(self):
+        super().serPresionado()
+        dx = self.parent.cursor.velocidad
+        if self.orientacion == 'izquierda':
+            if self.parent.moverCursor(dx= -dx):
+                self.parent.parent.slcX -= dx*1.23
+        elif self.orientacion == 'derecha':
+            if self.parent.moverCursor(dx= +dx):
+                self.parent.parent.slcX += dx*1.23
 
-    
-    def update (self):
-        self.dirty = 1
-    

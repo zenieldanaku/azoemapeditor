@@ -46,30 +46,29 @@ class barraEntry (Marco):
             G.guardar_mapa(texto)
             G.estado = "Mapa '"+texto+"' guardado."
         except: 
-            G.estado ='Error: Es necesario cargar un mapa.'
-    
-    def _cargar_imagen(self):
-        try:
-            imagen = r.cargar_imagen(G.ruta)
-            return imagen
-        except Exception as Description:
-            G.estado = str(Description)
+            G.estado ='Error: Es necesario cargar un mapa.'       
     
     def Set_imagen_fondo(self):
-        imagen = self._cargar_imagen()
-        G.IMG_actual = 'Fondo'
-        G.IMG_fondo = imagen
-        if G.MAPA != None:
-            ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
-            G.MAPA.actualizar({'key':'fondo','value':'maps/fondos/'+ruta})
+        try:
+            imagen = r.cargar_imagen(G.ruta)
+            G.IMG_actual = 'Fondo'
+            G.IMG_fondo = imagen
+            if G.MAPA != None:
+                ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
+                G.MAPA.actualizar({'key':'fondo','value':'maps/fondos/'+ruta})
+        except Exception as Description:
+            G.estado = str(Description)
         
     def Set_imagen_colisiones(self):
-        imagen = self._cargar_imagen()
-        G.IMG_actual = 'Colisiones'
-        G.IMG_colisiones = imagen
-        if G.MAPA != None:
-            ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
-            G.MAPA.actualizar({'key':'colisiones','value':'maps/colisiones/'+ruta})
+        try: 
+            imagen = r.cargar_imagen(G.ruta)
+            G.IMG_actual = 'Colisiones'
+            G.IMG_colisiones = imagen
+            if G.MAPA != None:
+                ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
+                G.MAPA.actualizar({'key':'colisiones','value':'maps/colisiones/'+ruta})
+        except Exception as Description:
+            G.estado = str(Description)
     
     def update(self):
         G.ruta = self.entry.devolver_texto()
