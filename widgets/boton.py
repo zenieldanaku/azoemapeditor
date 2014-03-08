@@ -1,31 +1,47 @@
 from libs.textrect import render_textrect
 from pygame import font,Rect,draw
 from . import BaseWidget
-from constantes import *
+from colores import color, cian_claro
 
 class Boton(BaseWidget):
     comando = None
-    def __init__(self,x,y,nombre,cmd,texto,descripcion=''):
-        super().__init__()
+    presionado = False
+    def __init__(self,x,y,nombre,cmd,texto,descripcion='', **opciones):
+        if 'colorBordeSombra' not in opciones:
+            opciones['colorBordeSombra'] = 'sysElmShadow'
+        if 'colorBordeLuz' not in opciones:
+            opciones['colorBordeLuz'] = 'sysElmLight'
+        super().__init__(**opciones)
         self.x,self.y = x,y
         self.nombre = nombre
         self.comando = cmd
         self.descripcion = descripcion
         
-        self.img_uns = self._crear(texto,negro,gris, gris_oscuro_bisel,gris_claro_bisel)
-        self.img_sel = self._crear(texto,cian_claro,gris, gris_oscuro_bisel,gris_claro_bisel)
-        self.img_pre = self._crear(texto,cian_claro,gris, gris_claro_bisel,gris_oscuro_bisel)
+        colorFondo = color(opciones.get('colorFondo', 'sysElmFace'))
+        
+        #TODO: cambiar medidas fijas a opciones[w] y opciones[h] 
+        self.rect = Rect(x,y,28,25)
+        
+        self.img_uns = self._crear(texto, color(opciones.get('colorText', 'sysElmText')), colorFondo)
+        self.img_sel = self._crear(texto,cian_claro, colorFondo)
+        
+        self.opciones['colorBordeSombra'], self.opciones['colorBordeLuz'] = self.opciones['colorBordeLuz'], self.opciones['colorBordeSombra']
+        self.img_pre = self._crear(texto,cian_claro, colorFondo)
+        self.opciones['colorBordeSombra'], self.opciones['colorBordeLuz'] = self.opciones['colorBordeLuz'], self.opciones['colorBordeSombra']
         
         self.image = self.img_uns
-        self.rect = self.image.get_rect(topleft=(x,y))
+        self._dibujarBorde()
     
-    def  _crear(self, texto, color_texto, color_fondo, color_marco1, color_marco2):
+    def  _crear(self, texto, color_texto, color_fondo):
         fuente = font.SysFont('verdana',16)
-        rect = Rect(0,0,28,25)
-        render = render_textrect(texto,fuente,rect,color_texto,color_fondo,1)
-        draw.line(render, color_marco1, (0,rect.h-3),(rect.w-3,rect.h-3), 2)
-        draw.line(render, color_marco1, (rect.w-3,rect.h-2),(rect.w-3,0), 2)
-        draw.lines(render, color_marco2, False, [(rect.w-2,0),(0,0),(0,rect.h-4)], 2)
+        render = render_textrect(texto,fuente,self.rect,color_texto,color_fondo,1)
+        
+        #esto es para reutilizar dibujarBorde con las 3 imagenes
+        dummy = lambda:None
+        dummy.image=render
+        dummy.rect=self.rect
+        dummy.opciones=self.opciones
+        Boton._dibujarBorde(dummy)
         return render
     
     def serElegido(self):
@@ -33,10 +49,11 @@ class Boton(BaseWidget):
     
     def serDeselegido(self):
         self.image = self.img_uns
+        self.presionado = False
     
     def serPresionado(self):
         self.image = self.img_pre
-        self.comando()
+        self.presionado = True
     
     def update(self):
         self.dirty = 1
@@ -55,6 +72,8 @@ class Boton(BaseWidget):
     
     def onMouseUp(self, dummy):
         self.serElegido()
+        if self.presionado:
+            self.comando()
 
     def __repr__(self):
         return 'Boton '+self.nombre

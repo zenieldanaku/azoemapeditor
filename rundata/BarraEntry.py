@@ -1,24 +1,18 @@
 from globales import GLOBALES as G, Resources as r
-from widgets import BaseWidget, Entry, Boton
+from widgets import  Entry, Boton, Marco
 from pygame import Surface,draw
 from renderer import Renderer
 from constantes import *
 import os
 
-class barraEntry (BaseWidget):
+class barraEntry (Marco):
     def __init__(self):
-        super().__init__()
-        nombre = 'Barra_Entry'
-        self.x,self.y = 0,18*C
-        self.w,self.h = 24*C,1*C
-        self.image = Surface((self.w,self.h))
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        self.image.fill(gris)
+        super().__init__(0,18*C,24*C,1*C)
+        self.nombre = 'Barra_Entry'
         draw.rect(self.image,negro,(0,0,self.w-2,self.h-2),2)
         self.focusable = False
         texto = os.getcwd().split('\\')
-        self.entry = Entry(5,self.y+5,int(self.rect.w/3)*2,'/'.join(texto))
-        Renderer.addWidget(self)
+        self.entry = Entry(5,self.y+5,int(self.w/3)*2,'/'.join(texto))
         elementos = [
             {"nom":'Abrir',"cmd":self.Abrir,"scr":"A"},
             {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},
@@ -26,7 +20,8 @@ class barraEntry (BaseWidget):
             {"nom":'Set_imagen_fondo',"cmd":self.Set_imagen_fondo,"scr":"Fd"},
             {"nom":'Set_imagen_colisiones',"cmd":self.Set_imagen_colisiones,"scr":"Cl"}]
         
-        Renderer.addWidget(self.entry,1)
+        #Renderer.addWidget(self.entry,1)
+        self.agregar(self.entry)
         x = int(self.rect.w/3)*2+4
         for e in elementos:
             if e['nom'] != 'barra':

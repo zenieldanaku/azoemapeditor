@@ -12,6 +12,12 @@ class Renderer:
         Renderer.widgets[widget.nombre] = widget
         return widget
 
+    def delWidget(widget):
+        if isinstance(widget,str):
+            widget = Renderer.widgets[widget]
+        Renderer.contents.remove(widget)
+        del Renderer.widgets[widget.nombre]
+    
     def setFocus(widget):
         if widget!=Renderer.currentFocus and widget.focusable:
             Renderer.currentFocus.onFocusOut()

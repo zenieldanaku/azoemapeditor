@@ -1,22 +1,16 @@
 from pygame.sprite import LayeredDirty
-from widgets import BaseWidget,Boton
+from widgets import Marco,Boton
 from globales import GLOBALES as G
 from pygame import draw, Surface
 from renderer import Renderer
 from constantes import *
 
-class barraHerramientas (BaseWidget):
-    botones = None
-    def __init__(self):
-        super().__init__()
+class barraHerramientas (Marco):
+    #botones = None
+    def __init__(self, **opciones):
+        super().__init__(0,C,24*C,C,**opciones)
         self.nombre = 'BarraHerramientas'
-        self.botones = LayeredDirty()
-        self.x,self.y = 0,C
-        self.w,self.h = 24*C,1*C
-        self.image = Surface((self.w,self.h))
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        self.image.fill(gris)
-        Renderer.addWidget(self)
+        #self.botones = LayeredDirty()
         elementos = [
             {"nom":'Nuevo',"cmd":self.Nuevo,"scr":"N"},
             {"nom":'barra'},
@@ -28,7 +22,7 @@ class barraHerramientas (BaseWidget):
             if e['nom'] != 'barra':
                 boton = Boton(x+6,C+4,e['nom'],e['cmd'],e['scr'])
                 x = boton.rect.right-2
-                self.botones.add(boton)
+                #self.botones.add(boton)
                 Renderer.addWidget(boton,2)
             else:
                 draw.line(self.image,gris_oscuro_bisel,[x+6,3],[x+6,27],1)
