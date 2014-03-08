@@ -11,8 +11,11 @@ class Renderer:
         Renderer.contents.add(widget,layer=layer)
         Renderer.widgets[widget.nombre] = widget
         return widget
-
+    
     def delWidget(widget):
+    #esta función en realidad no se usa nunca. la cree originalmente como par de
+    #addWidget, pero en realidad nunca eliminamos los widgets, solo los seteamos
+    #como not visible & not enabled.
         if isinstance(widget,str):
             widget = Renderer.widgets[widget]
         Renderer.contents.remove(widget)
@@ -45,8 +48,9 @@ class Renderer:
                         if widget._visible:
                             if widget.rect.collidepoint(event.pos):
                                 foundWidget = widget
+                    
                     Renderer.setFocus(foundWidget)
-                
+                    
                 if Renderer.currentFocus.enabled:
                     Renderer.currentFocus.onMouseDown(event.button)
                 

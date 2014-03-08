@@ -1,31 +1,29 @@
-from widgets import BaseWidget, Label
 from pygame import Rect,Surface,draw
 from globales import GLOBALES as G
+from widgets import Marco, Label
 from renderer import Renderer
+from colores import color
 from constantes import *
 
-class barraEstado (BaseWidget):
+class barraEstado (Marco):
     _estado = ''
+    lblEstado = None
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self,**opciones):
+        super().__init__(0,19*C,24*C,1*C,**opciones)
         self.nombre = 'estado'
-        self.x,self.y = 0,19*C
-        self.w,self.h = 24*C,1*C
-        self.image = Surface((self.w,self.h))
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        self.image.fill(gris)
-        draw.rect(self.image,negro,(0,0,self.w-2,self.h-2),2)
-        Renderer.addWidget(self)
-        self.draw_area = Rect(4,5,self.w-8,self.h-8)
         self._estado = ''
+        self.lblEstado = Label(self,self.x+4,self.y+5)
+        self.draw_area = Rect(4,5,self.w-8,self.h-8)
+        Renderer.addWidget(self)
+        Renderer.addWidget(self.lblEstado,2)
     
     def mostrar_estado(self,mensaje):
+        bgcolor = color(self.opciones.get('colorFondo', 'sysElmFace'))
         if mensaje != self._estado:
             self._estado = mensaje
-            self.image.fill(gris,self.draw_area)
-            estado = Label(mensaje)
-            self.image.blit(estado.image, self.draw_area)
+            self.image.fill(bgcolor,self.draw_area)
+            self.lblEstado.setText(mensaje)
             
     def update(self):
         msj = G.estado

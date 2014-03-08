@@ -1,5 +1,5 @@
 from widgets import BaseWidget, ScrollH, ScrollV, Boton
-from pygame import Surface,Rect,draw,font
+from pygame import Surface,Rect,draw,font,K_SPACE
 from globales import GLOBALES as G
 from renderer import Renderer
 from constantes import *
@@ -9,10 +9,14 @@ class grilla(BaseWidget):
     x,y,w,h = 0,0,0,0
     ScrollX = None
     ScrollY = None
+    BtnVerPos = None
+    BtnVerGr = None
+    BtnVerCapa = None
     ver_posiciones = False
     ver_grilla = True
     _imagen = None
-    
+    slcX = 0 # slc = Slicing, el "recorte" que se le hace a una imagen
+    slcY = 0 # cuyas dimensiones sean mayores a 480x480 (las de la grilla)
     def __init__(self):
         super().__init__()
         self.x,self.y, = (2*C)+2,2*C
@@ -26,6 +30,9 @@ class grilla(BaseWidget):
         self.BtnVerPos = Boton(3,17*C+2,'Grilla.BtnVerPos',self.cmdVerPos,'V')
         self.BtnVerGr = Boton(C+1,17*C+2,'Grilla.BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(17*C+3,17*C+4,'Grilla.BtnVerCapa',self.cmdVerCapa,'Cp')
+        
+        self.ScrollX.enabled = False
+        self.ScrollY.enabled = False
         
         Renderer.addWidget(self)
         Renderer.addWidget(self.ScrollX)
@@ -72,15 +79,22 @@ class grilla(BaseWidget):
         elif G.IMG_actual == 'Colisiones':
             G.IMG_actual = 'Fondo'
     
+    # Event bindings
+    
     #Otras funciones importantes
     def sobreimponer_imagen(self,imagen):
         '''Impone la imagen cargada como fondo sobre la base gris'''
         self._imagen = imagen.copy()
         if imagen.get_width() > self.w or imagen.get_height() > self.h:
-            imagen = imagen.subsurface((0,0,self.w,self.h))
+            imagen = imagen.subsurface(self.slcX,self.slcY,self.w,self.h)
+            self.habilitarScrolls()
         self.image = imagen.copy()
         self.dibujar_marco()
     
+    def habilitarScrolls(self):
+        self.ScrollX.enabled = True
+        self.ScrollY.enabled = True
+        
     def update(self):
         if G.IMG_actual == 'Fondo':
             if G.IMG_fondo != None:

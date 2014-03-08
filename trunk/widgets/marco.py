@@ -12,10 +12,10 @@ class Marco(BaseWidget):
         super().__init__(**opciones)
         self.w, self.h = w,h
         self.x, self.y = x,y
-        self.image = Surface((w,h))
+        self.image = Surface((self.w, self.h))
         
         self.image.fill(colores.color(opciones.get('colorFondo', 'sysElmFace')))
-        self.rect = self.image.get_rect(topleft=(x,y))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
         
         Renderer.addWidget(self)
         
@@ -26,6 +26,7 @@ class Marco(BaseWidget):
         #cuando va a tener contenido si acaba de inicializarse?
         #if len(self.contenido) != 0:
         #    self.contenido.draw(self.image)
+        #lo tenia porque se supone que agregaba contenido on init.
     
     def agregar(self,objeto, layer=1):
         self.contenido.add(objeto)
