@@ -54,7 +54,6 @@ class Boton(BaseWidget):
     def serPresionado(self):
         self.image = self.img_pre
         self.presionado = True
-        self.comando()
     
     def onMouseIn(self):
         super().onMouseIn()
@@ -72,6 +71,7 @@ class Boton(BaseWidget):
     def onMouseUp(self, dummy):
         if self.hasMouseOver:
             self.serElegido()
+            self.comando()
         
     def update(self):
         self.dirty = 1
