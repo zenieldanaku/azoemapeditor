@@ -3,7 +3,7 @@ from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 from renderer import Renderer
 from . import BaseWidget
-from constantes import *
+from colores import *
 
 class Menu (BaseWidget):
     cascada = None
@@ -32,12 +32,16 @@ class _Boton(BaseWidget):
     nombre = ''
     menu = None
     
-    def __init__(self,menu,nombre,x,y):
-        super().__init__()
+    def __init__(self,menu,nombre,x,y, **opciones):
+        if 'colorFondo' not in opciones:
+            opciones['colorFondo'] = 'sysMenBack'
+        if 'colorTexto' not in opciones:
+            opciones['colorTexto'] = 'sysMenText'
+        super().__init__(**opciones)
         self.nombre = nombre
         self.menu = menu
-        self.layer = 2
-        self.img_des = self.crear_boton(self.nombre,negro)
+        self._layer = 2
+        self.img_des = self.crear_boton(self.nombre,color(opciones['colorTexto']))
         self.img_sel = self.crear_boton(self.nombre,cian_claro)
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
@@ -45,11 +49,11 @@ class _Boton(BaseWidget):
         self.dirty = 1
         Renderer.addWidget(self,4)
     
-    def crear_boton(self,nombre,color):
+    def crear_boton(self,nombre,colorTexto):
         fuente = font.SysFont('Verdana',14)
         w,h = fuente.size(nombre)
         rect = Rect(-1,-1,w,h+1)
-        render = render_textrect(nombre,fuente,rect,color,gris,1)
+        render = render_textrect(nombre,fuente,rect,colorTexto,color(self.opciones['colorFondo']),1)
         return render
         
     def onMouseDown (self,button):
