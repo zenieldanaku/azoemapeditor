@@ -36,8 +36,8 @@ class Entry(BaseWidget):
         h = 21
         self.rect = Rect((x,y),(w,h))
         self.image = Surface((w,h))
-        self.erase_area = Rect(2,2,self.rect.w-4,self.rect.h-4)
-        self.write_area = Rect(4,2,self.rect.w-4,self.rect.h-4)
+        self.erase_area = Rect(1,1,self.rect.w-2,self.rect.h-2)
+        self.write_area = Rect(4,2,self.rect.w-2,self.rect.h-4)
         self.dx = x+4
         self.borrar_todo()
         self.texto = list(texto)

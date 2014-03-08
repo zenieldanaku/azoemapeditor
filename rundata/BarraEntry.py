@@ -9,7 +9,6 @@ class barraEntry (Marco):
     def __init__(self):
         super().__init__(0,18*C,24*C,1*C)
         self.nombre = 'Barra_Entry'
-        draw.rect(self.image,negro,(0,0,self.w-2,self.h-2),2)
         self.focusable = False
         texto = os.getcwd().split('\\')
         self.entry = Entry(5,self.y+5,int(self.w/3)*2,'/'.join(texto))
