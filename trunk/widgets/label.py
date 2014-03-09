@@ -7,7 +7,7 @@ from constantes import *
 class Label (BaseWidget):
     texto = ''
     
-    def __init__(self,parent,x,y,**opciones):
+    def __init__(self,parent,nombre,x,y,texto = '',**opciones):
         if 'colorTexto' not in opciones:
             opciones['colorTexto'] = 'sysElmText'
         if 'colorFondo' not in opciones:
@@ -21,10 +21,14 @@ class Label (BaseWidget):
         super().__init__(**opciones)
         self.fuente = font.SysFont(opciones['Fuente'],opciones['fontSize'])
         self.x,self.y = x,y
-        self.w,self.h = self.fuente.size(self.texto)
         self.parent = parent
-        self.image = Surface((self.w,self.h))
-        self.rect = self.image.get_rect(topleft = (self.x,self.y))
+        self.nombre = self.parent.nombre+'.Label'+nombre
+        if texto == '':
+            self.w,self.h = self.fuente.size(self.texto)
+            self.image = Surface((self.w,self.h))
+            self.rect = self.image.get_rect(topleft = (self.x,self.y))
+        else:
+            self.setText(texto)
         
     def setText(self,texto,fgcolor=None,bgcolor=None):
         if fgcolor == None:
@@ -35,7 +39,5 @@ class Label (BaseWidget):
         rect = Rect(self.x,self.y,w,h+1)
         self.image = render_textrect(texto,self.fuente,rect,fgcolor,bgcolor)
         self.rect = self.image.get_rect(topleft= (self.x,self.y))
-    
-    def update(self):
-        self.dirty = 1
+        self.w,self.h = self.image.get_size()
         

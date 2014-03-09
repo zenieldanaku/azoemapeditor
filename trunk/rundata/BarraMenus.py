@@ -18,7 +18,7 @@ class barraMenus (BaseWidget):
         self.image.fill(color(opciones.get('colorFondo', 'sysMenBack')))
         prev  = 0
         for menu_nom in ['Archivo','Editar','Mapa','Simbolo']:
-            menu = eval('Menu_'+menu_nom+'(prev+4,6,self)')
+            menu = eval('Menu_'+menu_nom+'(prev+8,6,self)')
             prev = menu.boton.rect.right
             self.menus['Menu '+menu_nom] = menu
         Renderer.addWidget(self)

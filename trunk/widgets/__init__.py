@@ -6,3 +6,5 @@ from .marco import Marco
 from .entry import Entry
 from .label import Label
 from .menu import Menu
+from .dropdownList import DropDownList
+from .fileDialog import FileDiag

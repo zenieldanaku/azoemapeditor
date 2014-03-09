@@ -1,5 +1,5 @@
 from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION
-from pygame import KEYDOWN,KEYUP,K_ESCAPE,QUIT
+from pygame import KEYDOWN,KEYUP,K_ESCAPE,QUIT,K_F1
 from pygame.sprite import LayeredDirty
 
 class Renderer:
@@ -13,11 +13,9 @@ class Renderer:
         return widget
     
     def delWidget(widget):
-    #esta función en realidad no se usa nunca. la cree originalmente como par de
-    #addWidget, pero en realidad nunca eliminamos los widgets, solo los seteamos
-    #como not visible & not enabled.
         if isinstance(widget,str):
             widget = Renderer.widgets[widget]
+        widget.onDestruction()
         Renderer.contents.remove(widget)
         del Renderer.widgets[widget.nombre]
     
@@ -35,6 +33,11 @@ class Renderer:
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     return False
+                elif event.key == K_F1:
+                    print('--Inicio de lista')
+                    for widget in Renderer.contents:
+                        print(widget.nombre)
+                    print('--Fin de lista')
                 else:
                     Renderer.currentFocus.onKeyDown(event)
                 

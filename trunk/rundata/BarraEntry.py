@@ -3,6 +3,7 @@ from widgets import  Entry, Boton, Marco
 from pygame import Surface,draw
 from renderer import Renderer
 from constantes import *
+from colores import color
 import os
 
 class barraEntry (Marco):
@@ -11,26 +12,25 @@ class barraEntry (Marco):
         self.nombre = 'Barra_Entry'
         self.focusable = False
         texto = os.getcwd().split('\\')
-        self.entry = Entry(5,self.y+5,int(self.w/3)*2,'/'.join(texto))
+        self.entry = Entry(self,'EntryRuta',5,self.y+5,int(self.w/3)*2,'/'.join(texto))
         elementos = [
             {"nom":'Abrir',"cmd":self.Abrir,"scr":"A"},
             {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},
             {"nom":"barra"},
-            {"nom":'Set_imagen_fondo',"cmd":self.Set_imagen_fondo,"scr":"Fd"},
-            {"nom":'Set_imagen_colisiones',"cmd":self.Set_imagen_colisiones,"scr":"Cl"}]
+            {"nom":'SetImgFondo',"cmd":self.Set_imagen_fondo,"scr":"Fd"},
+            {"nom":'SetImgColisiones',"cmd":self.Set_imagen_colisiones,"scr":"Cl"}]
         
-        #Renderer.addWidget(self.entry,1)
         self.agregar(self.entry)
         x = int(self.rect.w/3)*2+4
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = Boton(x+4,self.y+3,e['nom'],e['cmd'],e['scr'])
+                boton = Boton(self,x+4,self.y+3,e['nom'],e['cmd'],e['scr'])
                 x = boton.rect.right-2
                 Renderer.addWidget(boton,2)
             else:
-                draw.line(self.image,gris_oscuro_bisel,[x+5,3],[x+5,27],1)
-                draw.line(self.image,gris_claro_bisel,[x+6,3],[x+6,27],1)
-                x = x+7
+                draw.line(self.image,color('sysElmShadow'),[x+6,3],[x+6,27],1)
+                draw.line(self.image,color('sysElmLight'),[x+7,3],[x+7,27],1)
+                x = x+8
     
     def Abrir(self):
         texto = self.entry.devolver_texto()
@@ -45,7 +45,7 @@ class barraEntry (Marco):
             G.guardar_mapa(texto)
             G.estado = "Mapa '"+texto+"' guardado."
         except: 
-            G.estado ='Error: Es necesario cargar un mapa.'       
+            G.estado ='Error: Es necesario cargar un mapa.'
     
     def Set_imagen_fondo(self):
         try:

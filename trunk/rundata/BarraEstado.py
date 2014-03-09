@@ -11,9 +11,9 @@ class barraEstado (Marco):
     
     def __init__(self,**opciones):
         super().__init__(0,19*C,24*C,1*C,**opciones)
-        self.nombre = 'estado'
+        self.nombre = 'BarraEstado'
         self._estado = ''
-        self.lblEstado = Label(self,self.x+4,self.y+5)
+        self.lblEstado = Label(self,'Estado',self.x+4,self.y+5)
         self.draw_area = Rect(4,5,self.w-8,self.h-8)
         Renderer.addWidget(self)
         Renderer.addWidget(self.lblEstado,2)

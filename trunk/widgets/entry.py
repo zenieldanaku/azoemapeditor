@@ -14,9 +14,12 @@ class Entry(BaseWidget):
     sel_start,sel_end = 0,0
     seleccion = None
     
-    def __init__(self,x,y,w,texto):
+    def __init__(self,parent,nombre,x,y,w,texto):
         super().__init__()
+        self.parent = parent
+        self.nombre = self.parent.nombre+nombre
         self.fuente = font.SysFont('courier new',14)
+        self.x,self.y,self.w = x,y,w
         self.cursor =  ("        ",
                         "ooo ooo ",
                         "   o    ",
@@ -33,11 +36,11 @@ class Entry(BaseWidget):
                         "   o    ",
                         "   o    ",
                         "ooo ooo ")
-        h = 21
-        self.rect = Rect((x,y),(w,h))
-        self.image = Surface((w,h))
-        self.erase_area = Rect(1,1,self.rect.w-2,self.rect.h-2)
-        self.write_area = Rect(4,2,self.rect.w-2,self.rect.h-4)
+        self.h = self.fuente.get_height()+4#21
+        self.rect = Rect(self.x,self.y,self.w,self.h)
+        self.image = Surface(self.rect.size)
+        self.erase_area = Rect(1,1,self.w-2,self.h-2)
+        self.write_area = Rect(4,2,self.w-2,self.h-4)
         self.dx = x+4
         self.borrar_todo()
         self.texto = list(texto)
@@ -161,7 +164,7 @@ class Entry(BaseWidget):
         
     def onMouseOver(self):
         text = self.cursor
-        curs,mask = cursors.compile(text,'','o')
+        curs,mask = cursors.compile(text,'o','o')
         mouse.set_cursor([8,16],[4,1],curs,mask)
         if self.seleccionando:
             self.sel_end = self.get_x()[1]
