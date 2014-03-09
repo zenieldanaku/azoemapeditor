@@ -1,6 +1,7 @@
 from pygame import Rect,Surface,mouse,draw
 from . import BaseWidget, Boton
 from renderer import Renderer
+from colores import color
 from constantes import *
 
 class _baseScroll(BaseWidget):
@@ -20,7 +21,8 @@ class _baseScroll(BaseWidget):
 
     def _crear(self,w,h):
         imagen = Surface((w,h))
-        imagen.fill([205]*3)
+        # [205]*3
+        imagen.fill(color('sysScrBack'))
         return imagen
     
     def onMouseDown(self,button):
@@ -42,10 +44,10 @@ class _baseScroll(BaseWidget):
         self.dirty = 1
 
 class ScrollV(_baseScroll):
-    def __init__(self,parent,x,y,w,h):
+    def __init__(self,parent,x,y,h,w=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollV'
-        self.cursor = CursorV(self,self.x,self.y+12,1/2*C,1/2*C)
+        self.cursor = CursorV(self,self.x,self.y+12,1/2*C)
         self.BtnPos = _btnVer(self,self.x,self.y+self.h-12,'abajo')
         self.BtnNeg = _btnVer(self,self.x,self.y,'arriba')
         Renderer.addWidget(self.cursor,3)
@@ -59,15 +61,15 @@ class ScrollV(_baseScroll):
         return False
 
 class ScrollH(_baseScroll):
-    def __init__(self,parent,x,y,w,h):
+    def __init__(self,parent,x,y,w,h=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollH'
-        self.cursor = CursorH(self,self.x+12,self.y,1/2*C,1/2*C)
+        self.cursor = CursorH(self,self.x+12,self.y,1/2*C)
         self.BtnPos = _btnHor(self,self.x+self.w-12,self.y,'derecha')
         self.BtnNeg = _btnHor(self,self.x,self.y,'izquierda')
         Renderer.addWidget(self.cursor,3)
-        Renderer.addWidget(self.BtnPos,10)
-        Renderer.addWidget(self.BtnNeg,10)
+        Renderer.addWidget(self.BtnPos,4)
+        Renderer.addWidget(self.BtnNeg,4)
     
     def moverCursor(self,dx):
         if 0 <= dx <= self.cursor.maxX-1:
@@ -93,11 +95,11 @@ class _baseCursor(BaseWidget):
         
     def _crear(self,w,h):
         imagen = Surface((w,h)) # crear la base absoluta
+        
         # definir los colores. 
-        mod = 40 # Se usa para modificar todos los colores a la vez
-        c0 = [125+mod]*3 # base constantes.gris
-        c1 = [150+mod]*3 # base constantes.gris_claro_bisel
-        c2 = [100+mod]*3 # base constantes.gris_oscuro_bisel
+        c0 = color('sysElmFace') 
+        c1 = color('sysElmLight') 
+        c2 = color('sysElmShadow') 
         
         # colorear el fondo
         imagen.fill(c0)
@@ -128,7 +130,7 @@ class _baseCursor(BaseWidget):
         self.dirty = 1
         
 class CursorH(_baseCursor):
-    def __init__(self,parent,x,y,w,h):
+    def __init__(self,parent,x,y,w,h=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorH'
         self.minX = int(parent.x+self.w+4)
@@ -136,7 +138,7 @@ class CursorH(_baseCursor):
         
     def agregar_barras(self,imagen,w,h,c1,c2):
         '''Agrega 6 barritas de "agarre" verticales'''
-        for i in range(-3,3,1):
+        for i in range(-4,3,1):
             if i%2 != 0: color = c1
             else: color = c2
             draw.line(imagen,color,(w//2+i,2),(w//2+i,h-4))
@@ -150,7 +152,7 @@ class CursorH(_baseCursor):
                 self.parent.parent.slcX = (x-(self.parent.x)-20)*1.23
         
 class CursorV(_baseCursor):
-    def __init__(self,parent,x,y,w,h):
+    def __init__(self,parent,x,y,h,w=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorV'
         self.minY = int(parent.y+self.h+4)
@@ -158,7 +160,7 @@ class CursorV(_baseCursor):
         
     def agregar_barras(self,imagen,w,h,c1,c2):
         '''Agrega 6 barritas de "agarre" horizontales'''
-        for i in range(-3,3,1):
+        for i in range(-4,3,1):
             if i%2 != 0: color = c1
             else: color = c2
             draw.line(imagen,color,(2,h//2+i),(w-4,h//2+i))
@@ -220,21 +222,24 @@ class _btnVer(_baseBtn):
         self.w,self.h = 1/2*C,12
         self.orientacion = orientacion
         self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
-        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),[190]*3,[140]*3)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),[140]*3,[190]*3)
+        luz = color('sysElmLight')
+        sombra = color('sysElmShadow')
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
     def _crear(self,w,h,orientacion):
         imagen = Surface((w,h))
-        imagen.fill(([165]*3))
+        imagen.fill(color('sysElmFace'))
         
         if orientacion == 'arriba':
             points = [[3,h-4],[w//2-1,2],[w-5,h-4]]
         elif orientacion == 'abajo':
             points = [[3,4],[w//2-1,h-4],[w-5,4]]
         
-        draw.polygon(imagen, ([70]*3), points)
+        # [70]*3
+        draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
     
     def serPresionado(self):
@@ -253,21 +258,23 @@ class _btnHor(_baseBtn):
         self.w,self.h = 12,1/2*C
         self.orientacion = orientacion
         self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
-        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),[190]*3,[140]*3)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),[140]*3,[190]*3)
+        luz = color('sysElmLight')
+        sombra = color('sysElmShadow')
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
     def _crear(self,w,h,orientacion):
         imagen = Surface((w,h))
-        imagen.fill(([165]*3))
+        imagen.fill(color('sysElmFace'))
         
         if orientacion == 'derecha':
             points = [[4,3],[w-4,h//2-1],[4,h-5]]
         elif orientacion == 'izquierda':
             points = [[w-5,3],[3,h//2-1],[w-5,h-5]]
         
-        draw.polygon(imagen, ([70]*3), points)
+        draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
     
     def serPresionado(self):

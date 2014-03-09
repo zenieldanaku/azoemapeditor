@@ -19,17 +19,17 @@ class grilla(BaseWidget):
     slcY = 0 # cuyas dimensiones sean mayores a 480x480 (las de la grilla)
     def __init__(self):
         super().__init__()
-        self.x,self.y, = (2*C)+2,2*C
+        self.x,self.y, = 2*C+15,2*C+15
         self.w,self.h = 15*C,15*C
-        self.nombre = 'grilla'
+        self.nombre = 'Grilla'
         self.image = self.dibujar_base(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         
-        self.ScrollX = ScrollH(self,self.x, (17*C)+8, self.w, 1/2*C)
-        self.ScrollY = ScrollV(self,(17*C)+8, self.y, 1/2*C, self.h)
-        self.BtnVerPos = Boton(3,17*C+2,'Grilla.BtnVerPos',self.cmdVerPos,'V')
-        self.BtnVerGr = Boton(C+1,17*C+2,'Grilla.BtnVerGr',self.cmdVerGr,'Gr')
-        self.BtnVerCapa = Boton(17*C+3,17*C+4,'Grilla.BtnVerCapa',self.cmdVerCapa,'Cp')
+        self.ScrollX = ScrollH(self,self.x, self.y+self.h, self.w)
+        self.ScrollY = ScrollV(self,self.x+self.w, self.y, self.h)
+        self.BtnVerPos = Boton(self,3,17*C+2,'BtnVerPos',self.cmdVerPos,'V')
+        self.BtnVerGr = Boton(self,C+1,17*C+2,'BtnVerGr',self.cmdVerGr,'Gr')
+        self.BtnVerCapa = Boton(self,3,16*C+8,'BtnVerCapa',self.cmdVerCapa,'Cp')
         
         self.ScrollX.enabled = False
         self.ScrollY.enabled = False

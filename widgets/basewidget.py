@@ -47,10 +47,20 @@ class BaseWidget(DirtySprite):
     
     def onKeyUp(self, keydata):
         pass
-        
+    
+    def onDestruction(self):
+        #esta funcion se llama cuando el widget es quitado del renderer.
+        pass
+    
     def _dibujarBorde(self):
         from colores import color
         from pygame import draw
         draw.line(self.image, color(self.opciones.get('colorBordeSombra', 'sysElmShadow')), (0,self.rect.h-2),(self.rect.w-1,self.rect.h-2), 2)
         draw.line(self.image, color(self.opciones.get('colorBordeSombra', 'sysElmShadow')), (self.rect.w-2,self.rect.h-2),(self.rect.w-2,0), 2)
         draw.lines(self.image, color(self.opciones.get('colorBordeLuz', 'sysElmLight')), False, [(self.rect.w-1,0),(0,0),(0,self.rect.h-3)], 2)
+    
+    def update(self):
+        self.dirty = 1
+    
+    def __repr__(self):
+        return self.nombre

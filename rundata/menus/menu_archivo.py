@@ -1,7 +1,7 @@
 from globales import GLOBALES as G
 from pygame import quit as pyquit
 from sys import exit as sysexit
-from widgets import Menu
+from widgets import Menu, FileDiag
 
 class Menu_Archivo(Menu):
     def  __init__(self,x,y,barra):
@@ -19,7 +19,7 @@ class Menu_Archivo(Menu):
             ]}
         
         opciones = [
-            {'nom':'Prueba{}>','csc':cascadas['Prueba']},
+            #{'nom':'Prueba{}>','csc':cascadas['Prueba']},
             {'nom':'Nuevo{}','cmd':self.Nuevo},
             {'nom':'Abrir...{}','cmd':self.Abrir},
             {'nom':'Guardar{}','cmd':self.Guardar},
@@ -31,10 +31,16 @@ class Menu_Archivo(Menu):
     
     def Nuevo(self): G.nuevo_mapa()
     def Abrir(self):
-        print('abrir achivo')
-    def Guardar(self): G.guardar_mapa()
+        comando = {'scr':'A','cmd':lambda:print('abrir achivo')}
+        FileDiag(comando)
+    
+    def Guardar(self):
+        # acá habria que ver si hay cambios.
+        FileDiag({'scr':'G','cmd':lambda:print('guardar arhivo')})
+    
     def Guardar_como(self):
-        print('guardar archivo con otro nombre')
+        FileDiag({'scr':'G','cmd':lambda:print('guardar arhivo')})
+        
     def Cerrar(self):
         print('cierra el archivo abierto')
     

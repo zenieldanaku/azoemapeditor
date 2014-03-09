@@ -4,6 +4,7 @@ from pygame.sprite import LayeredDirty
 from renderer import Renderer
 from . import BaseWidget
 from colores import *
+from colores import color
 
 class Menu (BaseWidget):
     cascada = None
@@ -16,7 +17,7 @@ class Menu (BaseWidget):
         super().__init__()
         self.boton = _Boton(self,nombre,x,y)
         h = self.boton.rect.h
-        self.cascada = _Cascada(self,ops,x,h,h)
+        self.cascada = _Cascada(self,nombre,ops,x,h,h)
         
     def showMenu(self):
         self.cascada.showMenu()
@@ -32,17 +33,18 @@ class _Boton(BaseWidget):
     nombre = ''
     menu = None
     
-    def __init__(self,menu,nombre,x,y, **opciones):
+    def __init__(self,parent,nombre,x,y, **opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack'
         if 'colorTexto' not in opciones:
             opciones['colorTexto'] = 'sysMenText'
         super().__init__(**opciones)
-        self.nombre = nombre
-        self.menu = menu
+        self.parent = parent
+        self.nombre = self.parent.nombre+'.Boton'
+
         self._layer = 2
-        self.img_des = self.crear_boton(self.nombre,color(opciones['colorTexto']))
-        self.img_sel = self.crear_boton(self.nombre,cian_claro)
+        self.img_des = self.crear_boton(nombre,color(opciones['colorTexto']))
+        self.img_sel = self.crear_boton(nombre,cian_claro)
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
@@ -58,7 +60,7 @@ class _Boton(BaseWidget):
         
     def onMouseDown (self,button):
         if button == 1:
-            self.menu.barra.onFocusIn(self.menu)
+            self.parent.barra.onFocusIn(self.parent)
             
     def onFocusOut(self):
         #self.menu.onFocusOut()
@@ -71,19 +73,16 @@ class _Boton(BaseWidget):
     def onMouseOut(self):
         super().onMouseOut()
         self.image = self.img_des
-    
-    def update(self):
-        self.dirty = 1
-
+        
 class _Cascada (BaseWidget):
     opciones = None
-    padre = None
+    parent = None
     
-    def __init__(self,padre,opciones,x,y,j=19):
+    def __init__(self,parent,nombre,opciones,x,y,j=19):
         super().__init__()
         self.opciones = LayeredDirty()
-        self.padre = padre
-        self.nombre = padre.nombre
+        self.parent = parent
+        self.nombre = parent.nombre+'.'+nombre
         # Determinar el ancho de la opcion con mas caracteres
         l = [opciones[n]['nom'] for n in range(len(opciones))]
         w_max = len(max(l,key=lambda n:len(n)))
@@ -102,7 +101,7 @@ class _Cascada (BaseWidget):
             opcion = _Opcion(self,_nom,[x,dy])
             w,h = opcion.image.get_size()
             if 'csc' in opciones[n]:
-                opcion.command = _Cascada(self,opciones[n]['csc'],x+w+1,dy,h*(n+1))
+                opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x+w+1,dy,h*(n+1))
             elif 'cmd' in opciones[n]:
                 opcion.command = opciones[n]['cmd']
             alto += h+1
@@ -140,11 +139,11 @@ class _Cascada (BaseWidget):
     def onFocusOut(self):
         super().onFocusOut()
         recursion = True
-        padre = self.padre
+        parent = self.parent
         while recursion:
-            if hasattr(padre,'padre'):
-                padre.hideMenu()
-                padre = padre.padre
+            if hasattr(parent,'parent'):
+                parent.hideMenu()
+                parent = parent.parent
             else:
                 recursion = False
         self.hideMenu()
@@ -156,29 +155,29 @@ class _Cascada (BaseWidget):
 class _Opcion(BaseWidget):
     command = None
     
-    def __init__(self,padre,nombre,pos):
+    def __init__(self,parent,nombre,pos):
         super().__init__()
-        self.nombre = nombre
-        self.padre = padre
+        self.parent = parent
+        self.nombre = self.parent.nombre+'.Opcion'+nombre
         self.visible = False
         self.enabled = False
-        self.img_des = self.crear(self.nombre,negro)
-        self.img_sel = self.crear(self.nombre,cian_claro)
+        self.img_des = self.crear(nombre,negro)
+        self.img_sel = self.crear(nombre,cian_claro)
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=pos)
         self.dirty = 1
     
-    def crear(self,nombre,color):
+    def crear(self,nombre,fgcolor):
         fuente = font.SysFont('Courier new',14)
         w,h = fuente.size(nombre)
         rect = Rect(-1,-1,w,h+1)
-        render = render_textrect(nombre,fuente,rect,color,gris,1)
+        render = render_textrect(nombre,fuente,rect,fgcolor,color('sysMenBack'),1)
         return render
             
     def onMouseDown(self,button):
-        #self.comando()
-        self.padre.onFocusOut()
+        self.comando()
+        self.parent.onFocusOut()
     
     #def onFocusIn(self):
     #    super().onFocusIn()
@@ -186,7 +185,7 @@ class _Opcion(BaseWidget):
     def onFocusOut(self):
         super().onFocusOut()
         self.enabled=False
-        self.padre.hideMenu()
+        self.parent.hideMenu()
         
     #def onMouseIn(self):
     #    super().onMouseIn()

@@ -6,4 +6,4 @@ class PanelHerramientas(Marco):
     
     def __init__(self,**opciones):
         super().__init__(0,2*C,2*C,16*C,**opciones)
-        self.nombre = 'herramientas'        
+        self.nombre = 'PanelHerramientas'
