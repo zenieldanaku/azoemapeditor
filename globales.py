@@ -9,6 +9,8 @@ class GLOBALES:
     IMG_fondo = None
     IMG_colisiones = None
     IMG_actual = ''
+    IMG_ID = -1
+    IMGs_cargadas = []
     
     def nuevo_mapa():
         GLOBALES.MAPA = Mapa()
@@ -25,6 +27,16 @@ class GLOBALES:
         GLOBALES.MAPA = Mapa()
         GLOBALES.MAPA.cargar(data)
     
+    def cargar_imagen(dest):
+        img = Resources.cargar_imagen(GLOBALES.ruta)
+        if dest == 'Fondo':
+            GLOBALES.IMG_fondo = img
+        elif dest == 'Colisiones':
+            GLOBALES.IMG_colisiones = img
+        GLOBALES.IMG_actual = dest
+        GLOBALES.IMG_ID += 1
+        GLOBALES.IMGs_cargadas.append({'img':img, 'ID':GLOBALES.IMG_ID})
+        
 class Resources:
     def abrir_json (archivo):
         ex = open(archivo,'r')

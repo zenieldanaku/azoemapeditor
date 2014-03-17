@@ -49,9 +49,8 @@ class barraEntry (Marco):
     
     def Set_imagen_fondo(self):
         try:
-            imagen = r.cargar_imagen(G.ruta)
             G.IMG_actual = 'Fondo'
-            G.IMG_fondo = imagen
+            G.cargar_imagen('Fondo')
             if G.MAPA != None:
                 ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
                 G.MAPA.actualizar({'key':'fondo','value':'maps/fondos/'+ruta})
@@ -60,9 +59,8 @@ class barraEntry (Marco):
         
     def Set_imagen_colisiones(self):
         try: 
-            imagen = r.cargar_imagen(G.ruta)
             G.IMG_actual = 'Colisiones'
-            G.IMG_colisiones = imagen
+            G.cargar_imagen('Fondo')
             if G.MAPA != None:
                 ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
                 G.MAPA.actualizar({'key':'colisiones','value':'maps/colisiones/'+ruta})

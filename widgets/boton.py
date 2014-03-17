@@ -14,7 +14,7 @@ class Boton(BaseWidget):
         super().__init__(**opciones)
         self.x,self.y = x,y
         self.parent = parent
-        self.nombre = self.parent.nombre+'.'+nombre
+        self.nombre = self.parent.nombre+'.Boton.'+nombre
         self.comando = cmd
         self.descripcion = descripcion
         

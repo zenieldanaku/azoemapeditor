@@ -1,14 +1,14 @@
 from globales import GLOBALES as G, Resources as r
-from widgets import Menu
+from widgets import Menu, FileDiag
 
 class Menu_Mapa (Menu):
     def  __init__(self,x,y,barra):
-        self.nombre = 'Menu Mapa'
+        self.nombre = 'Menu.Mapa'
         self.barra = barra
         cascadas = {
             'imagen':[
-                {'nom':'Fondo','cmd':self.Set_imagen_fondo},
-                {'nom':'Colisiones','cmd':self.Set_imagen_colisiones}]
+                {'nom':'Fondo','cmd':self.Fondo},
+                {'nom':'Colisiones','cmd':self.Colisiones}]
         }
         opciones = [{'nom':'Grilla...','cmd':self.Grilla},
                    {'nom':'Capas...','cmd':self.Capas},
@@ -20,22 +20,19 @@ class Menu_Mapa (Menu):
     
     def Capas(self):
         print('capas')
+       
+    def Fondo(self):
+        FileDiag({'scr':'A','tipo':'A','cmd':self.setRutaFondo})
+        
+    def Colisiones(self):
+        FileDiag({'scr':'A','tipo':'A','cmd':self.setRutaColis})
     
-    def _cargar_imagen(self):
-        try:
-            imagen = r.cargar_imagen(G.ruta)
-            return imagen
-        except Exception as Description:
-            G.estado = str(Description)
+    @staticmethod
+    def setRutaFondo(ruta):
+        G.ruta = ruta
+        G.cargar_imagen('Fondo')
     
-    def Set_imagen_fondo(self):
-        imagen = self._cargar_imagen()
-        G.IMG_actual = 'Fondo'
-        G.IMG_fondo = imagen
-        
-    def Set_imagen_colisiones(self):
-        imagen = self._cargar_imagen()
-        G.IMG_actual = 'Colisiones'
-        G.IMG_colisiones = imagen
-        
-        
+    @staticmethod
+    def setRutaColis(ruta):
+        G.ruta = ruta
+        G.cargar_imagen('Colisiones')

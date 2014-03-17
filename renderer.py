@@ -34,10 +34,13 @@ class Renderer:
                 if event.key == K_ESCAPE:
                     return False
                 elif event.key == K_F1:
+                    i = 0
                     print('--Inicio de lista')
                     for widget in Renderer.contents:
+                        i+=1
                         print(widget.nombre)
                     print('--Fin de lista')
+                    print('Nº Total de widgets: '+str(i))
                 else:
                     Renderer.currentFocus.onKeyDown(event)
                 

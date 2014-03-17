@@ -22,7 +22,7 @@ class Label (BaseWidget):
         self.fuente = font.SysFont(opciones['Fuente'],opciones['fontSize'])
         self.x,self.y = x,y
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Label'+nombre
+        self.nombre = self.parent.nombre+'.Label.'+nombre
         if texto == '':
             self.w,self.h = self.fuente.size(self.texto)
             self.image = Surface((self.w,self.h))

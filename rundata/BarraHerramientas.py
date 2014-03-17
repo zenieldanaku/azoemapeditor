@@ -36,21 +36,11 @@ class barraHerramientas (Marco):
         G.nuevo_mapa()
     
     def Abrir(self):
-        FileDiag({'scr':'A','cmd':lambda:print('abrir achivo')})
-        #texto = self.entry.devolver_texto()
-        #try:
-        #    G.cargar_mapa(texto)
-        #except:
-        #    G.estado = 'Error: El archivo no existe.'
-    
+        FileDiag({'scr':'A','tipo':'A','cmd':self.abrirMapa})
+
     def Guardar(self):
-        FileDiag({'scr':'G','cmd':lambda:print('guardar achivo')})
-        #texto = self.entry.devolver_texto()
-        #try:
-        #    G.guardar_mapa(texto)
-        #    G.estado = "Mapa '"+texto+"' guardado."
-        #except: 
-        #    G.estado ='Error: Es necesario cargar un mapa.'
+        FileDiag({'scr':'G','tipo':'G','cmd':self.guardarMapa})
+
     # barra
     def Cortar(self):
         print('boton cortar')
@@ -59,27 +49,34 @@ class barraHerramientas (Marco):
     def Pegar(self):
         print('boton pegar')
     # barra
+
     def Set_imagen_fondo(self):
-        try:
-            imagen = r.cargar_imagen(G.ruta)
-            G.IMG_actual = 'Fondo'
-            G.IMG_fondo = imagen
-            if G.MAPA != None:
-                ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
-                G.MAPA.actualizar({'key':'fondo','value':'maps/fondos/'+ruta})
-            G.estado = ''    
-        except Exception as Description:
-            G.estado = str(Description)
+        FileDiag({'scr':'A','tipo':'A','cmd':self.setRutaFondo})
         
     def Set_imagen_colisiones(self):
-        try: 
-            imagen = r.cargar_imagen(G.ruta)
-            G.IMG_actual = 'Colisiones'
-            G.IMG_colisiones = imagen
-            if G.MAPA != None:
-                ruta = G.ruta.strip('/'.join(os.getcwd().split('\\')))
-                G.MAPA.actualizar({'key':'colisiones','value':'maps/colisiones/'+ruta})
-            G.estado = ''
-        except Exception as Description:
-            G.estado = str(Description)
+        FileDiag({'scr':'A','tipo':'A','cmd':self.setRutaColis})
+        
+    @staticmethod
+    def setRutaFondo(ruta):
+        G.ruta = ruta
+        G.cargar_imagen('Fondo')
     
+    @staticmethod
+    def setRutaColis(ruta):
+        G.ruta = ruta
+        G.cargar_imagen('Colisiones')
+    
+    @staticmethod
+    def abrirMapa(ruta):
+        try:
+            G.cargar_mapa(ruta)
+        except:
+            G.estado = 'Error: El archivo no existe.'
+    
+    @staticmethod
+    def guardarMapa(ruta):
+        try:
+            G.guardar_mapa(ruta)
+            G.estado = "Mapa '"+ruta+"' guardado."
+        except: 
+            G.estado ='Error: Es necesario cargar un mapa.'
