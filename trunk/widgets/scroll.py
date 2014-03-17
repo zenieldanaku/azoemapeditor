@@ -18,10 +18,14 @@ class _baseScroll(BaseWidget):
         self.image = self._crear(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.dirty = 1
+    
+    def onDestruction(self):
+        Renderer.delWidget(self.cursor)
+        Renderer.delWidget(self.BtnPos)
+        Renderer.delWidget(self.BtnNeg)
 
     def _crear(self,w,h):
         imagen = Surface((w,h))
-        # [205]*3
         imagen.fill(color('sysScrBack'))
         return imagen
     
@@ -32,9 +36,6 @@ class _baseScroll(BaseWidget):
     def onMouseOut(self):
         if not self.cursor.pressed:
             super().onMouseOut()
-    
-    def moverCursor(self,x=0,y=0):
-        self.cursor.rect.move_ip(x,y)
     
     def setCursorSpeed(self,velocidad):
         self.cursor.velocidad = velocidad
@@ -47,35 +48,23 @@ class ScrollV(_baseScroll):
     def __init__(self,parent,x,y,h,w=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollV'
-        self.cursor = CursorV(self,self.x,self.y+12,1/2*C)
         self.BtnPos = _btnVer(self,self.x,self.y+self.h-12,'abajo')
         self.BtnNeg = _btnVer(self,self.x,self.y,'arriba')
-        Renderer.addWidget(self.cursor,3)
+        self.cursor = CursorV(self,parent,self.x,self.y+12,1/2*C)
         Renderer.addWidget(self.BtnPos,4)
         Renderer.addWidget(self.BtnNeg,4)
-    
-    def moverCursor(self,dy):
-        if 0 <= dy <= self.cursor.maxY-1:
-            super().moverCursor(y=dy)
-            return True
-        return False
+        Renderer.addWidget(self.cursor,3)
 
 class ScrollH(_baseScroll):
     def __init__(self,parent,x,y,w,h=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = self.parent.nombre+'.ScrollH'
-        self.cursor = CursorH(self,self.x+12,self.y,1/2*C)
         self.BtnPos = _btnHor(self,self.x+self.w-12,self.y,'derecha')
         self.BtnNeg = _btnHor(self,self.x,self.y,'izquierda')
-        Renderer.addWidget(self.cursor,3)
+        self.cursor = CursorH(self,parent,self.x+12,self.y,1/2*C)
         Renderer.addWidget(self.BtnPos,4)
         Renderer.addWidget(self.BtnNeg,4)
-    
-    def moverCursor(self,dx):
-        if 0 <= dx <= self.cursor.maxX-1:
-            super().moverCursor(x=dx)
-            return True
-        return False
+        Renderer.addWidget(self.cursor,3)
 
 class _baseCursor(BaseWidget):
     parent = None
@@ -130,11 +119,13 @@ class _baseCursor(BaseWidget):
         self.dirty = 1
         
 class CursorH(_baseCursor):
-    def __init__(self,parent,x,y,w,h=1/2*C):
+    def __init__(self,parent,scrollable,x,y,w,h=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorH'
-        self.minX = int(parent.x+self.w+4)
-        self.maxX = parent.x+parent.w-19
+        self.scrollable = scrollable
+        self.minX = int(parent.x+parent.BtnNeg.w)
+        self.maxX = parent.x+parent.w-self.w-parent.BtnPos.w
+        self.relX = 0
         
     def agregar_barras(self,imagen,w,h,c1,c2):
         '''Agrega 6 barritas de "agarre" verticales'''
@@ -147,16 +138,23 @@ class CursorH(_baseCursor):
     def onMouseOver(self):
         if self.pressed:
             x,y = mouse.get_pos()
-            if self.minX <= x <= self.maxX:
-                self.rect.x = x-8
-                self.parent.parent.slcX = (x-(self.parent.x)-20)*1.23
+            dx = x-self.rect.x-8
+            self.mover(dx)
+    
+    def mover(self,dx):
+        x = self.rect.x+dx
+        if self.minX <= x <= self.maxX:
+            self.rect.x = x
+            self.scrollable.scroll(dx=dx)
         
 class CursorV(_baseCursor):
-    def __init__(self,parent,x,y,h,w=1/2*C):
+    def __init__(self,parent,scrollable,x,y,h,w=1/2*C):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorV'
-        self.minY = int(parent.y+self.h+4)
-        self.maxY = parent.y+parent.h-19
+        self.scrollable = scrollable
+        self.minY = int(parent.y+parent.BtnNeg.h)
+        self.maxY = parent.y+parent.h-self.h-parent.BtnPos.h
+        self.relY = 0
         
     def agregar_barras(self,imagen,w,h,c1,c2):
         '''Agrega 6 barritas de "agarre" horizontales'''
@@ -169,9 +167,14 @@ class CursorV(_baseCursor):
     def onMouseOver(self):
         if self.pressed:
             x,y = mouse.get_pos()
-            if self.minY <= y <= self.maxY:
-                self.rect.y = y-8
-                self.parent.parent.slcY = (y-(self.parent.y)-20)*1.23
+            dy = y-self.rect.y-8
+            self.mover(dy)
+    
+    def mover(self,dy):
+        y = self.rect.y+dy
+        if self.minY <= y <= self.maxY:
+            self.rect.y = y
+            self.scrollable.scroll(dy=dy)
                 
 class _baseBtn(BaseWidget):
     nombre = ''
@@ -237,8 +240,7 @@ class _btnVer(_baseBtn):
             points = [[3,h-4],[w//2-1,2],[w-5,h-4]]
         elif orientacion == 'abajo':
             points = [[3,4],[w//2-1,h-4],[w-5,4]]
-        
-        # [70]*3
+
         draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
     
@@ -246,11 +248,9 @@ class _btnVer(_baseBtn):
         super().serPresionado()
         dy = self.parent.cursor.velocidad
         if self.orientacion == 'arriba':
-            if self.parent.moverCursor(dy= -dy):
-                self.parent.parent.slcY -= dy*1.23
+            self.parent.cursor.mover(-dy)
         elif self.orientacion == 'abajo':
-            if self.parent.moverCursor(dy= +dy):
-                self.parent.parent.slcY += dy*1.23
+            self.parent.cursor.mover(+dy)
 
 class _btnHor(_baseBtn):
     def __init__(self,parent,x,y,orientacion):
@@ -281,9 +281,7 @@ class _btnHor(_baseBtn):
         super().serPresionado()
         dx = self.parent.cursor.velocidad
         if self.orientacion == 'izquierda':
-            if self.parent.moverCursor(dx= -dx):
-                self.parent.parent.slcX -= dx*1.23
+            self.parent.cursor.mover(-dx)
         elif self.orientacion == 'derecha':
-            if self.parent.moverCursor(dx= +dx):
-                self.parent.parent.slcX += dx*1.23
+            self.parent.cursor.mover(+dx)
 
