@@ -15,6 +15,7 @@ class FileDiag(Marco):
     archivoActual = ''
     nombredeArchivo = ''
     tipoSeleccinado = ''
+    carpetaVieja = ''
     def __init__(self,comando,**opciones):      
         self.nombre = 'FileDiag'
         super().__init__(5*C,5*C,16*C,10*C+18,**opciones)
@@ -49,8 +50,9 @@ class FileDiag(Marco):
     def ejecutar_comando(self):
         if self.TipoComando == 'A':
             ruta = os.path.join(self.carpetaActual,self.archivoActual)
+        
         elif self.TipoComando == 'G':
-            if self.tipoSeleccinado != '':
+            if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo+self.tipoSeleccinado)
             else:
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo)
@@ -60,33 +62,25 @@ class FileDiag(Marco):
     
     def cerrar_ventana(self):
         Renderer.delWidget(self)
-          
-    @staticmethod
-    def listar_archivos(fold):
-        lista = []
-        for item in os.listdir(fold):
-            if os.path.isfile(os.path.join(fold,item)):
-                lista.append(item)
-        return lista
-    
+              
     def update(self):
         tipo = self.tipos.ItemActual.lstrip('*')
-        carpeta = self.carpetas.CarpetaSeleccionada
-        nombre = self.entryNombre.devolver_texto()
-        if carpeta != '':
-            self.carpetaActual = carpeta
-            self.archivos.borrarLista()
-            lista_de_archivos = self.listar_archivos(carpeta)
-            self.archivos.crearLista(lista_de_archivos,tipo.lstrip('.'))
+        if self.tipoSeleccinado != tipo:
+            self.tipoSeleccinado = tipo
+            self.archivos.actualizarLista(self.carpetaActual,self.tipoSeleccinado.lstrip('.'))
+            
+        self.carpetaActual = self.carpetas.CarpetaSeleccionada
+        if self.carpetaActual != self.carpetaVieja:
+            self.carpetaVieja = self.carpetaActual
+            self.archivos.actualizarLista(self.carpetaActual,self.tipoSeleccinado.lstrip('.'))
             
         if self.archivos.ArchivoActual != '':
             self.archivoActual = self.archivos.ArchivoActual
         
+        nombre = self.entryNombre.devolver_texto()
         if nombre != '':
             self.nombredeArchivo = nombre
-        
-        if tipo != '':
-            self.tipoSeleccinado = tipo
+
             
         self.dirty = 1
 
@@ -169,7 +163,15 @@ class listaDeArchivos(Marco):
             return filtrado         
         else:
             return archivos
-
+    
+    @staticmethod
+    def listar_archivos(fold):
+        lista = []
+        for item in os.listdir(fold):
+            if os.path.isfile(os.path.join(fold,item)):
+                lista.append(item)
+        return lista
+    
     def crearLista(self,opciones,ext):
         lista = self.FiltrarExtS(opciones,ext)
         h = 0
@@ -188,6 +190,11 @@ class listaDeArchivos(Marco):
     
     def scroll(self,dy):
         pass
+    
+    def actualizarLista(self,carpeta,tipo):
+        self.borrarLista()
+        nuevalista = self.listar_archivos(carpeta)
+        self.crearLista(nuevalista,tipo)
     
     def update(self):
         for item in self.items:
