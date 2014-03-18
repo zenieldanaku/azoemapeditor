@@ -1,4 +1,6 @@
 from pygame.sprite import DirtySprite
+from colores import color
+from pygame import draw
 
 class BaseWidget(DirtySprite):
     '''clase base para todos los widgets'''
@@ -52,12 +54,13 @@ class BaseWidget(DirtySprite):
         #esta funcion se llama cuando el widget es quitado del renderer.
         pass
     
-    def _dibujarBorde(self):
-        from colores import color
-        from pygame import draw
-        draw.line(self.image, color(self.opciones.get('colorBordeSombra', 'sysElmShadow')), (0,self.rect.h-2),(self.rect.w-1,self.rect.h-2), 2)
-        draw.line(self.image, color(self.opciones.get('colorBordeSombra', 'sysElmShadow')), (self.rect.w-2,self.rect.h-2),(self.rect.w-2,0), 2)
-        draw.lines(self.image, color(self.opciones.get('colorBordeLuz', 'sysElmLight')), False, [(self.rect.w-1,0),(0,0),(0,self.rect.h-3)], 2)
+    @staticmethod
+    def _biselar(imagen,colorLuz,colorSombra):
+        w,h = imagen.get_size()
+        draw.line(imagen, colorSombra, (0,h-2),(w-1,h-2), 2)
+        draw.line(imagen, colorSombra, (w-2,h-2),(w-2,0), 2)
+        draw.lines(imagen, colorLuz, 0, [(w-2,0),(0,0),(0,h-4)],2)
+        return imagen
     
     def update(self):
         self.dirty = 1

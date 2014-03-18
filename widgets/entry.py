@@ -3,6 +3,7 @@ from pygame.constants import K_BACKSPACE, K_DELETE, K_RETURN, K_KP_ENTER
 from pygame import Rect,Surface,font,draw,mouse,cursors,key
 from . import BaseWidget
 from constantes import *
+from colores import color
 
 class Entry(BaseWidget):
     texto = []
@@ -14,8 +15,14 @@ class Entry(BaseWidget):
     sel_start,sel_end = 0,0
     seleccion = None
     
-    def __init__(self,parent,nombre,x,y,w,texto):
-        super().__init__()
+    def __init__(self,parent,nombre,x,y,w,texto,**opciones):
+        if 'colorFondo' not in opciones:
+            opciones['colorFondo'] = 'sysBoxBack'
+        if 'colorTexto' not in opciones:
+            opciones['colorTexto'] = 'sysElmText'
+        if 'colorSelect' not in opciones:
+            opciones['colorSelect'] = 'sysBoxSelBack'
+        super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.Entry.'+nombre
         self.fuente = font.SysFont('courier new',14)
@@ -68,15 +75,18 @@ class Entry(BaseWidget):
         #self.insertar_cursor()
         
     def borrar_todo(self):
-        self.image.fill(blanco,self.erase_area)
+        self.image.fill(color(self.opciones['colorFondo']),self.erase_area)
     
     def imprimir(self):
         txt = ''.join(self.texto)
-        render = self.fuente.render(txt,True,gris,blanco)
+        cTexto =  color(self.opciones['colorTexto'])
+        cFondo =  color(self.opciones['colorFondo'])
+        cSelect = color(self.opciones['colorSelect'])
+        render = self.fuente.render(txt,True,cTexto,cFondo)
 
         if self.seleccion != None:
             sel = ''.join(self.texto[self.seleccion])
-            render_sel = self.fuente.render(sel,True,negro,gris_seleccion)
+            render_sel = self.fuente.render(sel,True,cTexto,cSelect)
             x = self.seleccion.start*8
             render.blit(render_sel,(x,0))
 
@@ -85,9 +95,9 @@ class Entry(BaseWidget):
     def dibujar_cursor(self):
         x = self.cur_x
         if not self.cur_visible:
-            draw.line(self.image,negro,(x,3),(x,16),1)
+            draw.line(self.image,color(self.opciones['colorTexto']),(x,3),(x,16),1)
         else:
-            draw.line(self.image,blanco,(x,3),(x,16),1)
+            draw.line(self.image,color(self.opciones['colorFondo']),(x,3),(x,16),1)
     
     def insertar_cursor(self):
         self.set_x()

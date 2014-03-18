@@ -1,7 +1,7 @@
 from pygame.sprite import LayeredDirty
 from pygame import Surface,draw
 from . import BaseWidget
-import colores
+from colores import color
 from renderer import Renderer
 
 class Marco(BaseWidget):
@@ -14,20 +14,15 @@ class Marco(BaseWidget):
         self.x, self.y = x,y
         self.image = Surface((self.w, self.h))
         self._layer = 1
-        self.image.fill(colores.color(opciones.get('colorFondo', 'sysElmFace')))
+        self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         
         Renderer.addWidget(self,self._layer)
         
-        if borde:
-            #draw.rect(self.image,colores.color(opciones.get('colorBorde', 'sysElmShadow')) ,(0,0,w-2,h-2),2)
-            self._dibujarBorde()
-        
-        #cuando va a tener contenido si acaba de inicializarse?
-        #if len(self.contenido) != 0:
-        #    self.contenido.draw(self.image)
-        #lo tenia porque se supone que agregaba contenido on init.
-    
+        if borde:self.image = self._biselar(self.image,
+                color(self.opciones.get('colorLuz','sysElmLight')),
+                color(self.opciones.get('colorSombra','sysElmShadow')))
+            
     def agregar(self,objeto, layer=1):
         self.contenido.add(objeto)
         Renderer.addWidget(objeto,self._layer+layer)

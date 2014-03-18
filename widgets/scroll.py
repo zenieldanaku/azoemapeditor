@@ -77,29 +77,16 @@ class _baseCursor(BaseWidget):
         self.parent = parent
         self.x,self.y = x,y
         self.w,self.h = w,h
-        self.image = self._crear(self.w,self.h)
+        cF,cL,cS = color('sysElmFace'),color('sysElmLight'),color('sysElmShadow') 
+        self.image = self._biselar(self._agregar_barras(self._crear(w,h,cF),cL,cS),cL,cS)
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.pressed = False
         self.dirty = 1
-        
-    def _crear(self,w,h):
+    
+    @staticmethod
+    def _crear(w,h,color):
         imagen = Surface((w,h)) # crear la base absoluta
-        
-        # definir los colores. 
-        c0 = color('sysElmFace') 
-        c1 = color('sysElmLight') 
-        c2 = color('sysElmShadow') 
-        
-        # colorear el fondo
-        imagen.fill(c0)
-        
-        #agregar lineas de biselado
-        draw.line(imagen, c2, (0,h-2),(w-1,h-2), 2) # inferior
-        draw.line(imagen, c2, (w-2,h-2),(w-2,0), 2) # derecha
-        draw.lines(imagen, c1, 0, [(w-2,0),(0,0),(0,h-4)]) #superior,izquierda
-        
-        # función de subclase: agregar barras H o V según corresponda.
-        imagen = self.agregar_barras(imagen,w,h,c1,c2)
+        imagen.fill(color)
         return imagen
 
     def onMouseDown(self,button):
@@ -127,8 +114,10 @@ class CursorH(_baseCursor):
         self.maxX = parent.x+parent.w-self.w-parent.BtnPos.w
         self.relX = 0
         
-    def agregar_barras(self,imagen,w,h,c1,c2):
+    @staticmethod
+    def _agregar_barras(imagen,c1,c2):
         '''Agrega 6 barritas de "agarre" verticales'''
+        w,h = imagen.get_size()
         for i in range(-4,3,1):
             if i%2 != 0: color = c1
             else: color = c2
@@ -155,9 +144,11 @@ class CursorV(_baseCursor):
         self.minY = int(parent.y+parent.BtnNeg.h)
         self.maxY = parent.y+parent.h-self.h-parent.BtnPos.h
         self.relY = 0
-        
-    def agregar_barras(self,imagen,w,h,c1,c2):
+    
+    @staticmethod
+    def _agregar_barras(imagen,c1,c2):
         '''Agrega 6 barritas de "agarre" horizontales'''
+        w,h = imagen.get_size()
         for i in range(-4,3,1):
             if i%2 != 0: color = c1
             else: color = c2
@@ -187,14 +178,6 @@ class _baseBtn(BaseWidget):
         self.pressed = False
         self.x,self.y = x,y
         self.dirty = 1
-    
-    def _biselar(self,imagen,c1,c2):
-        imagen = imagen.copy()
-        w,h = imagen.get_size()
-        draw.line(imagen, c1, (0,h-2),(w-1,h-2), 2) # inferior
-        draw.line(imagen, c1, (w-2,h-2),(w-2,0), 2) # derecha
-        draw.lines(imagen, c2, 0, [(w-2,0),(0,0),(0,h-4)]) #superior,izquierda
-        return imagen
     
     def serDeselegido(self):
         self.image = self.img_uns
@@ -227,12 +210,13 @@ class _btnVer(_baseBtn):
         self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
-        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
-    def _crear(self,w,h,orientacion):
+    @staticmethod
+    def _crear(w,h,orientacion):
         imagen = Surface((w,h))
         imagen.fill(color('sysElmFace'))
         
@@ -260,12 +244,13 @@ class _btnHor(_baseBtn):
         self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
-        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
-    def _crear(self,w,h,orientacion):
+    @staticmethod
+    def _crear(w,h,orientacion):
         imagen = Surface((w,h))
         imagen.fill(color('sysElmFace'))
         

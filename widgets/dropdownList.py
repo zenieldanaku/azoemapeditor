@@ -74,7 +74,8 @@ class _Flecha(BaseWidget):
         draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
     
-    def _biselar(self,imagen,c1,c2):
+    @staticmethod
+    def _biselar(imagen,c1,c2):
         imagen = imagen.copy()
         w,h = imagen.get_size()
         draw.line(imagen, c1, (0,h-2),(w-1,h-2), 2) # inferior

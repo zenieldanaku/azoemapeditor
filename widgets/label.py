@@ -14,12 +14,12 @@ class Label (BaseWidget):
             opciones['colorFondo'] = 'sysElmFace'
         # algo más custom.. esta bien así?
         if 'Fuente' not in opciones:
-            opciones['Fuente'] = 'Verdana'
+            opciones['fontType'] = 'Verdana'
         if 'fontSize' not in opciones:
             opciones['fontSize'] = 14
         
         super().__init__(**opciones)
-        self.fuente = font.SysFont(opciones['Fuente'],opciones['fontSize'])
+        self.fuente = font.SysFont(opciones['fontType'],opciones['fontSize'])
         self.x,self.y = x,y
         self.parent = parent
         self.nombre = self.parent.nombre+'.Label.'+nombre

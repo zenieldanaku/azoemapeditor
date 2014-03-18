@@ -1,51 +1,60 @@
 from libs.textrect import render_textrect
-from pygame import font,Rect,draw,Surface
+from pygame import font,Rect,draw,Surface, Color 
 from . import BaseWidget
-from colores import color, cian_claro
+from colores import color
 
 class Boton(BaseWidget):
     comando = None
     presionado = False
     def __init__(self,parent,x,y,nombre,cmd,scr,descripcion='', **opciones):
-        if 'colorBordeSombra' not in opciones:
-            opciones['colorBordeSombra'] = 'sysElmShadow'
-        if 'colorBordeLuz' not in opciones:
-            opciones['colorBordeLuz'] = 'sysElmLight'
+        opciones = self._opcionesPorDefault(opciones)
         super().__init__(**opciones)
         self.x,self.y = x,y
+        self.w,self.h = self.opciones['w'],self.opciones['h']
         self.parent = parent
         self.nombre = self.parent.nombre+'.Boton.'+nombre
         self.comando = cmd
         self.descripcion = descripcion
         
-        colorFondo = color(opciones.get('colorFondo', 'sysElmFace'))
-        
-        #TODO: cambiar medidas fijas a opciones[w] y opciones[h] 
-        self.rect = Rect(x,y,28,25)
-        
-        self.img_uns = self._crear(scr, color(opciones.get('colorText', 'sysElmText')), colorFondo)
-        self.img_sel = self._crear(scr,cian_claro, colorFondo)
-        
-        self.opciones['colorBordeSombra'], self.opciones['colorBordeLuz'] = self.opciones['colorBordeLuz'], self.opciones['colorBordeSombra']
-        self.img_pre = self._crear(scr,cian_claro, colorFondo)
-        self.opciones['colorBordeSombra'], self.opciones['colorBordeLuz'] = self.opciones['colorBordeLuz'], self.opciones['colorBordeSombra']
-        
+        colorFondo   = color(self.opciones['colorFondo'])
+        colorTexto   = color(self.opciones['colorText'])
+        colorSText   = color(self.opciones['colorSelect'])
+        colorBLuz    = color(self.opciones['colorBordeLuz'])
+        colorBSombra = color(self.opciones['colorBordeSombra'])
+            
+        self.img_uns = self._biselar(self._crear(scr, colorTexto, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
+        self.img_sel = self._biselar(self._crear(scr, colorSText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
+        self.img_pre = self._biselar(self._crear(scr, colorSText, colorFondo,self.w,self.h),colorBSombra,colorBLuz)
         self.image = self.img_uns
-        self._dibujarBorde()
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
-    def  _crear(self, scr, color_texto, color_fondo):
+    @staticmethod
+    def _opcionesPorDefault(opciones):
+        if 'colorBordeSombra' not in opciones:
+            opciones['colorBordeSombra'] = 'sysElmShadow'
+        if 'colorBordeLuz' not in opciones:
+            opciones['colorBordeLuz'] = 'sysElmLight'
+        if 'colorSelect' not in opciones:
+            opciones['colorSelect'] = Color(125,255,255)
+        if 'colorText' not in opciones:
+            opciones['colorText'] = 'sysElmText'
+        if 'colorFondo' not in opciones:
+            opciones['colorFondo'] = 'sysElmFace'
+        if 'w' not in opciones:
+            opciones['w'] = 28
+        if 'h' not in opciones:
+            opciones['h'] = 25
+        return opciones
+    
+    @staticmethod
+    def  _crear(scr, color_texto, color_fondo,w,h):
+        _rect = Rect(-1,-1,w,h)
         if type (scr) == str:
-            fuente = font.SysFont('verdana',16)
-            render = render_textrect(scr,fuente,self.rect,color_texto,color_fondo,1)
+            fuente = font.SysFont('verdana',16)        
+            render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
         elif type (scr) == Surface:
-            render = scr.copy()
-        
-        #esto es para reutilizar dibujarBorde con las 3 imagenes
-        dummy = lambda:None
-        dummy.image=render
-        dummy.rect=self.rect
-        dummy.opciones=self.opciones
-        Boton._dibujarBorde(dummy)
+            if scr.get_widht() > w or scr.get_height() > h:
+                render = scr.copy()
         return render
     
     def serElegido(self):

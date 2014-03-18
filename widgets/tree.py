@@ -7,11 +7,14 @@ from renderer import Renderer
 from libs.textrect import render_textrect
 
 class Tree (Marco):
+    ItemActual = ''
+    items = None
     def __init__(self,parent,x,y,w,h,walk,**opciones):
+        if 'colorFondo' not in opciones:
+            opciones['colorFondo'] = 'sysMenBack' 
         super().__init__(x,y,w,h,False,**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.Tree'
-        self.image.fill(color('sysMenBack'))
         self.items = LayeredDirty()
         self.crearLista(walk)
         self.ItemActual = ''

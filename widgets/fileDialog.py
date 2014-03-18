@@ -23,14 +23,15 @@ class FileDiag(Marco):
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
         dummyList = ['*.png','*.json','*.mob','*.quest']
-        self.carpetas = arbolCarpetas(self,self.x+2,self.y+19,self.w//2-2,8*C)
-        self.archivos = listaDeArchivos(self,self.x+self.w//2,self.y+19,self.w//2-2,8*C)
-        self.entryNombre = Entry(self,'IngresarRuta',self.x+2*C+3,self.y+8*C+23,12*C+25,'')
-        self.BtnAccion = Boton(self,self.x+14*C+32,self.y+8*C+21,'Accion',self.ejecutar_comando,comando['scr'])
-        self.tipos = DropDownList(self,'TipoDeArchivo',self.x+2*C+3,self.y+9*C+19,12*C+25,dummyList)
-        self.BtnCancelar = Boton(self,self.x+15*C,self.y+9*C+15,'Cancelar',self.cerrar_ventana,'C')
-        self.lblTipo = Label(self,'Tipo',self.x+4,self.y+9*C+18,texto = "Tipo:")
-        self.lblNombre = Label(self,'Nombre',self.x+4,self.y+8*C+24, texto = 'Nombre:')    
+        x,y,w,h = self.x,self.y,self.w,self.h # abreviaturas de legibilidad
+        self.carpetas = arbolCarpetas(self,x+2,y+19,w//2-2,8*C)
+        self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C)
+        self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,12*C+25,'')
+        self.BtnAccion = Boton(self,x+14*C+32,y+8*C+21,'Accion',self.ejecutar_comando,comando['scr'])
+        self.tipos = DropDownList(self,'TipoDeArchivo'x+2*C+3,y+9*C+19,12*C+25,dummyList)
+        self.BtnCancelar = Boton(self,x+15*C,y+9*C+15,'Cancelar',lambda:Renderer.delWidget(self),'Cancelar')
+        self.lblTipo = Label(self,'Tipo',x+4,y+9*C+18,texto = "Tipo:")
+        self.lblNombre = Label(self,'Nombre',x+4,y+8*C+24, texto = 'Nombre:')    
         
         self.agregar(self.carpetas)
         self.agregar(self.archivos)
@@ -58,11 +59,8 @@ class FileDiag(Marco):
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo)
         
         self.comando(ruta)
-        self.cerrar_ventana()
-    
-    def cerrar_ventana(self):
         Renderer.delWidget(self)
-              
+
     def update(self):
         tipo = self.tipos.ItemActual.lstrip('*')
         if self.tipoSeleccinado != tipo:
@@ -90,14 +88,14 @@ class arbolCarpetas(Marco):
         self.nombre = parent.nombre+'.ArbolDeCarpetas'
         super().__init__(x,y,w,h,False,**opciones)
         self.focusable = False
-        self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self.generar_arbol(os.getcwd()))
+        self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()))
         self.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y,self.h)
         self.agregar(self.ScrollY)
         self.agregar(self.arbol)
         self.CarpetaSeleccionada = ''
     
     @staticmethod #decorator! ^^ 'cause explicit is better than implicit
-    def generar_arbol(path):
+    def _generar_arbol(path):
         walk = []
         x,y = -1,-1
         root_ = ''
@@ -142,16 +140,17 @@ class arbolCarpetas(Marco):
 
 class listaDeArchivos(Marco):
     def __init__(self,parent,x,y,w,h,**opciones):
+        if 'colorFondo' not in opciones:
+            opciones['colorFondo'] = 'sysMenBack'
         self.nombre = parent.nombre+'.ListaDeArchivos'
         super().__init__(x,y,w,h,False,**opciones)
-        self.image.fill(color('sysMenBack'))
         self.ScrollY = ScrollV(self,self.x+self.w-16,self.y,self.h)
         self.agregar(self.ScrollY)
         self.items = LayeredDirty()
         self.ArchivoActual = ''
     
     @staticmethod
-    def FiltrarExtS(archivos,extension):
+    def _FiltrarExtS(archivos,extension):
         if extension != '':
             filtrado = []
             for archivo in archivos:
@@ -165,7 +164,7 @@ class listaDeArchivos(Marco):
             return archivos
     
     @staticmethod
-    def listar_archivos(fold):
+    def _listar_archivos(fold):
         lista = []
         for item in os.listdir(fold):
             if os.path.isfile(os.path.join(fold,item)):
@@ -173,7 +172,7 @@ class listaDeArchivos(Marco):
         return lista
     
     def crearLista(self,opciones,ext):
-        lista = self.FiltrarExtS(opciones,ext)
+        lista = self._FiltrarExtS(opciones,ext)
         h = 0
         for n in range(len(lista)):
             nom = lista[n]
@@ -193,7 +192,7 @@ class listaDeArchivos(Marco):
     
     def actualizarLista(self,carpeta,tipo):
         self.borrarLista()
-        nuevalista = self.listar_archivos(carpeta)
+        nuevalista = self._listar_archivos(carpeta)
         self.crearLista(nuevalista,tipo)
     
     def update(self):
