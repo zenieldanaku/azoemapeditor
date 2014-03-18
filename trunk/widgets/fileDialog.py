@@ -14,6 +14,7 @@ class FileDiag(Marco):
     carpetaActual = ''
     archivoActual = ''
     nombredeArchivo = ''
+    tipoSeleccinado = ''
     def __init__(self,comando,**opciones):      
         self.nombre = 'FileDiag'
         super().__init__(5*C,5*C,16*C,10*C+18,**opciones)
@@ -47,35 +48,21 @@ class FileDiag(Marco):
     
     def ejecutar_comando(self):
         if self.TipoComando == 'A':
-            self.comando(os.path.join(self.carpetaActual,self.archivoActual))
+            ruta = os.path.join(self.carpetaActual,self.archivoActual)
         elif self.TipoComando == 'G':
-            self.comando(os.path.join(self.carpetaActual,self.nombredeArchivo))
+            if self.tipoSeleccinado != '':
+                ruta = os.path.join(self.carpetaActual,self.nombredeArchivo+self.tipoSeleccinado)
+            else:
+                ruta = os.path.join(self.carpetaActual,self.nombredeArchivo)
         
+        self.comando(ruta)
         self.cerrar_ventana()
     
     def cerrar_ventana(self):
         Renderer.delWidget(self)
-        
-    #def onMouseDown(self,boton):
-    #    if boton == 1:
-    #        self.cerrar_ventana()
-    
-    def onMouseUp(self,boton):
-        if boton == 1:
-            self.pressed = False
-    
-    def onMouseOut(self):
-        if not self.pressed:
-            super().onMouseOut()
-    
-    def onMouseOver(self):
-        if self.pressed == True:
-            x,y = mouse.get_pos()
-            self.rect.x = x
-            self.rect.y = y
-            self.dirty = 1
-    
-    def listar_archivos(self,fold):
+          
+    @staticmethod
+    def listar_archivos(fold):
         lista = []
         for item in os.listdir(fold):
             if os.path.isfile(os.path.join(fold,item)):
@@ -83,20 +70,23 @@ class FileDiag(Marco):
         return lista
     
     def update(self):
-        tipo = self.tipos.ItemActual.strip('*')
+        tipo = self.tipos.ItemActual.lstrip('*')
         carpeta = self.carpetas.CarpetaSeleccionada
         nombre = self.entryNombre.devolver_texto()
-        if self.carpetaActual != carpeta:
+        if carpeta != '':
             self.carpetaActual = carpeta
             self.archivos.borrarLista()
             lista_de_archivos = self.listar_archivos(carpeta)
-            self.archivos.crearLista(lista_de_archivos)
+            self.archivos.crearLista(lista_de_archivos,tipo.lstrip('.'))
             
         if self.archivos.ArchivoActual != '':
             self.archivoActual = self.archivos.ArchivoActual
         
         if nombre != '':
             self.nombredeArchivo = nombre
+        
+        if tipo != '':
+            self.tipoSeleccinado = tipo
             
         self.dirty = 1
 
@@ -165,11 +155,26 @@ class listaDeArchivos(Marco):
         self.agregar(self.ScrollY)
         self.items = LayeredDirty()
         self.ArchivoActual = ''
-        
-    def crearLista(self,opciones):
+    
+    @staticmethod
+    def FiltrarExtS(archivos,extension):
+        if extension != '':
+            filtrado = []
+            for archivo in archivos:
+                if extension != '':
+                    split = archivo.split('.')
+                    ext = split[-1]
+                    if ext == extension:
+                        filtrado.append(archivo)    
+            return filtrado         
+        else:
+            return archivos
+
+    def crearLista(self,opciones,ext):
+        lista = self.FiltrarExtS(opciones,ext)
         h = 0
-        for n in range(len(opciones)):
-            nom = opciones[n]
+        for n in range(len(lista)):
+            nom = lista[n]
             dy = self.y+(n*h)
             opcion = _Opcion(self,nom,self.x,dy,self.w-16)
             h = opcion.image.get_height()
@@ -197,10 +202,6 @@ class _Opcion(BaseOpcion):
     def __init__(self,parent,nombre,x,y,w=0,**opciones):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
-    #
-    #def onMouseDown(self,dummy):
-    #    self.isSelected = True
-    #    #self.parent.ArchivoActual = self.texto
     
     def onFocusIn(self):
         super().onFocusIn()
