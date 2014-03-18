@@ -3,7 +3,6 @@ from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 from renderer import Renderer
 from . import BaseWidget, BaseOpcion
-from colores import *
 from colores import color
 
 class Menu (BaseWidget):
@@ -35,10 +34,6 @@ class Menu (BaseWidget):
         if self.cascada.mostrar:
             self.cascada.hideMenu()
     
-    #def onFocusOut(self):
-    #    super().onFocusOut()
-    #    #self.cascada.onFocusOut()
-
 class _Boton(BaseWidget):
     nombre = ''
     menu = None
@@ -48,11 +43,13 @@ class _Boton(BaseWidget):
             opciones['colorFondo'] = 'sysMenBack'
         if 'colorTexto' not in opciones:
             opciones['colorTexto'] = 'sysMenText'
+        if 'colorBgSel' not in opciones:
+            opciones['colorBgSel'] = 'sysBoxSelBack'
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.Boton'
         self.img_des = self.crear_boton(nombre,color(opciones['colorTexto']),color(self.opciones['colorFondo']))
-        self.img_sel = self.crear_boton(nombre,color(opciones['colorTexto']),gris_seleccion)
+        self.img_sel = self.crear_boton(nombre,color(opciones['colorTexto']),color(self.opciones['colorBgSel']))
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
@@ -161,12 +158,7 @@ class _Opcion(BaseOpcion):
         else:
             self.command()
             self.parent.onFocusOut()
-            
-    #def onFocusOut(self):
-    #    super().onFocusOut()
-    #    #self.enabled=False
-    #    #self.parent.hideMenu()
-
+    
     def onMouseIn(self):
         if self.enabled:
             super().onMouseIn()

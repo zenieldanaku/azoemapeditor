@@ -17,7 +17,6 @@ class barraMenus (BaseWidget):
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.image.fill(color(opciones.get('colorFondo', 'sysMenBack')))
         prev  = 0
-        #self.focusable = False
         for menu_nom in ['Archivo','Editar','Mapa','Simbolo']:
             menu = eval('Menu_'+menu_nom+'(prev+8,6,self)')
             prev = menu.boton.rect.right

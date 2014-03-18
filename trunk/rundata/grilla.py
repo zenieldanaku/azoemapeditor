@@ -4,6 +4,7 @@ from pygame import Surface,Rect,draw,font,K_SPACE
 from globales import GLOBALES as G
 from renderer import Renderer
 from constantes import *
+from colores import color
 import os
 
 class grilla(BaseWidget):
@@ -48,12 +49,12 @@ class grilla(BaseWidget):
     # Funciones que dibujan la base, el marco, la grilla y las posiciones
     def dibujar_base(self,w,h):
         imagen = Surface((w,h))
-        imagen.fill(gris)
-        draw.rect(imagen, negro, (0,0,w-1,h-1), 2)
+        imagen.fill(color('sysElmFace'))
+        draw.rect(imagen, color('sysBoxBorder'), (0,0,w-1,h-1), 2)
         return imagen
     
     def dibujar_marco(self):
-        draw.rect(self.image, negro, (0,0,self.w-1,self.h-1), 2)
+        draw.rect(self.image, color('sysBoxBorder'), (0,0,self.w-1,self.h-1), 2)
     
     def crear_grilla(self,imagen):
         w = imagen.get_width()
@@ -61,8 +62,8 @@ class grilla(BaseWidget):
         marco = Rect(2,2,w-5,h-5)
         base = Surface(marco.size)
         for i in range(1*C,16*C,C):
-            draw.line(base, blanco, (i,marco.top), (i,marco.bottom),1)
-            draw.line(base, blanco, (marco.left,i), (marco.right,i),1)
+            draw.line(base, color('sysBoxBack'), (i,marco.top), (i,marco.bottom),1)
+            draw.line(base, color('sysBoxBack'), (marco.left,i), (marco.right,i),1)
         base.set_colorkey(negro)
         
         grilla = DirtySprite()
@@ -83,7 +84,7 @@ class grilla(BaseWidget):
                     pos += 1
                     render = fuente.render(str(pos),True,blanco,negro)
                     base.blit(render,(x*C+2,y*C+2))
-            base.set_colorkey(negro)
+            base.set_colorkey(color('sysElmText'))
         
         posis = DirtySprite()
         posis.image = base

@@ -12,12 +12,6 @@ class GLOBALES:
     IMG_ID = -1
     IMGs_cargadas = []
     
-    def nuevo_mapa():
-        GLOBALES.MAPA = Mapa()
-        GLOBALES.IMG_fondo = None
-        GLOBALES.IMG_colisiones = None
-        GLOBALES.IMG_actual = ''
-    
     def guardar_mapa(ruta):
         data = GLOBALES.MAPA.guardar()
         Resources.guardar_json(ruta,data)
@@ -52,3 +46,43 @@ class Resources:
     def cargar_imagen(ruta):
         ar = image.load(ruta).convert_alpha()
         return ar
+
+class SharedFuntions:
+    @staticmethod
+    def setRutaFondo(ruta):
+        try:
+            GLOBALES.ruta = ruta
+            GLOBALES.cargar_imagen('Fondo')
+        except:
+            GLOBALES.estado = 'No se ha selecionado ninguna imagen'
+    
+    @staticmethod
+    def setRutaColis(ruta):
+        try:
+            GLOBALES.ruta = ruta
+            GLOBALES.cargar_imagen('Colisiones')
+        except:
+            GLOBALES.estado = 'No se ha selecionado ninguna imagen'
+    
+    @staticmethod
+    def nuevoMapa():
+        GLOBALES.MAPA = Mapa()
+        GLOBALES.IMG_fondo = None
+        GLOBALES.IMG_colisiones = None
+        GLOBALES.IMG_actual = ''
+    
+    @staticmethod
+    def abrirMapa(ruta):
+        try:
+            GLOBALES.cargar_mapa(ruta)
+        except:
+            GLOBALES.estado = 'Error: El archivo no existe.'
+    
+    @staticmethod
+    def guardarMapa(ruta):
+        try:
+            GLOBALES.guardar_mapa(ruta)
+            GLOBALES.estado = "Mapa '"+ruta+"' guardado."
+        except: 
+            GLOBALES.estado ='Error: Es necesario cargar un mapa.'
+        
