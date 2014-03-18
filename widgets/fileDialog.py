@@ -28,8 +28,8 @@ class FileDiag(Marco):
         self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C)
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,12*C+25,'')
         self.BtnAccion = Boton(self,x+14*C+32,y+8*C+21,'Accion',self.ejecutar_comando,comando['scr'])
-        self.tipos = DropDownList(self,'TipoDeArchivo'x+2*C+3,y+9*C+19,12*C+25,dummyList)
-        self.BtnCancelar = Boton(self,x+15*C,y+9*C+15,'Cancelar',lambda:Renderer.delWidget(self),'Cancelar')
+        self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,12*C+25,dummyList)
+        self.BtnCancelar = Boton(self,x+15*C,y+9*C+15,'Cancelar',lambda:Renderer.delWidget(self),'C')
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+18,texto = "Tipo:")
         self.lblNombre = Label(self,'Nombre',x+4,y+8*C+24, texto = 'Nombre:')    
         
