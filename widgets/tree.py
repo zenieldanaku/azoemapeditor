@@ -113,8 +113,9 @@ class _Opcion(BaseOpcion):
         self.texto = nombre
         self.path = path
     
-    def onMouseDown(self,dummy):
-        self.parent.parent.ItemActual = self.path
+    def onMouseDown(self,button):
+        if button == 1:
+            self.parent.parent.ItemActual = self.path
     
     def onFocusIn(self):
         super().onFocusIn()
@@ -150,18 +151,19 @@ class _Cursor(BaseWidget):
         draw.rect(imagen,(0,0,0),(2,2,rect.w-2,rect.h-2),1)
         return imagen
     
-    def onMouseDown(self,dummy):
-        if not self.vacio:
-            self.open = not self.open
-        
-        if self.open:
-            self.parent.mostrarHijos()
-            dy = +1
-        else:
-            self.parent.colapsarHijos()
-            dy = -1
-        
-        self.parent.parent.mover(self.parent,dy)
+    def onMouseDown(self,button):
+        if button == 1:
+            if not self.vacio:
+                self.open = not self.open
+            
+            if self.open:
+                self.parent.mostrarHijos()
+                dy = +1
+            else:
+                self.parent.colapsarHijos()
+                dy = -1
+            
+            self.parent.parent.mover(self.parent,dy)
     
     def setStatus(self):
         if self.open:
