@@ -20,7 +20,7 @@ class Renderer:
         del Renderer.widgets[widget.nombre]
     
     def setFocus(widget):
-        if widget!=Renderer.currentFocus and widget.focusable:
+        if widget!=Renderer.currentFocus:
             Renderer.currentFocus.onFocusOut()
             Renderer.currentFocus = widget
             Renderer.currentFocus.onFocusIn()
@@ -53,8 +53,9 @@ class Renderer:
                     for widget in Renderer.contents:
                         if widget._visible:
                             if widget.rect.collidepoint(event.pos):
-                                foundWidget = widget
-                    
+                                if widget.focusable:
+                                    foundWidget = widget
+                
                     Renderer.setFocus(foundWidget)
                     
                 if Renderer.currentFocus.enabled:

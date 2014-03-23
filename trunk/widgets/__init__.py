@@ -10,3 +10,4 @@ from .menu import Menu
 from .dropdownList import DropDownList
 from .tree import Tree
 from .fileDialog import FileDiag
+from .canvas import Canvas

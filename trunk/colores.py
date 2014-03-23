@@ -12,7 +12,7 @@ try:
     sysElmShadow =        hexa(16)    #color del borde de abajo de elementos 3D (botones, etc)    
     sysElmLight =         hexa(20)    #color del borde de arriba de elementos 3D
     sysElmText =          hexa(18)    #color de texto de elementos
-    sysDisText =          hexa(15)    #color de texto deshabilitado
+    sysDisText =          hexa(17)    #color de texto deshabilitado
     sysBoxBack =          hexa(5)     #color para el fondo de cuadros (de texto, etc)
     sysBoxBorder =        hexa(6)     #color de borde de cuadros
     sysBoxText =          hexa(8)     #color de texto de cuadros

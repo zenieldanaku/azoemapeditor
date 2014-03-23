@@ -12,6 +12,7 @@ class DropDownList(BaseWidget):
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.DropDownList.'+nombre
+        self.layer = self.parent.layer +1
         self.x,self.y = x,y
         self.items = LayeredDirty()
         self.entry = Entry(self,nombre,self.x,self.y-2,w-19,'')
@@ -21,8 +22,8 @@ class DropDownList(BaseWidget):
         self.lista = self.crearLista(lista)
         self.visible = 0 # no es que sea invisible, es que no tiene imagen
         self.dirty = 1
-        Renderer.addWidget(self.entry)      
-        Renderer.addWidget(self.flecha)
+        Renderer.addWidget(self.entry,self.layer+1)      
+        Renderer.addWidget(self.flecha,self.layer+1)
         
         self.ItemActual = ''
     
@@ -36,7 +37,7 @@ class DropDownList(BaseWidget):
             self.items.add(opcion)
             
         for op in self.items:
-            Renderer.addWidget(op,4)
+            Renderer.addWidget(op,self.layer+2)
     
     def setText(self,texto):
         self.entry.setText(texto)

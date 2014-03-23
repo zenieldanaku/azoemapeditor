@@ -13,6 +13,7 @@ class _baseScroll(BaseWidget):
     def __init__(self,parent,x,y,w,h):
         super().__init__()
         self.parent = parent
+        self.layer = self.parent.layer +1
         self.x,self.y = x,y
         self.w,self.h = w,h
         self.image = self._crear(self.w,self.h)
@@ -45,26 +46,32 @@ class _baseScroll(BaseWidget):
         self.dirty = 1
 
 class ScrollV(_baseScroll):
-    def __init__(self,parent,x,y,h,w=1/2*C):
-        super().__init__(parent,x,y,w,h)
+    def __init__(self,parent,x,y,w=1/2*C):        
+        super().__init__(parent,x,y,w,parent.h)
         self.nombre = self.parent.nombre+'.ScrollV'
         self.BtnPos = _btnVer(self,self.x,self.y+self.h-12,'abajo')
         self.BtnNeg = _btnVer(self,self.x,self.y,'arriba')
         self.cursor = CursorV(self,parent,self.x,self.y+12,1/2*C)
-        Renderer.addWidget(self.BtnPos,4)
-        Renderer.addWidget(self.BtnNeg,4)
-        Renderer.addWidget(self.cursor,3)
+        Renderer.addWidget(self.BtnPos,self.layer+5)
+        Renderer.addWidget(self.BtnNeg,self.layer+5)
+        Renderer.addWidget(self.cursor,self.layer+5)
+    
+    def moverCursor(self,dy):
+        self.cursor.mover(dy)
 
 class ScrollH(_baseScroll):
-    def __init__(self,parent,x,y,w,h=1/2*C):
-        super().__init__(parent,x,y,w,h)
+    def __init__(self,parent,x,y,h=1/2*C):
+        super().__init__(parent,x,y,parent.w,h)
         self.nombre = self.parent.nombre+'.ScrollH'
         self.BtnPos = _btnHor(self,self.x+self.w-12,self.y,'derecha')
         self.BtnNeg = _btnHor(self,self.x,self.y,'izquierda')
         self.cursor = CursorH(self,parent,self.x+12,self.y,1/2*C)
-        Renderer.addWidget(self.BtnPos,4)
-        Renderer.addWidget(self.BtnNeg,4)
-        Renderer.addWidget(self.cursor,3)
+        Renderer.addWidget(self.BtnPos,self.layer+5)
+        Renderer.addWidget(self.BtnNeg,self.layer+5)
+        Renderer.addWidget(self.cursor,self.layer+5)
+    
+    def moverCursor(self,dx):
+        self.cursor.mover(dx)
 
 class _baseCursor(BaseWidget):
     parent = None

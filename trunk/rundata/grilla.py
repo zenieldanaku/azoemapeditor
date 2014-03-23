@@ -1,4 +1,4 @@
-from widgets import BaseWidget, ScrollH, ScrollV, Boton
+from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco, Canvas
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Surface,Rect,draw,font,K_SPACE
 from globales import GLOBALES as G
@@ -7,164 +7,194 @@ from constantes import *
 from colores import color
 import os
 
-class grilla(BaseWidget):
-    x,y,w,h = 0,0,0,0
+class grilla(Marco):
+    canvas = None
     ScrollX = None
     ScrollY = None
-    BtnVerPos = None
     BtnVerGr = None
     BtnVerCapa = None
-    ver_posiciones = False
-    ver_grilla = True
-    _imagen = None
-    slcX = 0 # slc = Slicing, el "recorte" que se le hace a una imagen
-    slcY = 0 # cuyas dimensiones sean mayores a 480x480 (las de la grilla)
-    capas = None
-    hayCambios = False
+    verGrilla = False
+    verRegla = False
     def __init__(self):
-        super().__init__()
-        self.x,self.y, = 2*C+15,2*C+15
-        self.w,self.h = 15*C,15*C
+        super().__init__(2*C,2*C,15*C+15,15*C+16,False)
         self.nombre = 'Grilla'
-        self.image = self.dibujar_base(self.w,self.h)
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        self.capas = LayeredDirty()
+        self.canvas = Canvas(self,self.x+16,self.y+16,32*C,32*C,(15*C,15*C))
+        self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
+        self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
+        self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
+        self.BtnVerGr = Boton(self,3,15*C+12,'BtnVerGr',self.cmdVerGr,'Gr')
+        self.BtnVerCapa = Boton(self,3,16*C+7,'BtnVerCapa',self.cmdVerCapa,'Cp')
+        self.BtnVerRegla = Boton(self,3,17*C+2,'BtnVerCapa',self.cmdVerRegla,'Rg')
+        self.ReglaX = ReglaH(self,self.x+16,self.y,15*C)
+        self.ReglaY = ReglaV(self,self.x,self.y+16,15*C)
+        self.ReglaHandler = HandlerRegla(self,self.x,self.y)
         
-        self.ScrollX = ScrollH(self,self.x, self.y+self.h, self.w)
-        self.ScrollY = ScrollV(self,self.x+self.w, self.y, self.h)
-        self.BtnVerPos = Boton(self,3,17*C+2,'BtnVerPos',self.cmdVerPos,'V')
-        self.BtnVerGr = Boton(self,C+1,17*C+2,'BtnVerGr',self.cmdVerGr,'Gr')
-        self.BtnVerCapa = Boton(self,3,16*C+8,'BtnVerCapa',self.cmdVerCapa,'Cp')
-        
-        self.ScrollX.enabled = False
-        self.ScrollY.enabled = False
+        self.canvas.ScrollX.enabled = False
+        self.canvas.ScrollY.enabled = False
+        self.BtnVerCapa.serDeshabilitado()
+        self.BtnVerGr.serDeshabilitado()
+        self.BtnVerRegla.serDeshabilitado()
         
         Renderer.addWidget(self)
-        Renderer.addWidget(self.ScrollX)
-        Renderer.addWidget(self.ScrollY)
-        Renderer.addWidget(self.BtnVerPos,3)
+        Renderer.addWidget(self.canvas)
+        Renderer.addWidget(self.canvas.ScrollX)
+        Renderer.addWidget(self.canvas.ScrollY)
         Renderer.addWidget(self.BtnVerGr,3)
         Renderer.addWidget(self.BtnVerCapa,3)
-    
-    # Funciones que dibujan la base, el marco, la grilla y las posiciones
-    def dibujar_base(self,w,h):
-        imagen = Surface((w,h))
-        imagen.fill(color('sysElmFace'))
-        draw.rect(imagen, color('sysBoxBorder'), (0,0,w-1,h-1), 2)
-        return imagen
-    
-    def dibujar_marco(self):
-        draw.rect(self.image, color('sysBoxBorder'), (0,0,self.w-1,self.h-1), 2)
-    
-    def crear_grilla(self,imagen):
-        w = imagen.get_width()
-        h = imagen.get_height()
-        marco = Rect(2,2,w-5,h-5)
-        base = Surface(marco.size)
-        for i in range(1*C,16*C,C):
-            draw.line(base, color('sysBoxBack'), (i,marco.top), (i,marco.bottom),1)
-            draw.line(base, color('sysBoxBack'), (marco.left,i), (marco.right,i),1)
-        base.set_colorkey(negro)
+        Renderer.addWidget(self.BtnVerRegla,3)
         
-        grilla = DirtySprite()
-        grilla.image = base
-        grilla.rect = grilla.image.get_rect()
-        return grilla
-    
-    def crear_posiciones(self,imagen):
-        pos = -1
-        fuente = font.SysFont('verdana',8)
-        if self._imagen != None:
-            w = imagen.get_width()
-            h = imagen.get_height()
-            base = Surface((w,h))
-            
-            for y in range(0,h//32):
-                for x in range(0,w//32):    
-                    pos += 1
-                    render = fuente.render(str(pos),True,blanco,negro)
-                    base.blit(render,(x*C+2,y*C+2))
-            base.set_colorkey(color('sysElmText'))
-        
-        posis = DirtySprite()
-        posis.image = base
-        posis.rect = posis.image.get_rect()
-        return posis
-    
-    def crear_fondo (self,imagen):
-        fondo = DirtySprite()
-        fondo.image = imagen
-        fondo.rect = fondo.image.get_rect()
-        return fondo
-        
-    #Funciones de comando para los botones
-    def cmdVerPos(self):
-        if G.IMG_actual != '':
-            self.ver_posiciones = not self.ver_posiciones
+    #Funciones de comando para los botones        
     def cmdVerGr(self):
-        self.ver_grilla = not self.ver_grilla
+        if self.verGrilla:
+            self.quitar(self.canvas.Grilla)
+            self.verGrilla = False
+        else:
+            self.agregar(self.canvas.Grilla)
+            self.verGrilla = True
+        
     def cmdVerCapa(self):
-        if G.IMG_actual == 'Fondo':
-            G.IMG_actual = 'Colisiones'
-        elif G.IMG_actual == 'Colisiones':
-            G.IMG_actual = 'Fondo'
-    
-    # Event bindings
-    
-    #Otras funciones importantes
-    def sobreimponer_imagen(self,imagen):
-        '''Impone la imagen cargada como fondo sobre la base gris'''
-        self._imagen = imagen.copy()
-        if imagen.get_width() > self.w or imagen.get_height() > self.h:
-            imagen = imagen.subsurface(self.slcX,self.slcY,self.w,self.h)
-            self.habilitarScrolls()
-        self.image = imagen.copy()
-        self.dibujar_marco()
-    
-    def cargar_imagen(self,imagen):
-        self._imagen = self.crear_fondo(imagen)
-        self.grilla = self.crear_grilla(imagen)
-        self.posiciones = self.crear_posiciones(imagen)
-    
-    def habilitarScrolls(self):
-        self.ScrollX.enabled = True
-        self.ScrollY.enabled = True
-    
-    def scroll(self,dx=0,dy=0):
-        self.slcX += dx*1.23
-        self.slcY += dy*1.23
-    
-    def huboCambios(self,hay):
-        if G.IMG_actual == 'Fondo':
-            if G.IMG_fondo != None:
-                if self._imagen != None:
-                    self.cargar_imagen(G.IMG_fondo)
-                    hay = True
-                else:hay = False
-        elif G.IMG_actual == 'Colisiones':
-            if G.IMG_colisiones != None:
-                if self._imagen != None:
-                    self.cargar_imagen(G.IMG_colisiones)
-                    hay = True
-                else:hay = False
-        return hay
-    
-    def update(self):
-        #self.hayCambios = self.huboCambios(self.hayCambios)
-        #if self.hayCambios:
-        #    print(self._imagen,self.grilla,self.posiciones)
-        #    print('cambiar')
-        if G.IMG_actual == 'Fondo':
-            if G.IMG_fondo != None:
-                self.sobreimponer_imagen(G.IMG_fondo)
-        elif G.IMG_actual == 'Colisiones':
-            if G.IMG_colisiones != None:
-                self.sobreimponer_imagen(G.IMG_colisiones)
-        else: #G.IMG_actual == ''
-            self.image = self.dibujar_base(self.w,self.h)
-        #if self.ver_grilla:
-        #    self.dibujar_grilla()
-        #if self.ver_posiciones:
-        #    self.dibujar_posiciones()
+        self.canvas.capas.switch_layer(0,1)
+        
+    def cmdVerRegla(self):
+        if self.verRegla:
+            self.quitar(self.ReglaX)
+            self.quitar(self.ReglaY)
+            self.quitar(self.ReglaHandler)
+            self.verRegla = False
+        else:
+            self.agregar(self.ReglaX)
+            self.agregar(self.ReglaY)
+            self.agregar(self.ReglaHandler)
+            self.verRegla = True
+   
+    def update(self):        
+        if G.HabilitarTodo:
+            if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = True
+            if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = True
+            if not self.BtnVerCapa.enabled: self.BtnVerCapa.serHabilitado()
+            if not self.BtnVerGr.enabled: self.BtnVerGr.serHabilitado()
+            if not self.BtnVerRegla.enabled: self.BtnVerRegla.serHabilitado()
         
         self.dirty = 1
+        
+class _grilla(BaseWidget):
+    def __init__(self,parent,x,y,w,h,**opciones):
+        super().__init__(**opciones)
+        self.x,self.y = x,y
+        self.parent = parent
+        self.focusable = False
+        self.nombre = self.parent.nombre+'._grilla'
+        self.image = self._crear(w,h)
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+    
+    @staticmethod
+    def _crear(w,h):
+        marco = Rect(0,0,w,h)
+        base = Surface(marco.size)
+        for i in range(1*C,16*C,C):
+            draw.line(base, (125,255,255), (i,marco.top), (i,marco.bottom),1)
+            draw.line(base, (125,255,255), (marco.left,i), (marco.right,i),1)
+        base.set_colorkey((0,0,0))
+        
+        return base
+
+class BaseRegla(BaseWidget):
+    def __init__(self,parent,x,y,**opciones):
+        super().__init__(**opciones)        
+        self.x,self.y = x,y
+        self.parent = parent
+
+class ReglaH(BaseRegla):
+    def __init__(self,parent,x,y,w,**opciones):
+        super().__init__(parent,x,y,**opciones)
+        self.nombre = self.parent.nombre+'.ReglaH'
+        self.image = self.crear(w)
+        self.w,self.h = w,self.image.get_height()
+        self.rect = self.image.get_rect(topleft =(self.x,self.y))
+    
+    @staticmethod
+    def crear(w):
+        fuente = font.SysFont('verdana',8)
+        regla = Surface((w,C//2))
+        regla.fill((255,255,255),(1,1,w-2,14))
+        j = -1
+        for i in range(1,16):
+            j+=1
+            draw.line(regla,(0,0,0),(i*C,0),(i*C,16))
+            digitos = [i for i in str(j*C)]
+            gx = 0
+            for d in range(len(digitos)):
+                render = fuente.render(digitos[d],True,(0,0,0),(255,255,255))
+                dx = (i-1)*C+gx+4
+                regla.blit(render,(dx,4))
+                gx += 4
+                
+        return regla
+
+class ReglaV(BaseRegla):
+    def __init__(self,parent,x,y,h,**opciones):
+        super().__init__(parent,x,y,**opciones)
+        self.nombre = self.parent.nombre+'.ReglaV'
+        self.image = self.crear(h)
+        self.w,self.h = self.image.get_width(),h
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+    
+    @staticmethod
+    def crear(h):
+        fuente = font.SysFont('verdana',8)
+        regla = Surface((C//2,h))
+        regla.fill((255,255,255),(1,1,14,h-2))
+        
+        j = -1
+        for i in range(1,16):
+            j+=1
+            draw.line(regla,(0,0,0),(0,i*C),(16,i*C))
+            digitos = [i for i in str(j*C)]
+            gy = 0
+            for d in range(len(digitos)):
+                render = fuente.render(digitos[d],True,(0,0,0),(255,255,255))
+                dy = (i-1)*C+gy+1
+                regla.blit(render,(4,dy))
+                gy += 9
+    
+        return regla
+
+class HandlerRegla(BaseWidget):
+    selected = False
+    pressed = False
+    def __init__(self,parent,x,y,**opciones):
+        super().__init__(**opciones)        
+        self.x,self.y = x,y
+        self.parent = parent
+        self.image = self._crear()
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        self.w,self.h = self.image.get_size()
+    
+    @staticmethod
+    def _crear():
+        imagen =  Surface((16,16))
+        imagen.fill((255,255,255),(1,1,15,15))
+        draw.line(imagen,(0,0,0),(0,10),(15,10))
+        draw.line(imagen,(0,0,0),(10,0),(10,15))
+        return imagen
+
+    def onMouseDown(self,button):
+        self.pressed = True
+    
+    def onMouseIn(self):
+        super().onMouseIn()
+        self.ToggleSel(True)
+        self.dirty = 1
+        
+    def onMouseOut(self):
+        super().onMouseOut()
+        self.ToggleSel(False)
+        self.dirty = 1
+        
+    def ToggleSel(self,select):
+        if select:
+            draw.line(self.image,(125,255,255),(1,10),(15,10))
+            draw.line(self.image,(125,255,255),(10,1),(10,15))
+        else:
+            draw.line(self.image,(0,0,0),(0,10),(15,10))
+            draw.line(self.image,(0,0,0),(10,0),(10,15))

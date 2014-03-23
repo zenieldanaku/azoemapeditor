@@ -1,4 +1,5 @@
 from pygame import image
+from pygame.sprite import DirtySprite
 from mapa import Mapa
 import json
 
@@ -6,11 +7,10 @@ class GLOBALES:
     MAPA = None
     estado = ''
     ruta = ''
-    IMG_fondo = None
-    IMG_colisiones = None
-    IMG_actual = ''
+    ID_actual = -1
     IMG_ID = -1
-    IMGs_cargadas = []
+    IMGs_cargadas = {}
+    HabilitarTodo = False
     
     def guardar_mapa(ruta):
         data = GLOBALES.MAPA.guardar()
@@ -21,15 +21,21 @@ class GLOBALES:
         GLOBALES.MAPA = Mapa()
         GLOBALES.MAPA.cargar(data)
     
-    def cargar_imagen(dest):
+    def cargar_imagen(layer):
         img = Resources.cargar_imagen(GLOBALES.ruta)
-        if dest == 'Fondo':
-            GLOBALES.IMG_fondo = img
-        elif dest == 'Colisiones':
-            GLOBALES.IMG_colisiones = img
-        GLOBALES.IMG_actual = dest
         GLOBALES.IMG_ID += 1
-        GLOBALES.IMGs_cargadas.append({'img':img, 'ID':GLOBALES.IMG_ID})
+        
+        spr = DirtySprite()
+        spr.image = img
+        spr.idx = GLOBALES.IMG_ID
+        spr.rect = spr.image.get_rect()
+        spr._layer = layer
+        GLOBALES.IMGs_cargadas[spr.idx] = spr
+    
+    def habilitarItems(lista_de_items):
+        for item in lista_de_items:
+            if hasattr(item,'serHabilitado'):
+                item.serHabilitado()
         
 class Resources:
     def abrir_json (archivo):
@@ -52,7 +58,7 @@ class SharedFuntions:
     def setRutaFondo(ruta):
         try:
             GLOBALES.ruta = ruta
-            GLOBALES.cargar_imagen('Fondo')
+            GLOBALES.cargar_imagen(1)
         except:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
@@ -60,16 +66,13 @@ class SharedFuntions:
     def setRutaColis(ruta):
         try:
             GLOBALES.ruta = ruta
-            GLOBALES.cargar_imagen('Colisiones')
+            GLOBALES.cargar_imagen(0)
         except:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
     @staticmethod
     def nuevoMapa():
         GLOBALES.MAPA = Mapa()
-        GLOBALES.IMG_fondo = None
-        GLOBALES.IMG_colisiones = None
-        GLOBALES.IMG_actual = ''
     
     @staticmethod
     def abrirMapa(ruta):
