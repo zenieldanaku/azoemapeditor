@@ -20,7 +20,7 @@ class Renderer:
         del Renderer.widgets[widget.nombre]
     
     def setFocus(widget):
-        if widget!=Renderer.currentFocus:
+        if widget!=Renderer.currentFocus and widget!=None:
             Renderer.currentFocus.onFocusOut()
             Renderer.currentFocus = widget
             Renderer.currentFocus.onFocusIn()
@@ -69,6 +69,8 @@ class Renderer:
                     if widget.rect.collidepoint(event.pos):
                         if not widget.hasMouseOver:
                             widget.onMouseIn()
+                            if widget.setFocus_onIn:
+                                Renderer.setFocus(widget)
                     else:
                         if widget.hasMouseOver:
                             widget.onMouseOut()
@@ -77,5 +79,5 @@ class Renderer:
             if widget.hasMouseOver:
                 widget.onMouseOver()
                 
-        Renderer.contents.update()        
+        Renderer.contents.update()
         return Renderer.contents.draw(fondo)

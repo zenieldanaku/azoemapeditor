@@ -78,6 +78,7 @@ class Canvas(BaseWidget):
             self.image.set_clip(self.clip)
         self.ReglaX.scroll(dx)
         self.ReglaY.scroll(dy)
+        self.Grilla.scroll(dx,dy)
     
     def update(self):
         if not G.HabilitarTodo:

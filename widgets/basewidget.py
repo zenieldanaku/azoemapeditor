@@ -6,18 +6,19 @@ class BaseWidget(DirtySprite):
     '''clase base para todos los widgets'''
     focusable = True
     # si no es focusable, no se le llaman focusin y focusout
-    #(por ejemplo, un contenedor, una etiqueta de texto)
+    # (por ejemplo, un contenedor, una etiqueta de texto)
     hasFocus = False
     # indica si el widget está en foco o no.
     enabled = True
-    #un widget con enabled==False no recibe ningun evento
+    # un widget con enabled==False no recibe ningun evento
     nombre = ''
-    #identifica al widget en el renderer
+    # identifica al widget en el renderer
     hasMouseOver = False
-    #indica si el widget tuvo el mouse encima o no, por el onMouseOut
-    
-    ##las opciones con las que se inicializo
+    # indica si el widget tuvo el mouse encima o no, por el onMouseOut
     opciones = None
+    # las opciones con las que se inicializo
+    setFocus_onIn = False
+    # if True: Renderer.setFocus se dispara onMouseIn también.
     
     layer = 0
     def __init__(self, **opciones):

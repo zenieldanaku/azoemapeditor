@@ -21,7 +21,7 @@ class Grilla(Marco):
         self.canvas = Canvas(self,self.x+16,self.y+16,32*C,32*C,(15*C,15*C))
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
-        self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
+        self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,32*C,32*C)
         self.BtnVerGr = Boton(self,3,15*C+12,'BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(self,3,16*C+7,'BtnVerCapa',self.cmdVerCapa,'Cp')
         self.BtnVerRegla = Boton(self,3,17*C+2,'BtnVerCapa',self.cmdVerRegla,'Rg')
@@ -92,20 +92,33 @@ class _grilla(BaseWidget):
         self.parent = parent
         self.focusable = False
         self.nombre = self.parent.nombre+'._grilla'
-        self.image = self._crear(w,h)
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        self.FONDO = self._crear(w,h)
+        self.clip = Rect(0,0,15*C,15*C)
+        self.image = self.FONDO.subsurface(self.clip)
+        self.rect = self.FONDO.get_rect(topleft=(self.x,self.y))
     
     @staticmethod
     def _crear(w,h):
         marco = Rect(0,0,w,h)
         base = Surface(marco.size)
-        for i in range(1*C,16*C,C):
-            draw.line(base, (125,255,255), (i,marco.top), (i,marco.bottom),1)
-            draw.line(base, (125,255,255), (marco.left,i), (marco.right,i),1)
+        _color = (100,200,100)
+        for i in range(1*C,32*C,C):
+            draw.line(base, _color, (i,marco.top), (i,marco.bottom),1)
+            draw.line(base, _color, (marco.left,i), (marco.right,i),1)
         base.set_colorkey((0,0,0))
         
         return base
-
+    
+    def scroll(self,dx,dy):
+        self.clip.y += dy
+        self.clip.x += dx
+        try:
+            self.image.set_clip(self.clip)
+            self.image = self.FONDO.subsurface(self.clip)
+        except:
+            self.clip.y -= dy
+            self.clip.x -= dx
+        
 class BaseRegla(BaseWidget):
     pressed = False
     def __init__(self,parent,x,y,**opciones):
