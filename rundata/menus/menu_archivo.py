@@ -1,6 +1,4 @@
 from globales import GLOBALES as G, SharedFuntions as shared
-from pygame import quit as pyquit
-from sys import exit as sysexit
 from widgets import Menu, FileDiag
 
 class Menu_Archivo(Menu):
@@ -12,18 +10,10 @@ class Menu_Archivo(Menu):
             {"nom":'Abrir...{}',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa})},
             {'nom':'Guardar{}','cmd':self.Guardar},
             {'nom':'Guardar como...{}','cmd':lambda:FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})},
-            {'nom':'Cerrar{}','cmd':self.Cerrar},
-            {'nom':'Salir{}','cmd':self.Salir}]
+            {'nom':'Cerrar{}','cmd':shared.cerrarMapa},
+            {'nom':'Salir{}','cmd':shared.salir}]
         super().__init__('Archivo',opciones,x,y)
         
     def Guardar(self):
         # acá habria que ver si hay cambios.
         FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})
-        
-    def Cerrar(self):
-        print('cierra el archivo abierto')
-    
-    def Salir(self):
-        pyquit()
-        sysexit()
-        
