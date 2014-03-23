@@ -1,7 +1,8 @@
-from . import BaseWidget
-from pygame import Surface, mouse
 from pygame.sprite import LayeredDirty
 from globales import GLOBALES as G
+from pygame import Surface, mouse
+from . import BaseWidget
+from constantes import * 
 
 class Canvas(BaseWidget):
     capas = None
@@ -32,14 +33,14 @@ class Canvas(BaseWidget):
     
     def pintarFondoCuadriculado(self):
         self.FONDO.fill(self.opciones['colorFondo'])
-        for y in range(self.FONDO.get_height()//32):
-            for x in range(self.FONDO.get_width()//32):
+        for y in range(self.FONDO.get_height()//C):
+            for x in range(self.FONDO.get_width()//C):
                 if y%2 == 0:
                     if x%2 ==0:
-                        self.FONDO.fill(self.opciones['colorCuadro'],(x*32,y*32,32,32))
+                        self.FONDO.fill(self.opciones['colorCuadro'],(x*C,y*C,C,C))
                 else:
                     if x%2 != 0:
-                        self.FONDO.fill(self.opciones['colorCuadro'],(x*32,y*32,32,32))
+                        self.FONDO.fill(self.opciones['colorCuadro'],(x*C,y*C,C,C))
     
     def onMouseDown(self,button):
         if button == 1:
@@ -51,7 +52,7 @@ class Canvas(BaseWidget):
             if button == 4:
                 self.ScrollY.moverCursor(dy=-10)
                 
-    def _getRelMousePos(self):
+    def getRelMousePos(self):
         x,y = mouse.get_pos()
         dx = x-self.x
         dy = y-self.y

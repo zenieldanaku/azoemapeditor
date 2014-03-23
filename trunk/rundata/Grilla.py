@@ -53,7 +53,7 @@ class Grilla(Marco):
             self.verGrilla = True
         
     def cmdVerCapa(self):
-        self.canvas.capas.switch_layer(0,1)
+        self.canvas.capas.switch_layer(LAYER_COLISIONES,LAYER_FONDO)
         
     def cmdVerRegla(self):
         if self.verRegla:
@@ -61,14 +61,14 @@ class Grilla(Marco):
             self.quitar(self.ReglaY)
             self.quitar(self.ReglaHandler)
             self.verRegla = False
-            for linea in self.canvas.reglas:
+            for linea in self.canvas.guias:
                 linea.visible = False
         else:
             self.agregar(self.ReglaX)
             self.agregar(self.ReglaY)
             self.agregar(self.ReglaHandler)
             self.verRegla = True
-            for linea in self.canvas.reglas:
+            for linea in self.canvas.guias:
                 linea.visible = True
    
     def update(self):        
@@ -144,7 +144,7 @@ class BaseRegla(BaseWidget):
             self.moverLinea()
 
 class ReglaH(BaseRegla):
-    i = -1
+    
     def __init__(self,parent,x,y,w,**opciones):
         super().__init__(parent,x,y,**opciones)
         self.nombre = self.parent.nombre+'.ReglaH'
@@ -173,7 +173,7 @@ class ReglaH(BaseRegla):
         return regla
 
     def moverLinea(self):
-        x,y = self.parent._getRelMousePos()
+        x,y = self.parent.getRelMousePos()
         self.linea.rect.y = y
     
 class ReglaV(BaseRegla):
@@ -194,7 +194,7 @@ class ReglaV(BaseRegla):
         j = -1
         for i in range(1,16):
             j+=1
-            draw.line(regla,(0,0,0),(0,i*C),(16,i*C))
+            draw.line(regla,(0,0,0),(0,i*C),(C//2,i*C))
             digitos = [i for i in str(j*C)]
             gy = 0
             for d in range(len(digitos)):
@@ -206,7 +206,7 @@ class ReglaV(BaseRegla):
         return regla
         
     def moverLinea(self):
-        x,y = self.parent._getRelMousePos()
+        x,y = self.parent.getRelMousePos()
         self.linea.rect.x = x
         
 class HandlerRegla(BaseWidget):
@@ -225,7 +225,7 @@ class HandlerRegla(BaseWidget):
     
     @staticmethod
     def _crear():
-        imagen =  Surface((16,16))
+        imagen =  Surface((C//2,C//2))
         imagen.fill((255,255,255),(1,1,15,15))
         draw.line(imagen,(0,0,0),(0,10),(15,10))
         draw.line(imagen,(0,0,0),(10,0),(10,15))
