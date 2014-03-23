@@ -10,6 +10,7 @@ import os, os.path
 
 class FileDiag(Marco):
     x,y,w,h = 0,0,0,0
+    layer = 3
     pressed = False
     carpetaActual = ''
     archivoActual = ''
@@ -33,14 +34,14 @@ class FileDiag(Marco):
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+18,texto = "Tipo:")
         self.lblNombre = Label(self,'Nombre',x+4,y+8*C+24, texto = 'Nombre:')    
         
-        self.agregar(self.carpetas)
-        self.agregar(self.archivos)
-        self.agregar(self.entryNombre)
-        self.agregar(self.BtnAccion)
-        self.agregar(self.tipos)
-        self.agregar(self.BtnCancelar)
-        self.agregar(self.lblTipo)
-        self.agregar(self.lblNombre)
+        self.agregar(self.carpetas,self.layer+1)
+        self.agregar(self.archivos,self.layer+1)
+        self.agregar(self.entryNombre,self.layer+1)
+        self.agregar(self.BtnAccion,self.layer+1)
+        self.agregar(self.tipos,self.layer+1)
+        self.agregar(self.BtnCancelar,self.layer+1)
+        self.agregar(self.lblTipo,self.layer+1)
+        self.agregar(self.lblNombre,self.layer+1)
     
     def titular(self,texto):
         fuente = font.SysFont('verdana',12)
@@ -71,27 +72,28 @@ class FileDiag(Marco):
         if self.carpetaActual != self.carpetaVieja:
             self.carpetaVieja = self.carpetaActual
             self.archivos.actualizarLista(self.carpetaActual,self.tipoSeleccinado.lstrip('.'))
-            
-        if self.archivos.ArchivoActual != '':
-            self.archivoActual = self.archivos.ArchivoActual
         
         nombre = self.entryNombre.devolver_texto()
         if nombre != '':
             self.nombredeArchivo = nombre
-
             
+        if self.archivos.ArchivoActual != '':
+            self.archivoActual = self.archivos.ArchivoActual
+            if self.nombredeArchivo == '':
+                self.entryNombre.setText(self.archivoActual)
+        
         self.dirty = 1
 
 class arbolCarpetas(Marco):
     CarpetaSeleccionada = ''
+    layer = 3
     def __init__(self,parent,x,y,w,h,**opciones):
         self.nombre = parent.nombre+'.ArbolDeCarpetas'
         super().__init__(x,y,w,h,False,**opciones)
-        self.focusable = False
         self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()))
-        self.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y,self.h)
-        self.agregar(self.ScrollY)
-        self.agregar(self.arbol)
+        self.arbol.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y)
+        self.agregar(self.arbol.ScrollY,self.layer+1)
+        self.agregar(self.arbol,self.layer+1)
         self.CarpetaSeleccionada = ''
     
     @staticmethod #decorator! ^^ 'cause explicit is better than implicit
@@ -139,13 +141,14 @@ class arbolCarpetas(Marco):
         self.dirty = 1
 
 class listaDeArchivos(Marco):
+    layer = 3
     def __init__(self,parent,x,y,w,h,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack'
         self.nombre = parent.nombre+'.ListaDeArchivos'
         super().__init__(x,y,w,h,False,**opciones)
-        self.ScrollY = ScrollV(self,self.x+self.w-16,self.y,self.h)
-        self.agregar(self.ScrollY)
+        self.ScrollY = ScrollV(self,self.x+self.w-16,self.y)
+        self.agregar(self.ScrollY,self.layer+1)
         self.items = LayeredDirty()
         self.ArchivoActual = ''
     
@@ -194,7 +197,14 @@ class listaDeArchivos(Marco):
         self.borrarLista()
         nuevalista = self._listar_archivos(carpeta)
         self.crearLista(nuevalista,tipo)
-    
+
+    def onMouseDown(self,button):
+        if self.ScrollY.enabled:
+            if button == 5:
+                self.ScrollY.moverCursor(dy=+10)
+            if button == 4:
+                self.ScrollY.moverCursor(dy=-10)
+                
     def update(self):
         for item in self.items:
             if item.isSelected:
@@ -208,7 +218,7 @@ class _Opcion(BaseOpcion):
     def __init__(self,parent,nombre,x,y,w=0,**opciones):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
-    
+       
     def onFocusIn(self):
         super().onFocusIn()
         self.image = self.img_sel

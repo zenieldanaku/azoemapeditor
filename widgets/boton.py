@@ -19,12 +19,14 @@ class Boton(BaseWidget):
         colorFondo   = color(self.opciones['colorFondo'])
         colorTexto   = color(self.opciones['colorText'])
         colorSText   = color(self.opciones['colorSelect'])
+        colorDText   = color(self.opciones['colorDisabled'])
         colorBLuz    = color(self.opciones['colorBordeLuz'])
         colorBSombra = color(self.opciones['colorBordeSombra'])
             
         self.img_uns = self._biselar(self._crear(scr, colorTexto, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
         self.img_sel = self._biselar(self._crear(scr, colorSText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
         self.img_pre = self._biselar(self._crear(scr, colorSText, colorFondo,self.w,self.h),colorBSombra,colorBLuz)
+        self.img_dis = self._biselar(self._crear(scr, colorDText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
@@ -40,10 +42,13 @@ class Boton(BaseWidget):
             opciones['colorText'] = 'sysElmText'
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysElmFace'
+        if 'colorDisabled'not in opciones:
+            opciones['colorDisabled'] = 'sysDisText'
         if 'w' not in opciones:
             opciones['w'] = 28
         if 'h' not in opciones:
             opciones['h'] = 25
+        
         return opciones
     
     @staticmethod
@@ -58,15 +63,28 @@ class Boton(BaseWidget):
         return render
     
     def serElegido(self):
-        self.image = self.img_sel
+        if self.enabled:
+            self.image = self.img_sel
     
     def serDeselegido(self):
-        self.image = self.img_uns
-        self.presionado = False
+        if self.enabled:
+            self.image = self.img_uns
+            self.presionado = False
     
     def serPresionado(self):
-        self.image = self.img_pre
-        self.presionado = True
+        if self.enabled:
+            self.image = self.img_pre
+            self.presionado = True
+    
+    def serDeshabilitado(self):
+        if self.enabled:
+            self.image = self.img_dis
+            self.enabled = False
+    
+    def serHabilitado(self):
+        if not self.enabled:
+            self.image = self.img_uns
+            self.enabled = True
     
     def onMouseIn(self):
         super().onMouseIn()
@@ -82,6 +100,6 @@ class Boton(BaseWidget):
                 self.serPresionado()
     
     def onMouseUp(self, dummy):
-        if self.hasMouseOver:
+        if self.hasMouseOver and self.enabled:
             self.serElegido()
             self.comando()

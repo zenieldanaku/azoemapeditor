@@ -9,7 +9,7 @@ class Menu_Archivo(Menu):
         self.barra = barra
         opciones = [
             {'nom':'Nuevo{}','cmd':lambda:shared.nuevo_mapa()},
-            {"nom":'Abrir...()',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa})},
+            {"nom":'Abrir...{}',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa})},
             {'nom':'Guardar{}','cmd':self.Guardar},
             {'nom':'Guardar como...{}','cmd':lambda:FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})},
             {'nom':'Cerrar{}','cmd':self.Cerrar},

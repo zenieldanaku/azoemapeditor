@@ -10,10 +10,11 @@ class Marco(BaseWidget):
     def __init__(self,x,y,w,h,borde=True,**opciones):
         self.contenido = LayeredDirty()
         super().__init__(**opciones)
+        self.layer += 1
         self.w, self.h = w,h
         self.x, self.y = x,y
+        self._layer = self.layer
         self.image = Surface((self.w, self.h))
-        self._layer = 1
         self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         

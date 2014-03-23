@@ -9,6 +9,7 @@ from libs.textrect import render_textrect
 class Tree (Marco):
     ItemActual = ''
     items = None
+    layer = 4
     def __init__(self,parent,x,y,w,h,walk,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack' 
@@ -55,15 +56,22 @@ class Tree (Marco):
         for i in range(idx,len(self.items)):
             widget = self.items.get_sprite(i)
             widget.mover(dh*dy)
+    
+    def onMouseDown(self,button):
+        if self.ScrollY.enabled:
+            if button == 5:
+                self.ScrollY.moverCursor(dy=+10)
+            if button == 4:
+                self.ScrollY.moverCursor(dy=-10)
 
 class Item (BaseWidget):
     hijos = None
-    
     def __init__(self,parent,x,y,keyargs,**opciones):
         super().__init__(**opciones)
         self.x,self.y = x,y
         self.parent = parent
         self.nombre = self.parent.nombre+'.Item.'+keyargs['obj']
+        self.layer  = self.parent.layer +1
         self.nom_obj = keyargs['obj']
         self.hijos = LayeredDirty()
         self.visible = 0 # no es que sea invisible, es que no tiene imagen
@@ -73,9 +81,9 @@ class Item (BaseWidget):
         w = self.cursor.rect.w+3+self.opcion.rect.w
         self.rect = Rect(x,y,w,h)
         self.w,self.h = self.rect.size
-        Renderer.addWidget(self.opcion)
-        Renderer.addWidget(self.cursor)      
-    
+        Renderer.addWidget(self.opcion,self.layer+1)
+        Renderer.addWidget(self.cursor,self.layer+1)      
+                
     def onDestruction(self):
         Renderer.delWidget(self.opcion)
         Renderer.delWidget(self.cursor)

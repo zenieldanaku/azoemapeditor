@@ -19,6 +19,7 @@ class BaseWidget(DirtySprite):
     ##las opciones con las que se inicializo
     opciones = None
     
+    layer = 0
     def __init__(self, **opciones):
         self.opciones = opciones
         super().__init__()
