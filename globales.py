@@ -1,6 +1,7 @@
 from pygame import image, quit as py_quit
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
+from constantes import *
 from mapa import Mapa
 import json
 
@@ -66,7 +67,7 @@ class SharedFuntions:
     def setRutaFondo(ruta):
         try:
             GLOBALES.ruta = ruta
-            GLOBALES.cargar_imagen(1)
+            GLOBALES.cargar_imagen(LAYER_FONDO)
         except:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
@@ -74,7 +75,7 @@ class SharedFuntions:
     def setRutaColis(ruta):
         try:
             GLOBALES.ruta = ruta
-            GLOBALES.cargar_imagen(0)
+            GLOBALES.cargar_imagen(LAYER_COLISIONES)
         except:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
