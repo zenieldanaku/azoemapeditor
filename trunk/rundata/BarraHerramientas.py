@@ -32,7 +32,7 @@ class barraHerramientas (Marco):
                 draw.line(self.image,color('sysElmLight'),[x+8,3],[x+8,27],1)
                 x = x+8
         
-        for boton in self.botones[1:]: #todos los botones, excepto Nuevo,
+        for boton in self.botones[2:]: #todos los botones, excepto Nuevo,
             boton.serDeshabilitado()   #comienzan deshabilitados.
     
     def Nuevo(self):

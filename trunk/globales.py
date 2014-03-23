@@ -1,5 +1,6 @@
-from pygame import image
+from pygame import image, quit as py_quit
 from pygame.sprite import DirtySprite
+from sys import exit as sys_exit
 from mapa import Mapa
 import json
 
@@ -30,12 +31,19 @@ class GLOBALES:
         spr.idx = GLOBALES.IMG_ID
         spr.rect = spr.image.get_rect()
         spr._layer = layer
+        spr.dirty = 2
         GLOBALES.IMGs_cargadas[spr.idx] = spr
     
     def habilitarItems(lista_de_items):
         for item in lista_de_items:
             if hasattr(item,'serHabilitado'):
                 item.serHabilitado()
+    
+    def deshabilitarItems(lista_de_items):
+        for item in lista_de_items:
+            if hasattr(item,'serDeshabilitado'):
+                item.serDeshabilitado()
+    
         
 class Resources:
     def abrir_json (archivo):
@@ -88,4 +96,15 @@ class SharedFuntions:
             GLOBALES.estado = "Mapa '"+ruta+"' guardado."
         except: 
             GLOBALES.estado ='Error: Es necesario cargar un mapa.'
-        
+    
+    @staticmethod
+    def cerrarMapa():
+        GLOBALES.MAPA = None
+        GLOBALES.IMGs_cargadas.clear()
+        GLOBALES.IMG_ID = -1
+        GLOBALES.HabilitarTodo = False
+    
+    @staticmethod
+    def salir():
+        py_quit()
+        sys_exit()

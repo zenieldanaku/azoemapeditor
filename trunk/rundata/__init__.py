@@ -3,7 +3,7 @@ from .herramientas import PanelHerramientas
 from .BarraEstado import barraEstado
 from .simbolos import PanelSimbolos
 from .BarraMenus import barraMenus
-from .grilla import grilla
+from .Grilla import Grilla
 from constantes import *
 from pygame import font
 from widgets import *
@@ -13,6 +13,6 @@ font.init()
 BarraMenus = barraMenus()
 BarraHerramientas = barraHerramientas()
 BarraEstado = barraEstado()
-Grilla = grilla()
+Grilla = Grilla()
 Herramientas = PanelHerramientas()
 Simbolos = PanelSimbolos()

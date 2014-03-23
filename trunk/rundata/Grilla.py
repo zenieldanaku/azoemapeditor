@@ -7,7 +7,7 @@ from constantes import *
 from colores import color
 import os
 
-class grilla(Marco):
+class Grilla(Marco):
     canvas = None
     ScrollX = None
     ScrollY = None
@@ -25,9 +25,9 @@ class grilla(Marco):
         self.BtnVerGr = Boton(self,3,15*C+12,'BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(self,3,16*C+7,'BtnVerCapa',self.cmdVerCapa,'Cp')
         self.BtnVerRegla = Boton(self,3,17*C+2,'BtnVerCapa',self.cmdVerRegla,'Rg')
-        self.ReglaX = ReglaH(self,self.x+16,self.y,15*C)
-        self.ReglaY = ReglaV(self,self.x,self.y+16,15*C)
-        self.ReglaHandler = HandlerRegla(self,self.x,self.y)
+        self.ReglaX = ReglaH(self.canvas,self.x+16,self.y,15*C)
+        self.ReglaY = ReglaV(self.canvas,self.x,self.y+16,15*C)
+        self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
         
         self.canvas.ScrollX.enabled = False
         self.canvas.ScrollY.enabled = False
@@ -61,11 +61,15 @@ class grilla(Marco):
             self.quitar(self.ReglaY)
             self.quitar(self.ReglaHandler)
             self.verRegla = False
+            for linea in self.canvas.reglas:
+                linea.visible = False
         else:
             self.agregar(self.ReglaX)
             self.agregar(self.ReglaY)
             self.agregar(self.ReglaHandler)
             self.verRegla = True
+            for linea in self.canvas.reglas:
+                linea.visible = True
    
     def update(self):        
         if G.HabilitarTodo:
@@ -74,7 +78,12 @@ class grilla(Marco):
             if not self.BtnVerCapa.enabled: self.BtnVerCapa.serHabilitado()
             if not self.BtnVerGr.enabled: self.BtnVerGr.serHabilitado()
             if not self.BtnVerRegla.enabled: self.BtnVerRegla.serHabilitado()
-        
+        else:
+            if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = False
+            if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = False
+            if not self.BtnVerCapa.enabled: self.BtnVerCapa.serDeshabilitado()
+            if not self.BtnVerGr.enabled: self.BtnVerGr.serDeshabilitado()
+            if not self.BtnVerRegla.enabled: self.BtnVerRegla.serDeshabilitado()
         self.dirty = 1
         
 class _grilla(BaseWidget):
@@ -99,16 +108,48 @@ class _grilla(BaseWidget):
         return base
 
 class BaseRegla(BaseWidget):
+    pressed = False
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
         self.x,self.y = x,y
         self.parent = parent
+    
+    @staticmethod
+    def unaLinea(x,y,w,h):
+        img = Surface((w,h))
+        img.fill((120,255,255))
+        spr = DirtySprite()
+        spr.image = img
+        spr.rect = spr.image.get_rect(topleft=(x,y))
+        spr.dirty = 2
+        return spr
+    
+    def onMouseDown(self,button):
+        if button == 1:
+            self.pressed = True
+            self.linea = self.unaLinea(*self.lin)
+            self.parent.guias.add(self.linea)
+    
+    def onMouseUp(self,button):
+        if button == 1:
+            self.pressed = False
+            self.parent.guias.add(self.linea)
+
+    def onMouseOut(self):
+        if not self.pressed:
+            super().onMouseOut()
+
+    def onMouseOver(self):
+        if self.pressed:
+            self.moverLinea()
 
 class ReglaH(BaseRegla):
+    i = -1
     def __init__(self,parent,x,y,w,**opciones):
         super().__init__(parent,x,y,**opciones)
         self.nombre = self.parent.nombre+'.ReglaH'
         self.image = self.crear(w)
+        self.lin = 0,-2,self.parent.Tw,1
         self.w,self.h = w,self.image.get_height()
         self.rect = self.image.get_rect(topleft =(self.x,self.y))
     
@@ -131,11 +172,16 @@ class ReglaH(BaseRegla):
                 
         return regla
 
+    def moverLinea(self):
+        x,y = self.parent._getRelMousePos()
+        self.linea.rect.y = y
+    
 class ReglaV(BaseRegla):
     def __init__(self,parent,x,y,h,**opciones):
         super().__init__(parent,x,y,**opciones)
         self.nombre = self.parent.nombre+'.ReglaV'
         self.image = self.crear(h)
+        self.lin = -2,0,1,self.parent.Th
         self.w,self.h = self.image.get_width(),h
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
@@ -158,10 +204,15 @@ class ReglaV(BaseRegla):
                 gy += 9
     
         return regla
-
+        
+    def moverLinea(self):
+        x,y = self.parent._getRelMousePos()
+        self.linea.rect.x = x
+        
 class HandlerRegla(BaseWidget):
     selected = False
     pressed = False
+    
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
         self.x,self.y = x,y
@@ -169,6 +220,8 @@ class HandlerRegla(BaseWidget):
         self.image = self._crear()
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.w,self.h = self.image.get_size()
+        self.linX = -1,0,1,self.parent.Th
+        self.linY = 0,-1,self.parent.Tw,1
     
     @staticmethod
     def _crear():
@@ -177,20 +230,42 @@ class HandlerRegla(BaseWidget):
         draw.line(imagen,(0,0,0),(0,10),(15,10))
         draw.line(imagen,(0,0,0),(10,0),(10,15))
         return imagen
-
+    
+    @staticmethod
+    def unaLinea(x,y,w,h):
+        img = Surface((w,h))
+        img.fill((120,255,255))
+        spr = DirtySprite()
+        spr.image = img
+        spr.rect = spr.image.get_rect(topleft=(x,y))
+        spr.dirty = 2
+        return spr
+    
     def onMouseDown(self,button):
-        self.pressed = True
+        if button == 1:
+            self.pressed = True
+            self.lineaX = self.unaLinea(*self.linX)
+            self.lineaY = self.unaLinea(*self.linY)
+            self.parent.guias.add(self.lineaX,self.lineaY)
+    
+    def onMouseUp(self,button):
+        if button == 1:
+            self.pressed = False
+            self.parent.guias.add(self.lineaX,self.lineaY)
     
     def onMouseIn(self):
         super().onMouseIn()
         self.ToggleSel(True)
-        self.dirty = 1
-        
+    
     def onMouseOut(self):
-        super().onMouseOut()
         self.ToggleSel(False)
-        self.dirty = 1
-        
+        if not self.pressed:
+            super().onMouseOut()
+    
+    def onMouseOver(self):
+        if self.pressed:
+            self.moverLineas()
+    
     def ToggleSel(self,select):
         if select:
             draw.line(self.image,(125,255,255),(1,10),(15,10))
@@ -198,3 +273,10 @@ class HandlerRegla(BaseWidget):
         else:
             draw.line(self.image,(0,0,0),(0,10),(15,10))
             draw.line(self.image,(0,0,0),(10,0),(10,15))
+    
+    def moverLineas(self):
+        x,y = self.parent._getRelMousePos()
+        self.lineaX.rect.x = x
+        self.lineaY.rect.y = y
+        
+        
