@@ -25,8 +25,8 @@ class Grilla(Marco):
         self.BtnVerGr = Boton(self,3,15*C+12,'BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(self,3,16*C+7,'BtnVerCapa',self.cmdVerCapa,'Cp')
         self.BtnVerRegla = Boton(self,3,17*C+2,'BtnVerCapa',self.cmdVerRegla,'Rg')
-        self.ReglaX = ReglaH(self.canvas,self.x+16,self.y,15*C)
-        self.ReglaY = ReglaV(self.canvas,self.x,self.y+16,15*C)
+        self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,32*C)
+        self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,32*C)
         self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
         
         self.canvas.ScrollX.enabled = False
@@ -35,13 +35,12 @@ class Grilla(Marco):
         self.BtnVerGr.serDeshabilitado()
         self.BtnVerRegla.serDeshabilitado()
         
-        Renderer.addWidget(self)
-        Renderer.addWidget(self.canvas)
-        Renderer.addWidget(self.canvas.ScrollX)
-        Renderer.addWidget(self.canvas.ScrollY)
-        Renderer.addWidget(self.BtnVerGr,3)
-        Renderer.addWidget(self.BtnVerCapa,3)
-        Renderer.addWidget(self.BtnVerRegla,3)
+        self.agregar(self.canvas)
+        self.agregar(self.canvas.ScrollX)
+        self.agregar(self.canvas.ScrollY)
+        self.agregar(self.BtnVerGr)
+        self.agregar(self.BtnVerCapa)
+        self.agregar(self.BtnVerRegla)
         
     #Funciones de comando para los botones        
     def cmdVerGr(self):
@@ -57,15 +56,15 @@ class Grilla(Marco):
         
     def cmdVerRegla(self):
         if self.verRegla:
-            self.quitar(self.ReglaX)
-            self.quitar(self.ReglaY)
+            self.quitar(self.canvas.ReglaX)
+            self.quitar(self.canvas.ReglaY)
             self.quitar(self.ReglaHandler)
             self.verRegla = False
             for linea in self.canvas.guias:
                 linea.visible = False
         else:
-            self.agregar(self.ReglaX)
-            self.agregar(self.ReglaY)
+            self.agregar(self.canvas.ReglaX)
+            self.agregar(self.canvas.ReglaY)
             self.agregar(self.ReglaHandler)
             self.verRegla = True
             for linea in self.canvas.guias:
@@ -123,7 +122,7 @@ class BaseRegla(BaseWidget):
         spr.rect = spr.image.get_rect(topleft=(x,y))
         spr.dirty = 2
         return spr
-    
+        
     def onMouseDown(self,button):
         if button == 1:
             self.pressed = True
@@ -148,9 +147,11 @@ class ReglaH(BaseRegla):
     def __init__(self,parent,x,y,w,**opciones):
         super().__init__(parent,x,y,**opciones)
         self.nombre = self.parent.nombre+'.ReglaH'
-        self.image = self.crear(w)
+        self.FONDO = self.crear(w)
         self.lin = 0,-2,self.parent.Tw,1
-        self.w,self.h = w,self.image.get_height()
+        self.w,self.h = w,self.FONDO.get_height()
+        self.clip = Rect(0,0,15*C+1,self.h)
+        self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.image.get_rect(topleft =(self.x,self.y))
     
     @staticmethod
@@ -159,7 +160,7 @@ class ReglaH(BaseRegla):
         regla = Surface((w,C//2))
         regla.fill((255,255,255),(1,1,w-2,14))
         j = -1
-        for i in range(1,16):
+        for i in range(1,31):
             j+=1
             draw.line(regla,(0,0,0),(i*C,0),(i*C,16))
             digitos = [i for i in str(j*C)]
@@ -176,13 +177,23 @@ class ReglaH(BaseRegla):
         x,y = self.parent.getRelMousePos()
         self.linea.rect.y = y
     
+    def scroll(self,dx):
+        self.clip.x += dx
+        try:
+            self.image.set_clip(self.clip)
+            self.image = self.FONDO.subsurface(self.clip)
+        except:
+            self.clip.x -= dx
+
 class ReglaV(BaseRegla):
     def __init__(self,parent,x,y,h,**opciones):
         super().__init__(parent,x,y,**opciones)
         self.nombre = self.parent.nombre+'.ReglaV'
-        self.image = self.crear(h)
+        self.FONDO = self.crear(h)
         self.lin = -2,0,1,self.parent.Th
-        self.w,self.h = self.image.get_width(),h
+        self.w,self.h = self.FONDO.get_width(),h
+        self.clip = Rect(0,0,self.w,15*C+1)
+        self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
     @staticmethod
@@ -192,7 +203,7 @@ class ReglaV(BaseRegla):
         regla.fill((255,255,255),(1,1,14,h-2))
         
         j = -1
-        for i in range(1,16):
+        for i in range(1,31):
             j+=1
             draw.line(regla,(0,0,0),(0,i*C),(C//2,i*C))
             digitos = [i for i in str(j*C)]
@@ -208,7 +219,15 @@ class ReglaV(BaseRegla):
     def moverLinea(self):
         x,y = self.parent.getRelMousePos()
         self.linea.rect.x = x
-        
+    
+    def scroll(self,dy):
+        self.clip.y += dy
+        try:
+            self.image.set_clip(self.clip)
+            self.image = self.FONDO.subsurface(self.clip)
+        except:
+            self.clip.y -= dy
+    
 class HandlerRegla(BaseWidget):
     selected = False
     pressed = False
@@ -225,8 +244,8 @@ class HandlerRegla(BaseWidget):
     
     @staticmethod
     def _crear():
-        imagen =  Surface((C//2,C//2))
-        imagen.fill((255,255,255),(1,1,15,15))
+        imagen =  Surface((16,16))
+        imagen.fill((255,255,255),(1,1,14,14))
         draw.line(imagen,(0,0,0),(0,10),(15,10))
         draw.line(imagen,(0,0,0),(10,0),(10,15))
         return imagen
@@ -275,8 +294,6 @@ class HandlerRegla(BaseWidget):
             draw.line(self.image,(0,0,0),(10,0),(10,15))
     
     def moverLineas(self):
-        x,y = self.parent._getRelMousePos()
+        x,y = self.parent.getRelMousePos()
         self.lineaX.rect.x = x
         self.lineaY.rect.y = y
-        
-        

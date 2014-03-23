@@ -141,7 +141,7 @@ class CursorH(_baseCursor):
         x = self.rect.x+dx
         if self.minX <= x <= self.maxX:
             self.rect.x = x
-            self.scrollable.scroll(dx=dx)
+            self.scrollable.scroll(dx=dx*1.6)
         
 class CursorV(_baseCursor):
     def __init__(self,parent,scrollable,x,y,h,w=1/2*C):
@@ -172,7 +172,7 @@ class CursorV(_baseCursor):
         y = self.rect.y+dy
         if self.minY <= y <= self.maxY:
             self.rect.y = y
-            self.scrollable.scroll(dy=dy)
+            self.scrollable.scroll(dy=dy*1.6)
                 
 class _baseBtn(BaseWidget):
     nombre = ''

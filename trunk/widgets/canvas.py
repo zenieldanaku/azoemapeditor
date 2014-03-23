@@ -53,26 +53,31 @@ class Canvas(BaseWidget):
                 self.ScrollY.moverCursor(dy=-10)
                 
     def getRelMousePos(self):
-        x,y = mouse.get_pos()
-        dx = x-self.x
-        dy = y-self.y
-        if dx < 0:
-            dx = 0
-        if dy < 0:
-            dy = 0
+        abs_x,abs_y = mouse.get_pos()
+        off_x,off_y = self.image.get_offset()
+        dx = abs_x+off_x-self.x
+        dy = abs_y+off_y-self.y
         
-        if dx >= self.w:
-            dx = self.w
-        if dy >= self.h:
-            dy = self.h
+        if dx < 0: dx = 0
+        if dy < 0: dy = 0
+        
+        if dx >= self.Tw: dx = self.Tw
+        if dy >= self.Th: dy = self.Th
         
         return dx,dy
     
     def scroll(self,dx=0,dy=0):
         self.clip.x += dx
         self.clip.y += dy
-        self.image.set_clip(self.clip)
-        self.image = self.FONDO.subsurface(self.clip)
+        try:
+            self.image.set_clip(self.clip)
+            self.image = self.FONDO.subsurface(self.clip)
+        except:
+            self.clip.x -= dx
+            self.clip.y -= dy
+            self.image.set_clip(self.clip)
+        self.ReglaX.scroll(dx)
+        self.ReglaY.scroll(dy)
     
     def update(self):
         if not G.HabilitarTodo:
