@@ -136,11 +136,10 @@ class _Cascada (BaseWidget):
         parent = self.parent
         while recursion:
             if hasattr(parent,'parent'):
-                parent.hideMenu()
                 parent = parent.parent
             else:
                 recursion = False
-        self.hideMenu()
+        parent.hideMenu()
     
     def onMouseIn(self):
         if self._visible:
@@ -148,6 +147,7 @@ class _Cascada (BaseWidget):
 
 class _Opcion(BaseOpcion):
     command = None
+    setFocus_onIn = True
     
     def __init__(self,parent,nombre,x,y):
         super().__init__(parent,nombre,x,y)
@@ -163,7 +163,6 @@ class _Opcion(BaseOpcion):
         if self.enabled:
             super().onMouseIn()
             self.image = self.img_sel
-            self.onFocusIn()
     
     def onMouseOut(self):
         super().onMouseOut()

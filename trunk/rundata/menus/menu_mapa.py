@@ -9,7 +9,7 @@ class Menu_Mapa (Menu):
         cascadas = {'imagen':[
                 {'nom':'Fondo','cmd':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo})},
                 {'nom':'Colisiones','cmd':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis})}]}
-        opciones = [{'nom':'Grilla...','cmd':lambda:print('grilla')},
-                   {'nom':'Capas...','cmd':lambda:print('capas')},
-                   {'nom':'Imagen >','csc':cascadas['imagen']}]
+        opciones = [{'nom':'Grilla...{}','cmd':lambda:print('grilla')},
+                   {'nom':'Capas...{}','cmd':lambda:print('capas')},
+                   {'nom':'Imagen{}>','csc':cascadas['imagen']}]
         super().__init__('Mapa',opciones,x,y)
