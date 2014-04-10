@@ -1,5 +1,5 @@
 from globales import GLOBALES as G, Resources as r
-from globales import SharedFuntions as shared
+from globales import SharedFunctions as shared
 from widgets import Menu, FileDiag
 
 class Menu_Mapa (Menu):

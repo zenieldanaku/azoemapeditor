@@ -1,4 +1,4 @@
-from globales import GLOBALES as G,Resources as r, SharedFuntions as shared
+from globales import GLOBALES as G,Resources as r, SharedFunctions as shared
 from widgets import Marco, Boton, FileDiag
 from pygame.sprite import LayeredDirty
 from pygame import draw, Surface

@@ -69,8 +69,8 @@ class Grilla(Marco):
             self.verRegla = True
             for linea in self.canvas.guias:
                 linea.visible = True
-   
-    def update(self):        
+    
+    def update(self):
         if G.HabilitarTodo:
             if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = True
             if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = True

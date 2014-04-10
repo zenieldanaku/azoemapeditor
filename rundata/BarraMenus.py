@@ -19,15 +19,22 @@ class barraMenus (Marco):
             self.menus[menu.nombre] = menu
         Renderer.addWidget(self)
     
-    def onFocusIn(self,_menu=None):
+    def onFocusIn(self):
         super().onFocusIn()
+        self.ocultarMenus()
+        
+    def onFocusOut(self):
+        super().onFocusOut()
+        for menu in self.menus:
+            self.menus[menu].hideMenu()
+    
+    def soloUnMenu(self,_menu=None):
         if _menu != None:
             for menu in self.menus:
                 if menu != _menu.nombre:
                     self.menus[menu].hideMenu()
-            self.menus[_menu.nombre].showMenu()
-        
-    def onFocusOut(self):
-        super().onFocusOut()
+        self.menus[_menu.nombre].showMenu()
+    
+    def ocultarMenus(self):
         for menu in self.menus:
             self.menus[menu].hideMenu()
