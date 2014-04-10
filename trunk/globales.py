@@ -13,6 +13,7 @@ class GLOBALES:
     IMG_ID = -1
     IMGs_cargadas = {}
     HabilitarTodo = False
+    portapapeles = None
     
     def guardar_mapa(ruta):
         data = GLOBALES.MAPA.guardar()
@@ -45,7 +46,6 @@ class GLOBALES:
             if hasattr(item,'serDeshabilitado'):
                 item.serDeshabilitado()
     
-        
 class Resources:
     def abrir_json (archivo):
         ex = open(archivo,'r')
@@ -62,7 +62,7 @@ class Resources:
         ar = image.load(ruta).convert_alpha()
         return ar
 
-class SharedFuntions:
+class SharedFunctions:
     @staticmethod
     def setRutaFondo(ruta):
         try:
@@ -81,6 +81,7 @@ class SharedFuntions:
     
     @staticmethod
     def nuevoMapa():
+        GLOBALES.HabilitarTodo = True
         GLOBALES.MAPA = Mapa()
     
     @staticmethod
@@ -109,3 +110,15 @@ class SharedFuntions:
     def salir():
         py_quit()
         sys_exit()
+    
+    @staticmethod
+    def copiar(elemento):
+        GLOBALES.portapapeles = elemento.copy()
+    
+    @staticmethod
+    def pegar(destino):
+        from renderer import Renderer
+        widget = Renderer.getWidget(destino)
+        if hasattr(widget,'pegar'):
+            if GLOBALES.HabilitarTodo:
+                widget.pegar(GLOBALES.portapapeles)

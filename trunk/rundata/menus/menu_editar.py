@@ -1,5 +1,5 @@
 from widgets import Menu
-from globales import SharedFuntions as shared
+from globales import SharedFunctions as shared
 
 class Menu_Editar(Menu):
     def  __init__(self,x,y,barra):

@@ -1,4 +1,4 @@
-from pygame.sprite import LayeredDirty
+from pygame.sprite import LayeredDirty, DirtySprite
 from globales import GLOBALES as G
 from pygame import Surface, mouse
 from . import BaseWidget
@@ -7,6 +7,7 @@ from constantes import *
 class Canvas(BaseWidget):
     capas = None
     guias = None
+    tiles = None
     clip = None
     FONDO = None
     pressed = False
@@ -29,6 +30,7 @@ class Canvas(BaseWidget):
         self.clip = self.image.get_clip()
         self.rect = self.FONDO.get_rect(topleft=(self.x,self.y))
         self.capas = LayeredDirty()
+        self.tiles = LayeredDirty()
         self.guias = LayeredDirty()
     
     def pintarFondoCuadriculado(self):
@@ -43,15 +45,27 @@ class Canvas(BaseWidget):
                         self.FONDO.fill(self.opciones['colorCuadro'],(x*C,y*C,C,C))
     
     def onMouseDown(self,button):
+        x,y = self.getRelMousePos()
         if button == 1:
-            self.pressed = True
-        
+            if self.tiles.get_sprites_at((x,y)) != []:
+                item = self.tiles.get_sprites_at((x,y))[0]
+                item.onMouseDown(1)
+            else:
+                self.pressed = True
+                
         elif self.ScrollY.enabled:
             if button == 5:
                 self.ScrollY.moverCursor(dy=+10)
             if button == 4:
                 self.ScrollY.moverCursor(dy=-10)
-                
+    
+    def onMouseUp(self,button):
+        x,y = self.getRelMousePos()
+        if button == 1:
+            if self.tiles.get_sprites_at((x,y)) != []:
+                item = self.tiles.get_sprites_at((x,y))[0]
+                item.onMouseUp(1)
+    
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()
         off_x,off_y = self.image.get_offset()
@@ -80,14 +94,22 @@ class Canvas(BaseWidget):
         self.ReglaY.scroll(dy)
         self.Grilla.scroll(dx,dy)
     
+    def pegar(self,elemento):
+        x,y = self.getRelMousePos()
+        img = elemento.image
+        tile = SimboloCNVS(self,img,x-8,y-8)
+        self.tiles.add(tile)
+
     def update(self):
         if not G.HabilitarTodo:
             self.guias.empty()
             self.capas.empty()
+            self.tiles.empty()
             
         if len(G.IMGs_cargadas) <= 0:
             self.capas.empty()
             self.pintarFondoCuadriculado()
+
         else:
             for idx in G.IMGs_cargadas:
                 spr = G.IMGs_cargadas[idx]
@@ -95,6 +117,33 @@ class Canvas(BaseWidget):
                     self.capas.add(spr)
             self.capas.draw(self.FONDO)
         
+        self.tiles.update()
+        self.tiles.draw(self.FONDO)
         self.guias.draw(self.FONDO)
         self.dirty = 1
-                
+
+class SimboloCNVS (BaseWidget):
+    pressed = False
+    def __init__(self,parent,imagen,x,y,**opciones):
+        super().__init__(**opciones)
+        self.image = imagen
+        self.x,self.y = x,y
+        self.w,self.h = self.image.get_size()
+        self.parent = parent
+        self.nombre = self.parent.nombre+'.Simbolo.'+'ejemplo'
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+    
+    def onMouseDown(self,button):
+        if button == 1:
+            self.pressed = True
+    
+    def onMouseUp(self,button):
+        if button == 1:
+            self.pressed = False
+    
+    def update(self):
+        if self.pressed:
+            x,y = self.parent.getRelMousePos()
+            self.x,self.y = x-self.w//2,y-self.h//2
+            self.rect.topleft = x-self.w//2,y-self.h//2
+        self.dirty = 1

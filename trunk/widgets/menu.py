@@ -65,12 +65,8 @@ class _Boton(BaseWidget):
         
     def onMouseDown (self,dummy):
         self.parent.cascada.onFocusIn()
-        self.parent.barra.onFocusIn(self.parent)
-            
-    def onFocusOut(self):
-        super().onFocusOut()
-        #self.parent.cascada.onFocusOut()
-   
+        self.parent.barra.soloUnMenu(self.parent)
+ 
     def onMouseIn(self):
         super().onMouseIn()
         self.image = self.img_sel
@@ -158,7 +154,7 @@ class _Opcion(BaseOpcion):
         else:
             self.command()
             self.parent.onFocusOut()
-    
+            
     def onMouseIn(self):
         if self.enabled:
             super().onMouseIn()

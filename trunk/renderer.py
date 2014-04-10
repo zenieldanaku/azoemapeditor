@@ -6,12 +6,13 @@ class Renderer:
     contents = LayeredDirty()
     widgets = {}
     currentFocus = None
-    
+    @staticmethod
     def addWidget(widget,layer=1):
         Renderer.contents.add(widget,layer=layer)
         Renderer.widgets[widget.nombre] = widget
         return widget
     
+    @staticmethod
     def delWidget(widget):
         if isinstance(widget,str):
             widget = Renderer.widgets[widget]
@@ -19,12 +20,20 @@ class Renderer:
         Renderer.contents.remove(widget)
         del Renderer.widgets[widget.nombre]
     
+    @staticmethod
+    def getWidget(widget):
+        if isinstance(widget,str):#suponemos que es su nombre
+            widget = Renderer.widgets[widget]
+        return widget
+    
+    @staticmethod
     def setFocus(widget):
         if widget!=Renderer.currentFocus and widget!=None:
             Renderer.currentFocus.onFocusOut()
             Renderer.currentFocus = widget
             Renderer.currentFocus.onFocusIn()
     
+    @staticmethod
     def update(events,fondo):
         args = None
         for event in events:
@@ -78,6 +87,6 @@ class Renderer:
         for widget in Renderer.contents:
             if widget.hasMouseOver:
                 widget.onMouseOver()
-                
+        
         Renderer.contents.update()
         return Renderer.contents.draw(fondo)
