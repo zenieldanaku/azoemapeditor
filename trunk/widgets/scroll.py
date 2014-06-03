@@ -1,6 +1,6 @@
 from pygame import Rect,Surface,mouse,draw
+from pygame.sprite import LayeredDirty
 from . import BaseWidget, Boton
-from renderer import Renderer
 from colores import color
 from constantes import *
 
@@ -10,6 +10,7 @@ class _baseScroll(BaseWidget):
     cursor = None
     BtnPos = None # derecha, o abajo
     BtnNeg = None # izquierda, o arriba
+    componentes = None # LayeredDirty
     def __init__(self,parent,x,y,w,h):
         super().__init__()
         self.parent = parent
@@ -18,22 +19,58 @@ class _baseScroll(BaseWidget):
         self.w,self.h = w,h
         self.image = self._crear(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        self.componentes = LayeredDirty()
         self.dirty = 1
-    
-    def onDestruction(self):
-        Renderer.delWidget(self.cursor)
-        Renderer.delWidget(self.BtnPos)
-        Renderer.delWidget(self.BtnNeg)
 
     def _crear(self,w,h):
         imagen = Surface((w,h))
         imagen.fill(color('sysScrBack'))
         return imagen
     
+    def getRelMousePos(self):
+        abs_x,abs_y = mouse.get_pos()
+        dx = abs_x-self.x
+        dy = abs_y-self.y
+        
+        return dx,dy
+    
+    def get_component(self):
+        x,y = self.getRelMousePos()
+        if self.componentes.get_sprites_at((x,y)) != []:
+            return self.componentes.get_sprites_at((x,y))[-1]
+        return self
+        
     def onMouseDown(self,button):
         if button == 1:
-            self.cursor.pressed = True
+            item = self.get_component()
+            if item != self:
+                item.onMouseDown(button)
+            else:
+                self.cursor.pressed = True
     
+    def onMouseUp(self,button):
+        if button == 1:
+            item = self.get_component()
+            if item != self:
+                item.onMouseUp(button)
+            else:
+                self.cursor.pressed = False
+    
+    def onMouseIn(self):
+        super().onMouseIn()
+        item = self.get_component()
+        if item != self:
+            super().onMouseOut()
+            item.onMouseIn()
+        
+    def onMouseOver(self):
+        if self.cursor.pressed:
+            self.cursor.onMouseOver()
+        else:
+            item = self.get_component()
+            if item != self:
+                item.onMouseOver()
+        
     def onMouseOut(self):
         if not self.cursor.pressed:
             super().onMouseOut()
@@ -42,19 +79,21 @@ class _baseScroll(BaseWidget):
         self.cursor.velocidad = velocidad
     
     def update(self):
+        self.image.fill(color('sysScrBack'))
+        self.componentes.update()
         self.cursor.enabled = self.enabled
+        self.cursor.visible = self.enabled
+        self.componentes.draw(self.image)
         self.dirty = 1
 
 class ScrollV(_baseScroll):
     def __init__(self,parent,x,y,w=1/2*C):        
         super().__init__(parent,x,y,w,parent.h)
         self.nombre = self.parent.nombre+'.ScrollV'
-        self.BtnPos = _btnVer(self,self.x,self.y+self.h-12,'abajo')
-        self.BtnNeg = _btnVer(self,self.x,self.y,'arriba')
-        self.cursor = CursorV(self,parent,self.x,self.y+12,1/2*C)
-        Renderer.addWidget(self.BtnPos,self.layer+5)
-        Renderer.addWidget(self.BtnNeg,self.layer+5)
-        Renderer.addWidget(self.cursor,self.layer+5)
+        self.BtnPos = _btnVer(self,self.h-12,'abajo')
+        self.BtnNeg = _btnVer(self,0,'arriba')
+        self.cursor = CursorV(self,parent,0,12,1/2*C)
+        self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
     
     def moverCursor(self,dy):
         self.cursor.mover(dy)
@@ -63,12 +102,10 @@ class ScrollH(_baseScroll):
     def __init__(self,parent,x,y,h=1/2*C):
         super().__init__(parent,x,y,parent.w,h)
         self.nombre = self.parent.nombre+'.ScrollH'
-        self.BtnPos = _btnHor(self,self.x+self.w-12,self.y,'derecha')
-        self.BtnNeg = _btnHor(self,self.x,self.y,'izquierda')
-        self.cursor = CursorH(self,parent,self.x+12,self.y,1/2*C)
-        Renderer.addWidget(self.BtnPos,self.layer+5)
-        Renderer.addWidget(self.BtnNeg,self.layer+5)
-        Renderer.addWidget(self.cursor,self.layer+5)
+        self.BtnPos = _btnHor(self,self.w-12,'derecha')
+        self.BtnNeg = _btnHor(self,0,'izquierda')
+        self.cursor = CursorH(self,parent,12,0,1/2*C)
+        self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
     
     def moverCursor(self,dx):
         self.cursor.mover(dx)
@@ -103,11 +140,7 @@ class _baseCursor(BaseWidget):
     def onMouseUp(self,button):
         if button == 1:
             self.pressed = False
-    
-    def onMouseOut(self):
-        if not self.pressed:
-            super().onMouseOut()
-    
+            
     def update(self):
         self.visible = self.enabled
         self.dirty = 1
@@ -117,8 +150,8 @@ class CursorH(_baseCursor):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorH'
         self.scrollable = scrollable
-        self.minX = int(parent.x+parent.BtnNeg.w)
-        self.maxX = parent.x+parent.w-self.w-parent.BtnPos.w
+        self.minX = parent.BtnNeg.w
+        self.maxX = parent.w-self.w-parent.BtnPos.w
         self.relX = 0
         
     @staticmethod
@@ -133,7 +166,7 @@ class CursorH(_baseCursor):
     
     def onMouseOver(self):
         if self.pressed:
-            x,y = mouse.get_pos()
+            x,y = self.parent.getRelMousePos()
             dx = x-self.rect.x-8
             self.mover(dx)
     
@@ -148,8 +181,8 @@ class CursorV(_baseCursor):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorV'
         self.scrollable = scrollable
-        self.minY = int(parent.y+parent.BtnNeg.h)
-        self.maxY = parent.y+parent.h-self.h-parent.BtnPos.h
+        self.minY = parent.BtnNeg.h
+        self.maxY = parent.h-self.h-parent.BtnPos.h
         self.relY = 0
     
     @staticmethod
@@ -164,7 +197,7 @@ class CursorV(_baseCursor):
     
     def onMouseOver(self):
         if self.pressed:
-            x,y = mouse.get_pos()
+            x,y = self.parent.getRelMousePos()
             dy = y-self.rect.y-8
             self.mover(dy)
     
@@ -179,11 +212,19 @@ class _baseBtn(BaseWidget):
     parent = None
     pressed = False
     
-    def __init__(self,parent,x,y):
+    def __init__(self,parent,x,y,orientacion):
         super().__init__()
         self.parent = parent
         self.pressed = False
+        self.orientacion = orientacion
         self.x,self.y = x,y
+        luz = color('sysElmLight')
+        sombra = color('sysElmShadow')
+        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
+        self.image = self.img_uns
+        self.rect = self.image.get_rect(topleft = (self.x,self.y))
+        self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
         self.dirty = 1
     
     def serDeselegido(self):
@@ -206,21 +247,15 @@ class _baseBtn(BaseWidget):
             self.serPresionado()
     
     def update(self):
+        if self.pressed:
+            self.serPresionado()
         self.enabled = self.parent.enabled
         self.dirty = 1
-    
+
 class _btnVer(_baseBtn):
-    def __init__(self,parent,x,y,orientacion):
-        super().__init__(parent,x,y)
-        self.w,self.h = 1/2*C,12
-        self.orientacion = orientacion
-        self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
-        luz = color('sysElmLight')
-        sombra = color('sysElmShadow')
-        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
-        self.image = self.img_uns
-        self.rect = self.image.get_rect(topleft = (self.x,self.y))
+    def __init__(self,parent,y,orientacion):
+        self.w,self.h = parent.w,12
+        super().__init__(parent,0,y,orientacion)        
     
     @staticmethod
     def _crear(w,h,orientacion):
@@ -244,17 +279,9 @@ class _btnVer(_baseBtn):
             self.parent.cursor.mover(+dy)
 
 class _btnHor(_baseBtn):
-    def __init__(self,parent,x,y,orientacion):
-        super().__init__(parent,x,y)
-        self.w,self.h = 12,1/2*C
-        self.orientacion = orientacion
-        self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
-        luz = color('sysElmLight')
-        sombra = color('sysElmShadow')
-        self.img_pre = self._biselar(self._crear(self.w,self.h,self.orientacion),sombra,luz)
-        self.img_uns = self._biselar(self._crear(self.w,self.h,self.orientacion),luz,sombra)
-        self.image = self.img_uns
-        self.rect = self.image.get_rect(topleft = (self.x,self.y))
+    def __init__(self,parent,x,orientacion):
+        self.w,self.h = 12,parent.h
+        super().__init__(parent,x,0,orientacion)
     
     @staticmethod
     def _crear(w,h,orientacion):

@@ -9,7 +9,6 @@ class GLOBALES:
     MAPA = None
     estado = ''
     ruta = ''
-    ID_actual = -1
     IMG_ID = -1
     IMGs_cargadas = {}
     HabilitarTodo = False

@@ -12,7 +12,7 @@ class barraHerramientas (Marco):
         self.nombre = 'BarraHerramientas'
         self.botones = []
         elementos = [
-            {"nom":'Nuevo',"cmd":self.Nuevo,"scr":"N"},
+            {"nom":'Nuevo',"cmd":shared.nuevoMapa,"scr":"N"},
             {"nom":'Abrir',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa}),"scr":"A"},
             {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},{"nom":'barra'},
             {"nom":'Cortar',"cmd":self.Cortar,"scr":"X"},
@@ -31,15 +31,7 @@ class barraHerramientas (Marco):
                 draw.line(self.image,color('sysElmShadow'),[x+7,3],[x+7,27],1)
                 draw.line(self.image,color('sysElmLight'),[x+8,3],[x+8,27],1)
                 x = x+8
-        
-        for boton in self.botones[2:]: #todos los botones, excepto Nuevo,
-            boton.serDeshabilitado()   #comienzan deshabilitados.
     
-    def Nuevo(self):
-        G.HabilitarTodo = True
-        G.habilitarItems(self.botones[1:])
-        shared.nuevoMapa()
-        
     def Guardar(self):
         #tendría que fijarse si hay cambios.
         FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})
@@ -51,3 +43,9 @@ class barraHerramientas (Marco):
         print('boton copiar')
     def Pegar(self):
         print('boton pegar')
+    
+    def update(self):
+        if G.HabilitarTodo:
+            G.habilitarItems(self.botones[2:])
+        else:
+            G.deshabilitarItems(self.botones[2:])

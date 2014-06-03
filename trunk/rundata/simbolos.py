@@ -1,10 +1,11 @@
 from pygame import Rect,Surface,draw,mouse
 from pygame.sprite import LayeredDirty
 from widgets import Marco, BaseWidget
+from widgets import Boton, DropDownList, Entry
 from renderer import Renderer
 from colores import color
 from constantes import *
-from globales import SharedFunctions as shared
+from globales import SharedFunctions as shared, GLOBALES as G
 
 class PanelSimbolos(Marco):
     simbolos = None
@@ -13,12 +14,71 @@ class PanelSimbolos(Marco):
             opciones['colorFondo'] = color('sysElmFace')
 
         super().__init__(18*C-1,2*C,6*C,16*C-1,**opciones)
-        self.nombre = 'panel_simbolos'
+        self.nombre = 'PanelSimbolos'
         self.simbolos = LayeredDirty()
         self.PrevArea = area_prev(self,self.x+3,self.y+10*C-2,self.w-6,6*C)
         ejemplo = Simbolo(self.PrevArea,16,16)
         self.PrevArea.agregarSimbolo(ejemplo)
         
+        self.BtnMob = Boton(self,18*C+1,self.y+1,'Mobs',self.VerPanelMobs,'Mob',**{'w':3*C-1})
+        self.BtnProp = Boton(self,21*C,self.y+1,'Props',self.VerPanelProps,'Prop',**{'w':3*C-1})
+        self.PanelMobs = SubPanelMobs(self,self.x+2,self.y+C-5,self.w-4,9*C)
+        self.PanelProps = SubPanelProps(self,self.x+2,self.y+C-5,self.w-4,9*C)
+        self.agregar(self.BtnMob)
+        self.agregar(self.BtnProp)
+        self.agregar(self.PanelMobs,50)
+    
+    def VerPanelMobs(self):
+        self.PanelProps.visible = False
+        self.PanelMobs.visible = True
+        
+    def VerPanelProps(self):
+        self.PanelMobs.visible = False
+        self.PanelProps.visible = True
+    
+    def update(self):
+        if G.HabilitarTodo:
+            if not self.BtnMob.enabled: self.BtnMob.serHabilitado()
+            if not self.BtnProp.enabled: self.BtnProp.serHabilitado()
+        else:
+            if self.BtnMob.enabled: self.BtnMob.serDeshabilitado()
+            if self.BtnProp.enabled: self.BtnProp.serDeshabilitado()
+            
+
+class _SubPanel(Marco):
+    def __init__(self,parent,x,y,w,h,**opciones):
+        super().__init__(x,y,w,h,False,**opciones)
+        self.parent = parent
+        self.visible = False
+    
+    def update(self):
+        for item in self.contenido:
+            item.visible = self.visible
+            item.enabled = item.visible
+        self.dirty = 1
+
+class SubPanelMobs(_SubPanel):
+    def __init__(self,parent,x,y,w,h,**opciones):
+        super().__init__(parent,x,y,w,h,**opciones)
+        self.nombre = self.parent.nombre+'.SubPanelMobs'
+        self.BtnNuevo = Boton(self,self.x+self.w-29,self.y+1,'Nuevo',self.cmdNuevo,'+')
+        self.EntryNom = Entry(self,'Nombre',self.x+1,self.y+3,5*C-3)
+        self.EntryNom.enabled = False
+        self.dropTipo = DropDownList(self,'Tipo',self.x+1,self.y+C,6*C-6,['¿Tipo?','Monstruo','Victima'])
+        self.agregar(self.BtnNuevo)
+        self.agregar(self.EntryNom)
+        self.agregar(self.dropTipo)
+    
+    def cmdNuevo(self):
+        self.EntryNom.enabled = True
+        self.EntryNom.setText('¿Nombre?')
+
+
+class SubPanelProps(_SubPanel):
+    def __init__(self,parent,x,y,w,h,**opciones):
+        super().__init__(parent,x,y,w,h,**opciones)
+        self.nombre = self.parent.nombre+'.SubPanelProps'
+
 class area_prev(Marco):
     simbolos = None
     def __init__(self,parent,x,y,w,h,**opciones):
@@ -97,5 +157,4 @@ class Simbolo (BaseWidget):
         self.x,self.y = dx,dy
     
     def copy(self):
-        copia = Simbolo(self.parent,self.w,self.h)
-        return copia
+        return Simbolo(self.parent,self.w,self.h)

@@ -2,6 +2,8 @@ from libs.textrect import render_textrect
 from pygame import font,Rect,draw,Surface, Color 
 from . import BaseWidget
 from colores import color
+from globales import Resources as r
+import os.path
 
 class Boton(BaseWidget):
     comando = None
@@ -55,11 +57,29 @@ class Boton(BaseWidget):
     def  _crear(scr, color_texto, color_fondo,w,h):
         _rect = Rect(-1,-1,w,h)
         if type (scr) == str:
-            fuente = font.SysFont('verdana',16)        
-            render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
+            if os.path.isfile(scr):
+                img = r.cargar_imagen(scr)
+                render = Surface((img.get_width()+3,img.get_height()+4))
+                render.fill(color_fondo)
+                render.blit(img,(1,1))
+            else:
+                fuente = font.SysFont('verdana',16)
+                try:
+                    render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
+                except:
+                    img = fuente.render(scr,True,color_texto,color_fondo)
+                    render = Surface((img.get_width()+6,img.get_height()+4))
+                    render.fill(color_fondo)
+                    rect_render = render.get_rect()
+                    rect_img = img.get_rect(centerx=rect_render.centerx,centery=rect_render.centery-1)
+                    render.blit(img,rect_img)                    
         elif type (scr) == Surface:
-            if scr.get_widht() > w or scr.get_height() > h:
-                render = scr.copy()
+            if scr.get_width() < w or scr.get_height() < h:
+                render = Surface((scr.get_width()+3,scr.get_height()+3))
+                render.fill(color_fondo)
+                render.blit(scr,(1,1))
+            else:
+                raise ValueError('la imagen scr es mayor que el tamaño especificado')
         return render
     
     def serElegido(self):

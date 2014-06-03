@@ -56,7 +56,8 @@ class _Boton(BaseWidget):
         self.dirty = 1
         Renderer.addWidget(self,4)
     
-    def crear_boton(self,nombre,fgcolor,bgcolor):
+    @staticmethod
+    def crear_boton(nombre,fgcolor,bgcolor):
         fuente = font.SysFont('Verdana',14)
         w,h = fuente.size(nombre)
         rect = Rect(-1,-1,w,h+1)
