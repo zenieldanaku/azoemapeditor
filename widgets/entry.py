@@ -15,7 +15,7 @@ class Entry(BaseWidget):
     sel_start,sel_end = 0,0
     seleccion = None
     
-    def __init__(self,parent,nombre,x,y,w,texto,**opciones):
+    def __init__(self,parent,nombre,x,y,w,texto='',**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysBoxBack'
         if 'colorTexto' not in opciones:

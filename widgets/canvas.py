@@ -63,7 +63,7 @@ class Canvas(BaseWidget):
         x,y = self.getRelMousePos()
         if button == 1:
             if self.tiles.get_sprites_at((x,y)) != []:
-                item = self.tiles.get_sprites_at((x,y))[0]
+                item = self.tiles.get_sprites_at((x,y))[-1]
                 item.onMouseUp(1)
     
     def getRelMousePos(self):

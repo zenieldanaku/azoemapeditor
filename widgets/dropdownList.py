@@ -1,43 +1,43 @@
 from . import BaseWidget, Entry, BaseOpcion
-from .menu import _Opcion
-from renderer import Renderer
-from pygame import Surface,draw, Rect,font
+from pygame import Surface,draw, Rect,font, mouse
 from pygame.sprite import LayeredDirty,DirtySprite
 from libs.textrect import render_textrect
 from colores import color
 from constantes import *
 
 class DropDownList(BaseWidget):
+    componentes = None # LayeredDirty
     def __init__(self,parent,nombre,x,y,w,lista,**opciones):
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.DropDownList.'+nombre
         self.layer = self.parent.layer +1
         self.x,self.y = x,y
-        self.items = LayeredDirty()
-        self.entry = Entry(self,nombre,self.x,self.y-2,w-19,'')
+        self.componentes = LayeredDirty()
+        self.entry = Entry(self,nombre,0,0,w-18)
         self.w,self.h = w,self.entry.h
-        self.flecha = _Flecha(self,self.x+self.w-18,self.y-2,18,self.h)
-        self.rect = Rect(self.x,self.y,self.w,self.h)
-        self.lista = self.crearLista(lista)
-        self.visible = 0 # no es que sea invisible, es que no tiene imagen
+        self.flecha = _Flecha(self,18)
+        self.collapsedRect = Rect(self.x,self.y,self.w,self.h)
+        self.rect = self.collapsedRect
+        self.componentes.add(self.flecha,self.entry)
+        self.image = Surface((self.w,self.crearLista(lista)+2))
+        self.image.fill((255,0,0)) #fill with some transparent
+        self.image.set_colorkey((255,0,0)) # color
+        self.openRect = Rect((self.x,self.y),self.image.get_size())
         self.dirty = 1
-        Renderer.addWidget(self.entry,self.layer+1)      
-        Renderer.addWidget(self.flecha,self.layer+1)
-        
         self.ItemActual = ''
     
     def crearLista(self,opciones):        
         alto,h = 0,0
         for n in range(len(opciones)):
             nom = opciones[n]
-            dy = self.y+self.h+(n*h)-20
-            opcion = _Opcion(self,nom,self.x+1,dy,self.w-21)
-            h = opcion.image.get_height()
-            self.items.add(opcion)
-            
-        for op in self.items:
-            Renderer.addWidget(op,self.layer+2)
+            dy = self.h+(n*h)-19
+            opcion = _Opcion(self,nom,4,dy,self.w-23)
+            opcion.layer = self.layer +50
+            h = opcion.image.get_height()-1
+            alto += h
+            self.componentes.add(opcion)
+        return alto
     
     def setText(self,texto):
         self.entry.setText(texto)
@@ -45,53 +45,84 @@ class DropDownList(BaseWidget):
         # extrayendo solo el .json
         self.ItemActual = texto
     
-    def onFocusOut(self):
-        for item in self.items:
-            item.visible = False
-            item.enabled = False
+    def getRelMousePos(self):
+        abs_x,abs_y = mouse.get_pos()
+        dx = abs_x-self.x
+        dy = abs_y-self.y
+        
+        return dx,dy
     
-    def onDestruction(self):
-        Renderer.delWidget(self.entry)
-        Renderer.delWidget(self.flecha)
+    def get_component(self):
+        x,y = self.getRelMousePos()
+        if self.componentes.get_sprites_at((x,y)) != []:
+            return self.componentes.get_sprites_at((x,y))[-1]
+        return self
+    
+    def onMouseDown(self,button):
+        if button == 1:
+            item = self.get_component()
+            if item != self:
+                item.onMouseDown(button)
+    
+    def onMouseUp(self,button):
+        if button == 1:
+            item = self.get_component()
+            if item != self:
+                item.onMouseUp(button)
+    
+    def onMouseIn(self):
+        item = self.get_component()
+        if item != self:
+            for opcion in self.componentes:
+                if isinstance(opcion,_Opcion):
+                    opcion.onMouseOut()
+            item.onMouseIn()
+
+    def showItems(self):
+        for item in self.componentes:
+            if isinstance(item,_Opcion):
+                item.visible = True
+                item.enabled = True
+        self.rect = self.openRect
+    
+    def hideItems(self):
+        for item in self.componentes:
+            if isinstance(item,_Opcion):
+                item.visible = False
+                item.enabled = False
+        self.rect = self.collapsedRect
+    
+    def update(self):
+        self.image.fill((255,0,0)) #clear with transparent color
+        self.componentes.update()
+        self.componentes.draw(self.image)
+        self.dirty = 2
 
 class _Flecha(BaseWidget):
-    def __init__(self,parent,x,y,w,h):
-        super().__init__()
+    def __init__(self,parent,w,**opciones):
+        super().__init__(**opciones)
         self.parent = parent
         self.nombre = parent.nombre+'.flecha'
-        self.x,self.y = x,y
-        self.w,self.h = w,h
-        luz = color('sysElmLight')
-        sombra = color('sysElmShadow')
-        self.img_pre = self._biselar(self._crear(self.w,self.h),luz,sombra)
-        self.img_uns = self._biselar(self._crear(self.w,self.h),sombra,luz)
+        self.w,self.h = w,self.parent.h
+        self.x,self.y = self.parent.w-self.w,0
+        cF,cB = color('sysScrArrow'),color('sysElmFace') # cFlecha,cBackground
+        cL,cS = color('sysElmLight'),color('sysElmShadow') # cLuz,cSombra
+        self.img_pre = self._biselar(self._crear(self.w,self.h,cF,cB),cS,cL)
+        self.img_uns = self._biselar(self._crear(self.w,self.h,cF,cB),cL,cS)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
-    def _crear(self,w,h):
-        imagen = Surface((w,h))
-        imagen.fill(color('sysElmFace'))
-        points = [[4,6],[w//2-1,h-8],[w-6,6]]
-        draw.polygon(imagen, color('sysScrArrow'), points)
-        return imagen
-    
     @staticmethod
-    def _biselar(imagen,c1,c2):
-        imagen = imagen.copy()
-        w,h = imagen.get_size()
-        draw.line(imagen, c1, (0,h-2),(w-1,h-2), 2) # inferior
-        draw.line(imagen, c1, (w-2,h-2),(w-2,0), 2) # derecha
-        draw.lines(imagen, c2, 0, [(w-2,0),(0,0),(0,h-4)]) #superior,izquierda
+    def _crear(w,h,cFlecha,cFondo):
+        imagen = Surface((w,h))
+        imagen.fill(cFondo)
+        points = [[4,7],[w//2-1,h-9],[w-6,7]]
+        draw.polygon(imagen,cFlecha,points)
         return imagen
-    
-    def showList(self):
-        for item in self.parent.items:
-            item.visible = True
-            item.enabled = True
-    
+      
     def onMouseDown(self,dummy):
         self.image = self.img_pre
-        self.showList()
+        self.parent.showItems()
     
     def onMouseUp(self,dummy):
         self.image = self.img_uns
@@ -111,17 +142,12 @@ class _Opcion(BaseOpcion):
     def onMouseDown(self,button):
         self.parent.onFocusOut()
         self.devolverTexto()
-        
-    def onFocusOut(self):
-        super().onFocusOut()
-        self.enabled=False
-        
-    def onMouseIn(self):
-        if self.enabled:
-            super().onMouseIn()
+        self.parent.hideItems()
+            
+    def update(self):
+        if self.hasMouseOver:
             self.image = self.img_sel
-            self.onFocusIn()
-    
-    def onMouseOut(self):
-        super().onMouseOut()
-        self.image = self.img_des
+        else:
+            self.image = self.img_des
+            
+        self.dirty = 1

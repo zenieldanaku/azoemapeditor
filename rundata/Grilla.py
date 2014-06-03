@@ -29,12 +29,6 @@ class Grilla(Marco):
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,32*C)
         self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
         
-        self.canvas.ScrollX.enabled = False
-        self.canvas.ScrollY.enabled = False
-        self.BtnVerCapa.serDeshabilitado()
-        self.BtnVerGr.serDeshabilitado()
-        self.BtnVerRegla.serDeshabilitado()
-        
         self.agregar(self.canvas)
         self.agregar(self.canvas.ScrollX)
         self.agregar(self.canvas.ScrollY)
@@ -78,11 +72,12 @@ class Grilla(Marco):
             if not self.BtnVerGr.enabled: self.BtnVerGr.serHabilitado()
             if not self.BtnVerRegla.enabled: self.BtnVerRegla.serHabilitado()
         else:
-            if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = False
-            if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = False
-            if not self.BtnVerCapa.enabled: self.BtnVerCapa.serDeshabilitado()
-            if not self.BtnVerGr.enabled: self.BtnVerGr.serDeshabilitado()
-            if not self.BtnVerRegla.enabled: self.BtnVerRegla.serDeshabilitado()
+            if self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = False
+            if self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = False
+            if self.BtnVerCapa.enabled: self.BtnVerCapa.serDeshabilitado()
+            if self.BtnVerGr.enabled: self.BtnVerGr.serDeshabilitado()
+            if self.BtnVerRegla.enabled: self.BtnVerRegla.serDeshabilitado()
+        
         self.dirty = 1
         
 class _grilla(BaseWidget):
