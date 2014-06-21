@@ -1,5 +1,6 @@
 from widgets import Menu
-from globales import SharedFunctions as shared
+from globales import SharedFunctions as shared, C
+from ._cuadroPreferencias import cuadroPreferencias
 
 class Menu_Editar(Menu):
     def  __init__(self,x,y,barra):
@@ -9,7 +10,7 @@ class Menu_Editar(Menu):
             {"nom":'Cortar',"cmd":self.Cortar},
             {"nom":'Copiar',"cmd":self.Copiar},
             {"nom":'Pegar',"cmd":self.Pegar},
-            {'nom':'Preferencias...','cmd':lambda:print('preferencias')}]
+            {'nom':'Preferencias...','cmd':lambda:cuadroPreferencias()}]
         super().__init__('Editar',opciones,x,y)
 
     def Cortar(self):
@@ -18,3 +19,5 @@ class Menu_Editar(Menu):
         print('boton copiar')
     def Pegar(self):
         print('boton pegar')
+
+

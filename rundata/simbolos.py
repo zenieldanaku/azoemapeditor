@@ -1,83 +1,73 @@
 from pygame import Rect,Surface,draw,mouse
 from pygame.sprite import LayeredDirty
-from widgets import Marco, BaseWidget
+from widgets import Marco, BaseWidget, FileDiag
 from widgets import Boton, DropDownList, Entry
 from renderer import Renderer
 from colores import color
 from constantes import *
-from globales import SharedFunctions as shared, GLOBALES as G
+from globales import SharedFunctions as shared, GLOBALES as G, Resources as r
 
 class PanelSimbolos(Marco):
     simbolos = None
+    botones = []
     def __init__(self,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
 
-        super().__init__(18*C-1,2*C,6*C,16*C-1,**opciones)
+        super().__init__(16*C,1*C,4*C+8,16*C-1,**opciones)
         self.nombre = 'PanelSimbolos'
         self.simbolos = LayeredDirty()
-        self.PrevArea = area_prev(self,self.x+3,self.y+10*C-2,self.w-6,6*C)
-        ejemplo = Simbolo(self.PrevArea,16,16)
-        self.PrevArea.agregarSimbolo(ejemplo)
-        
-        self.BtnMob = Boton(self,18*C+1,self.y+1,'Mobs',self.VerPanelMobs,'Mob',**{'w':3*C-1})
-        self.BtnProp = Boton(self,21*C,self.y+1,'Props',self.VerPanelProps,'Prop',**{'w':3*C-1})
-        self.PanelMobs = SubPanelMobs(self,self.x+2,self.y+C-5,self.w-4,9*C)
-        self.PanelProps = SubPanelProps(self,self.x+2,self.y+C-5,self.w-4,9*C)
-        self.agregar(self.BtnMob)
-        self.agregar(self.BtnProp)
-        self.agregar(self.PanelMobs,50)
-    
-    def VerPanelMobs(self):
-        self.PanelProps.visible = False
-        self.PanelMobs.visible = True
-        
-    def VerPanelProps(self):
-        self.PanelMobs.visible = False
-        self.PanelProps.visible = True
-    
-    def update(self):
-        if G.HabilitarTodo:
-            if not self.BtnMob.enabled: self.BtnMob.serHabilitado()
-            if not self.BtnProp.enabled: self.BtnProp.serHabilitado()
-        else:
-            if self.BtnMob.enabled: self.BtnMob.serDeshabilitado()
-            if self.BtnProp.enabled: self.BtnProp.serDeshabilitado()
+        self.PrevArea = area_prev(self,self.x+3,self.y+3*C,self.w-6,13*C-2)
+        elementos = [
+            {"nom":'Nuevo',"cmd":shared.nuevoMapa,"scr":"N"},
+            {"nom":'Abrir',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa}),"scr":"A"},
+            {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},
+            {"nom":'barra'},
+            {"nom":'Cortar',"cmd":self.Cortar,"scr":"X"},
+            {"nom":'Copiar',"cmd":self.Copiar,"scr":"C"},
+            {"nom":'Pegar',"cmd":self.Pegar,"scr":"P"},
+            {"nom":'barra'},
+            {"nom":'SetImgFondo',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo}),"scr":"Fd"},
+            {"nom":'SetImgColisiones',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis}),"scr":"Cl"},
             
+            {"nom":'addMob',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':self.addMob}),"scr":"Mb"},
+            {"nom":'addProp',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':self.addProp}),"scr":"Pr"},
+            ]
+        x = self.x+4
+        y = 1*C+4
+        for e in elementos:
+            if e['nom'] != 'barra':
+                boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'])
+                x = boton.rect.right-2
+                self.botones.append(boton)
+                Renderer.addWidget(boton,2)
+            else:
+                x = self.x+4
+                y += 32
+    def Guardar(self):
+        #tendría que fijarse si hay cambios.
+        FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})
 
-class _SubPanel(Marco):
-    def __init__(self,parent,x,y,w,h,**opciones):
-        super().__init__(x,y,w,h,False,**opciones)
-        self.parent = parent
-        self.visible = False
+    # barra
+    def Cortar(self):
+        print('boton cortar')
+    def Copiar(self):
+        print('boton copiar')
+    def Pegar(self):
+        print('boton pegar')
     
-    def update(self):
-        for item in self.contenido:
-            item.visible = self.visible
-            item.enabled = item.visible
-        self.dirty = 1
-
-class SubPanelMobs(_SubPanel):
-    def __init__(self,parent,x,y,w,h,**opciones):
-        super().__init__(parent,x,y,w,h,**opciones)
-        self.nombre = self.parent.nombre+'.SubPanelMobs'
-        self.BtnNuevo = Boton(self,self.x+self.w-29,self.y+1,'Nuevo',self.cmdNuevo,'+')
-        self.EntryNom = Entry(self,'Nombre',self.x+1,self.y+3,5*C-3)
-        self.EntryNom.enabled = False
-        self.dropTipo = DropDownList(self,'Tipo',self.x+1,self.y+C,6*C-6,['¿Tipo?','Monstruo','Victima'])
-        self.agregar(self.BtnNuevo)
-        self.agregar(self.EntryNom)
-        self.agregar(self.dropTipo)
-    
-    def cmdNuevo(self):
-        self.EntryNom.enabled = True
-        self.EntryNom.setText('¿Nombre?')
-
-
-class SubPanelProps(_SubPanel):
-    def __init__(self,parent,x,y,w,h,**opciones):
-        super().__init__(parent,x,y,w,h,**opciones)
-        self.nombre = self.parent.nombre+'.SubPanelProps'
+    def addMob(self,ruta):
+        sprite = r.split_spritesheet(ruta)
+        nombre = os.path.split(ruta)[1][0:-4]
+        
+        
+    def addProp(self,ruta):
+        sprite = r.cargar_imagen(ruta)
+        nombre = os.path.split(ruta)[1][0:-4]
+        datos = {'nombre':nombre,'image':sprite,'tipo':'Prop'}
+        simbolo = Simbolo(self.PrevArea,datos)
+        self.PrevArea.agregarSimbolo(simbolo)
+        
 
 class area_prev(Marco):
     simbolos = None
@@ -98,9 +88,11 @@ class area_prev(Marco):
     def _dibujar_grilla(imagen,color):
         w,h = imagen.get_size()
         marco = Rect(0,0,w-2,h-2)
-        for i in range(1*C,6*C,C):
-            draw.line(imagen, color, (i,marco.top), (i,marco.bottom))
-            draw.line(imagen, color, (marco.left,i), (marco.right,i))
+        for x in range(1*C,6*C,C):
+            draw.line(imagen, color, (x,marco.top), (x,marco.bottom))
+        
+        for y in range(1*C,13*C,C):
+            draw.line(imagen, color, (marco.left,y), (marco.right,y))
         return imagen
     
     def agregarSimbolo(self,simbolo):
@@ -115,14 +107,15 @@ class Simbolo (BaseWidget):
     pressed = False
     enArea = True
     copiar = False
-    def __init__(self,parent,w,h,**opciones):
+    def __init__(self,parent,data,**opciones):
         super().__init__(**opciones)
+        self.data = data
         self.x,self.y = 0,0
-        self.w,self.h = w,h
+        self.w,self.h = data['image'].get_size()
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Simbolo.'+'ejemplo'
-        self.image = Surface((self.w,self.h))
-        self.image.fill((255,0,0))
+        self._nombre = self.data['nombre']
+        self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
+        self.image = self.data['image']
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
     def onMouseDown(self,button):
@@ -157,4 +150,5 @@ class Simbolo (BaseWidget):
         self.x,self.y = dx,dy
     
     def copy(self):
-        return Simbolo(self.parent,self.w,self.h)
+        #datos = {'nombre':self._nombre,'image':self.image}
+        return Simbolo(self.parent,self.data)
