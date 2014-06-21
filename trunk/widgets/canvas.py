@@ -96,8 +96,18 @@ class Canvas(BaseWidget):
     
     def pegar(self,elemento):
         x,y = self.getRelMousePos()
-        img = elemento.image
-        tile = SimboloCNVS(self,img,x-8,y-8)
+        datos = elemento.data
+        
+        if datos['tipo'] == 'Prop':
+            root = G.MAPA.script['capa_ground']['props']
+            if datos['nombre'] not in G.MAPA.script['capa_ground']['props']:
+                root[datos['nombre']] = [[]]
+                index = 0
+            else:
+                root[datos['nombre']].append([])
+                index = len(root[datos['nombre']])-1
+        datos['index'] = index
+        tile = SimboloCNVS(self,datos,x-8,y-8)
         self.tiles.add(tile)
 
     def update(self):
@@ -124,13 +134,15 @@ class Canvas(BaseWidget):
 
 class SimboloCNVS (BaseWidget):
     pressed = False
-    def __init__(self,parent,imagen,x,y,**opciones):
+    def __init__(self,parent,data,x,y,**opciones):
         super().__init__(**opciones)
-        self.image = imagen
+        self.data = data
+        self.image = self.data['image']
         self.x,self.y = x,y
         self.w,self.h = self.image.get_size()
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Simbolo.'+'ejemplo'
+        self._nombre = self.data['nombre']
+        self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
     def onMouseDown(self,button):
@@ -146,4 +158,8 @@ class SimboloCNVS (BaseWidget):
             x,y = self.parent.getRelMousePos()
             self.x,self.y = x-self.w//2,y-self.h//2
             self.rect.topleft = x-self.w//2,y-self.h//2
+            G.estado = self.data['tipo']+' '+self._nombre+' @ '+str(self.rect.topleft)
+            if self.data['tipo'] == "Prop":
+                root = G.MAPA.script['capa_ground']['props']
+                root[self._nombre][self.data['index']] = self.rect.topleft
         self.dirty = 1

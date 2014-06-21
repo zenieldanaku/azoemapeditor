@@ -1,6 +1,6 @@
-from . import BaseWidget,Marco, Entry, Boton, DropDownList
+from . import BaseWidget,Marco, Entry, Boton, DropDownList, subVentana
 from . import Label, ScrollV, ScrollH, Tree, BaseOpcion
-from pygame import Rect, font, Surface, mouse
+from pygame import Rect, font
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
 from renderer import Renderer
@@ -8,9 +8,7 @@ from constantes import *
 from colores import color
 import os, os.path
 
-class FileDiag(Marco):
-    x,y,w,h = 0,0,0,0
-    layer = 3
+class FileDiag(subVentana):
     pressed = False
     carpetaActual = ''
     archivoActual = ''
@@ -19,8 +17,7 @@ class FileDiag(Marco):
     carpetaVieja = ''
     def __init__(self,comando,**opciones):      
         self.nombre = 'FileDiag'
-        super().__init__(5*C,5*C,16*C,10*C+18,**opciones)
-        self.titular(self.nombre)
+        super().__init__(2*C+8,3*C,16*C,10*C+18,**opciones)
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
         dummyList = ['*.png','*.json','*.mob','*.quest']

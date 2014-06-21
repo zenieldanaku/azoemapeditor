@@ -16,15 +16,15 @@ class Grilla(Marco):
     verGrilla = False
     verRegla = False
     def __init__(self):
-        super().__init__(2*C,2*C,15*C+15,15*C+16,False)
+        super().__init__(0,1*C,15*C+15,15*C+16,False)
         self.nombre = 'Grilla'
-        self.canvas = Canvas(self,self.x+16,self.y+16,32*C,32*C,(15*C,15*C))
+        self.canvas = Canvas(self,self.x+16,self.y+16,25*C,25*C,(15*C,15*C))
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
         self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,32*C,32*C)
-        self.BtnVerGr = Boton(self,3,15*C+12,'BtnVerGr',self.cmdVerGr,'Gr')
-        self.BtnVerCapa = Boton(self,3,16*C+7,'BtnVerCapa',self.cmdVerCapa,'Cp')
-        self.BtnVerRegla = Boton(self,3,17*C+2,'BtnVerCapa',self.cmdVerRegla,'Rg')
+        self.BtnVerGr = Boton(self,19*C+6,2*C+4,'BtnVerGr',self.cmdVerGr,'Gr')
+        self.BtnVerCapa = Boton(self,19*C+6,1*C+4,'BtnVerCapa',self.cmdVerCapa,'Cp')
+        
         self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,32*C)
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,32*C)
         self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
@@ -34,9 +34,11 @@ class Grilla(Marco):
         self.agregar(self.canvas.ScrollY)
         self.agregar(self.BtnVerGr)
         self.agregar(self.BtnVerCapa)
-        self.agregar(self.BtnVerRegla)
+        self.agregar(self.canvas.ReglaX)
+        self.agregar(self.canvas.ReglaY)
+        self.agregar(self.ReglaHandler)
         
-    #Funciones de comando para los botones        
+    #Funciones de comando para los botones
     def cmdVerGr(self):
         if self.verGrilla:
             self.quitar(self.canvas.Grilla)
@@ -48,36 +50,17 @@ class Grilla(Marco):
     def cmdVerCapa(self):
         self.canvas.capas.switch_layer(LAYER_COLISIONES,LAYER_FONDO)
         
-    def cmdVerRegla(self):
-        if self.verRegla:
-            self.quitar(self.canvas.ReglaX)
-            self.quitar(self.canvas.ReglaY)
-            self.quitar(self.ReglaHandler)
-            self.verRegla = False
-            for linea in self.canvas.guias:
-                linea.visible = False
-        else:
-            self.agregar(self.canvas.ReglaX)
-            self.agregar(self.canvas.ReglaY)
-            self.agregar(self.ReglaHandler)
-            self.verRegla = True
-            for linea in self.canvas.guias:
-                linea.visible = True
-    
     def update(self):
         if G.HabilitarTodo:
             if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = True
             if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = True
             if not self.BtnVerCapa.enabled: self.BtnVerCapa.serHabilitado()
             if not self.BtnVerGr.enabled: self.BtnVerGr.serHabilitado()
-            if not self.BtnVerRegla.enabled: self.BtnVerRegla.serHabilitado()
         else:
             if self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = False
             if self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = False
             if self.BtnVerCapa.enabled: self.BtnVerCapa.serDeshabilitado()
             if self.BtnVerGr.enabled: self.BtnVerGr.serDeshabilitado()
-            if self.BtnVerRegla.enabled: self.BtnVerRegla.serDeshabilitado()
-        
         self.dirty = 1
         
 class _grilla(BaseWidget):

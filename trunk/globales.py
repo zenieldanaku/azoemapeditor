@@ -1,9 +1,9 @@
-from pygame import image, quit as py_quit
+from pygame import image, quit as py_quit, Rect
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
 from constantes import *
 from mapa import Mapa
-import json
+import json,os.path
 
 class GLOBALES:
     MAPA = None
@@ -13,6 +13,7 @@ class GLOBALES:
     IMGs_cargadas = {}
     HabilitarTodo = False
     portapapeles = None
+    preferencias = {}
     
     def guardar_mapa(ruta):
         data = GLOBALES.MAPA.guardar()
@@ -46,27 +47,47 @@ class GLOBALES:
                 item.serDeshabilitado()
     
 class Resources:
+    
+    @staticmethod
     def abrir_json (archivo):
         ex = open(archivo,'r')
         data = json.load(ex)
         ex.close()
         return data
     
+    @staticmethod
     def guardar_json (archivo,datos):
         ex = open(archivo,'w')
         json.dump(datos,ex, sort_keys=True,indent=4, separators=(',', ': '))
         ex.close()
     
+    @staticmethod
     def cargar_imagen(ruta):
         ar = image.load(ruta).convert_alpha()
         return ar
+     
+    @staticmethod
+    def split_spritesheet(ruta,w=32,h=32):
+        spritesheet = Resources.cargar_imagen(ruta)
+        ancho = spritesheet.get_width()
+        alto = spritesheet.get_height()
+        tamanio = w,h
+        sprites = []
+        for y in range(int(alto/h)):
+            for x in range(int(ancho/w)):
+                sprites.append(spritesheet.subsurface(Rect(((int(ancho/(ancho/w))*x,
+                                                            int(alto/(alto/h))*y),
+                                                            tamanio))))
+        return sprites
 
 class SharedFunctions:
     @staticmethod
     def setRutaFondo(ruta):
         try:
             GLOBALES.ruta = ruta
+            _ruta = 'maps/fondos/'+os.path.split(ruta)[1]
             GLOBALES.cargar_imagen(LAYER_FONDO)
+            GLOBALES.MAPA.script["capa_background"]["fondo"] = _ruta
         except:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
@@ -74,10 +95,19 @@ class SharedFunctions:
     def setRutaColis(ruta):
         try:
             GLOBALES.ruta = ruta
+            _ruta = 'maps/colisiones/'+os.path.split(ruta)[1]
             GLOBALES.cargar_imagen(LAYER_COLISIONES)
+            GLOBALES.MAPA.script["capa_background"]["colisiones"]= _ruta
         except:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
+    @staticmethod
+    def addSprite(ruta,sprite,nombre):
+        if type(sprite) == list:
+            _spr = sprite[0]
+        
+        GLOBALES.ruta = ruta
+        
     @staticmethod
     def nuevoMapa():
         GLOBALES.HabilitarTodo = True

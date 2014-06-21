@@ -4,6 +4,8 @@ from pygame.sprite import LayeredDirty
 from pygame import draw, Surface
 from renderer import Renderer
 from constantes import *
+from . import crear_ejemplo
+import os.path
 
 class barraHerramientas (Marco):
     
@@ -14,12 +16,18 @@ class barraHerramientas (Marco):
         elementos = [
             {"nom":'Nuevo',"cmd":shared.nuevoMapa,"scr":"N"},
             {"nom":'Abrir',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa}),"scr":"A"},
-            {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},{"nom":'barra'},
+            {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},
+            {"nom":'barra'},
             {"nom":'Cortar',"cmd":self.Cortar,"scr":"X"},
             {"nom":'Copiar',"cmd":self.Copiar,"scr":"C"},
-            {"nom":'Pegar',"cmd":self.Pegar,"scr":"P"},{"nom":'barra'},
+            {"nom":'Pegar',"cmd":self.Pegar,"scr":"P"},
+            {"nom":'barra'},
             {"nom":'SetImgFondo',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo}),"scr":"Fd"},
-            {"nom":'SetImgColisiones',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis}),"scr":"Cl"}]
+            {"nom":'SetImgColisiones',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis}),"scr":"Cl"},
+            {"nom":'barra'},
+            {"nom":'addMob',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':self.addMob}),"scr":"Mb"},
+            {"nom":'addProp',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':self.addProp}),"scr":"Pr"},
+            ]
         x = self.x
         for e in elementos:
             if e['nom'] != 'barra':
@@ -43,6 +51,17 @@ class barraHerramientas (Marco):
         print('boton copiar')
     def Pegar(self):
         print('boton pegar')
+    
+    def addMob(self,ruta):
+        #sprite = r.split_spritesheet(ruta)
+        #nombre = os.path.split(ruta)[1][0:-4]
+        #print(nombre)
+        crear_ejemplo(32,32)
+        
+    def addProp(self,ruta):
+        sprite = r.cargar_imagen(ruta)
+        nombre = os.path.split(ruta)[1][0:-4]
+        print(nombre)
     
     def update(self):
         if G.HabilitarTodo:

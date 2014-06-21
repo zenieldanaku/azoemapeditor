@@ -32,13 +32,4 @@ class Mapa:
     
     def cargar(self,data):
         self.script.update(data)
-    
-    def actualizar(self,dicc):
-        key = dicc['key']
-        value = dicc['value']
-        for k in self.script:
-            if k == key:
-                self.script[key]= value
-            elif key in self.script[k]:
-                self.script[k][key] = value
         

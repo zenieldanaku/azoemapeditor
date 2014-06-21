@@ -6,8 +6,8 @@ from rundata import *
 import pygame,sys,os
 
 pygame.init()
-tamanio = 24*C,19*C-7
-os.environ['SDL_VIDEO_WINDOW_POS'] = "{!s},{!s}".format(80,80)
+tamanio = 20*C+8,18*C-7
+os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
 pantalla.set_caption("MapGen")
 fondo = pantalla.set_mode(tamanio)
 ventana = Renderer.addWidget(Ventana(fondo.get_size()),0)
