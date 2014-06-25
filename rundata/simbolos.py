@@ -18,32 +18,33 @@ class PanelSimbolos(Marco):
         self.nombre = 'PanelSimbolos'
         self.simbolos = LayeredDirty()
         self.PrevArea = area_prev(self,self.x+3,self.y+3*C,self.w-6,13*C-2)
+        n,s,t,c,d = 'nom','scr','tipo','cmd','des'
         elementos = [
-            {"nom":'Nuevo',"cmd":shared.nuevoMapa,"scr":"N"},
-            {"nom":'Abrir',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.abrirMapa}),"scr":"A"},
-            {"nom":'Guardar',"cmd":self.Guardar,"scr":"G"},
-            {"nom":'barra'},
-            {"nom":'Cortar',"cmd":self.Cortar,"scr":"X"},
-            {"nom":'Copiar',"cmd":self.Copiar,"scr":"C"},
-            {"nom":'Pegar',"cmd":self.Pegar,"scr":"P"},
-            {"nom":'barra'},
-            {"nom":'SetImgFondo',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo}),"scr":"Fd"},
-            {"nom":'SetImgColisiones',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis}),"scr":"Cl"},
-            
-            {"nom":'addMob',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':self.addMob}),"scr":"Mb"},
-            {"nom":'addProp',"cmd":lambda:FileDiag({'scr':'A','tipo':'A','cmd':self.addProp}),"scr":"Pr"},
+            {n:'Nuevo',c:shared.nuevoMapa,s:"N",d:"Crear un mapa nuevo"},
+            {n:'Abrir',c:lambda:FileDiag({s:'A',t:'A',c:shared.abrirMapa}),s:"A",d:"Abrir un mapa existente"},
+            {n:'Guardar',c:self.Guardar,s:"G",d:"Guardar el mapa actual"},
+            {n:'barra'},
+            {n:'Cortar',c:self.Cortar,s:"X",d:"Cortar"},
+            {n:'Copiar',c:self.Copiar,s:"C",d:"Copiar"},
+            {n:'Pegar',c:self.Pegar,s:"P",d:"Pegar"},
+            {n:'barra'},
+            {n:'SetFondo',c:lambda:FileDiag({s:'A',t:'A',c:shared.setRutaFondo}),s:"Fd",d:"Cargar imagen de fondo"},
+            {n:'SetColis',c:lambda:FileDiag({s:'A',t:'A',c:shared.setRutaColis}),s:"Cl",d:"Cargar imagen de colisiones"},
+            {n:'addMob',c:lambda:FileDiag({s:'A',t:'A',c:self.addMob}),s:"Mb",d:"Cargar símbolo de mob (no funciona)"},
+            {n:'addProp',c:lambda:FileDiag({s:'A',t:'A',c:self.addProp}),s:"Pr",d:"Cargar símbolo de prop"},
             ]
         x = self.x+4
         y = 1*C+4
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'])
+                boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],descripcion = e['des'])
                 x = boton.rect.right-2
                 self.botones.append(boton)
                 Renderer.addWidget(boton,2)
             else:
                 x = self.x+4
                 y += 32
+                   
     def Guardar(self):
         #tendría que fijarse si hay cambios.
         FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})
@@ -60,15 +61,18 @@ class PanelSimbolos(Marco):
         sprite = r.split_spritesheet(ruta)
         nombre = os.path.split(ruta)[1][0:-4]
         
-        
     def addProp(self,ruta):
         sprite = r.cargar_imagen(ruta)
         nombre = os.path.split(ruta)[1][0:-4]
-        datos = {'nombre':nombre,'image':sprite,'tipo':'Prop'}
-        simbolo = Simbolo(self.PrevArea,datos)
-        self.PrevArea.agregarSimbolo(simbolo)
-        
-
+        datos = {'nombre':nombre,'image':sprite,'tipo':'Prop','ruta':ruta}
+        self.PrevArea.agregarSimbolo(datos)
+    
+    def update(self):
+        if G.HabilitarTodo:
+            G.habilitarItems(self.botones[2:])
+        else:
+            G.deshabilitarItems(self.botones[2:])
+            
 class area_prev(Marco):
     simbolos = None
     def __init__(self,parent,x,y,w,h,**opciones):
@@ -95,7 +99,8 @@ class area_prev(Marco):
             draw.line(imagen, color, (marco.left,y), (marco.right,y))
         return imagen
     
-    def agregarSimbolo(self,simbolo):
+    def agregarSimbolo(self,datos):
+        simbolo = Simbolo(self,datos)
         simbolo.rect.x += self.area.x
         simbolo.rect.y += self.area.y
 
@@ -110,12 +115,12 @@ class Simbolo (BaseWidget):
     def __init__(self,parent,data,**opciones):
         super().__init__(**opciones)
         self.data = data
-        self.x,self.y = 0,0
-        self.w,self.h = data['image'].get_size()
         self.parent = parent
+        self.image = self.data['image']
         self._nombre = self.data['nombre']
         self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
-        self.image = self.data['image']
+        self.x,self.y = 0,0
+        self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
     def onMouseDown(self,button):
@@ -145,8 +150,7 @@ class Simbolo (BaseWidget):
                 self.copiar = True
         
     def mover(self,dx=0,dy=0):
-        self.rect.x = dx
-        self.rect.y = dy
+        self.rect.topleft = dx,dy
         self.x,self.y = dx,dy
     
     def copy(self):

@@ -102,12 +102,11 @@ class SharedFunctions:
             GLOBALES.estado = 'No se ha selecionado ninguna imagen'
     
     @staticmethod
-    def addSprite(ruta,sprite,nombre):
-        if type(sprite) == list:
-            _spr = sprite[0]
-        
-        GLOBALES.ruta = ruta
-        
+    def addRef(nombre,ruta):
+        _ruta = ruta.replace('\\','/')
+        if nombre not in GLOBALES.MAPA.script['refs']:
+            GLOBALES.MAPA.script['refs'][nombre] = _ruta
+            
     @staticmethod
     def nuevoMapa():
         GLOBALES.HabilitarTodo = True

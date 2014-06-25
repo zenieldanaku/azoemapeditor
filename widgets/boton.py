@@ -2,7 +2,7 @@ from libs.textrect import render_textrect
 from pygame import font,Rect,draw,Surface, Color 
 from . import BaseWidget
 from colores import color
-from globales import Resources as r
+from globales import Resources as r, GLOBALES as G
 import os.path
 
 class Boton(BaseWidget):
@@ -123,3 +123,7 @@ class Boton(BaseWidget):
         if self.hasMouseOver and self.enabled:
             self.serElegido()
             self.comando()
+    
+    def onMouseOver(self):
+        #print(self.descripcion)
+        G.estado = self.descripcion

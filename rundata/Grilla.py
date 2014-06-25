@@ -25,6 +25,9 @@ class Grilla(Marco):
         self.BtnVerGr = Boton(self,19*C+6,2*C+4,'BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(self,19*C+6,1*C+4,'BtnVerCapa',self.cmdVerCapa,'Cp')
         
+        self.BtnVerCapa.descripcion = "Alterna entre el mapa de colisiones y la imagen de fondo"
+        self.BtnVerGr.descripcion = "Muestra u oculta la grilla"
+        
         self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,32*C)
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,32*C)
         self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
