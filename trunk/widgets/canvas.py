@@ -1,5 +1,5 @@
 from pygame.sprite import LayeredDirty, DirtySprite
-from globales import GLOBALES as G
+from globales import GLOBALES as G, SharedFunctions as shared
 from pygame import Surface, mouse
 from . import BaseWidget
 from constantes import * 
@@ -100,7 +100,7 @@ class Canvas(BaseWidget):
         
         if datos['tipo'] == 'Prop':
             root = G.MAPA.script['capa_ground']['props']
-            if datos['nombre'] not in G.MAPA.script['capa_ground']['props']:
+            if datos['nombre'] not in root:
                 root[datos['nombre']] = [[]]
                 index = 0
             else:
@@ -134,32 +134,54 @@ class Canvas(BaseWidget):
 
 class SimboloCNVS (BaseWidget):
     pressed = False
+    selected = False
+    
     def __init__(self,parent,data,x,y,**opciones):
         super().__init__(**opciones)
         self.data = data
-        self.image = self.data['image']
-        self.x,self.y = x,y
-        self.w,self.h = self.image.get_size()
         self.parent = parent
+        self.x,self.y = x,y
+        self.tipo = data['tipo']
+        self.index = data['index']
+        self.ruta = data['ruta']
         self._nombre = self.data['nombre']
+        self.img_uns = self.data['image']       
+        self.img_sel = self.crear_img_sel(self.img_uns)
+        self.image = self.img_uns
+        self.w,self.h = self.image.get_size()      
         self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
+    
+    @staticmethod
+    def crear_img_sel(imagebase):
+        over = imagebase.copy()
+        over.fill((0,0,100), special_flags=1)
+        return over
     
     def onMouseDown(self,button):
         if button == 1:
             self.pressed = True
+            self.image = self.img_sel
     
     def onMouseUp(self,button):
         if button == 1:
             self.pressed = False
+            self.image = self.img_uns
+    
+    def mover(self):
+        x,y = self.parent.getRelMousePos()
+        self.x,self.y = x-self.w//2,y-self.h//2
+        self.rect.topleft = x-self.w//2,y-self.h//2
     
     def update(self):
         if self.pressed:
-            x,y = self.parent.getRelMousePos()
-            self.x,self.y = x-self.w//2,y-self.h//2
-            self.rect.topleft = x-self.w//2,y-self.h//2
-            G.estado = self.data['tipo']+' '+self._nombre+' @ '+str(self.rect.topleft)
-            if self.data['tipo'] == "Prop":
+            self.mover()
+            #esto no le correponde al simbolo en sí.
+            G.estado = self.tipo+' '+self._nombre+' '+str(self.index)+' @ '+str(self.rect.topleft)
+            
+            if self.tipo == "Prop":
+                #G.addProp(self._nombre,self.index,self.rect.topleft)
                 root = G.MAPA.script['capa_ground']['props']
-                root[self._nombre][self.data['index']] = self.rect.topleft
+                root[self._nombre][self.index] = self.rect.topleft
+            shared.addRef(self._nombre,self.ruta)
         self.dirty = 1
