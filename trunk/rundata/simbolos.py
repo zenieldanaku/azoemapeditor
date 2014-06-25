@@ -1,6 +1,6 @@
 from pygame import Rect,Surface,draw,mouse
 from pygame.sprite import LayeredDirty
-from widgets import Marco, BaseWidget, FileDiag
+from widgets import Marco, BaseWidget, FileDiag, SimboloBase
 from widgets import Boton, DropDownList, Entry
 from renderer import Renderer
 from colores import color
@@ -100,36 +100,22 @@ class area_prev(Marco):
         return imagen
     
     def agregarSimbolo(self,datos):
-        simbolo = Simbolo(self,datos)
-        simbolo.rect.x += self.area.x
-        simbolo.rect.y += self.area.y
-
+        datos['pos'] = self.area.topleft
+        simbolo = SimboloPanel(self,datos)
         if simbolo not in self.simbolos:
             self.simbolos.add(simbolo)
         self.agregar(simbolo)
 
-class Simbolo (BaseWidget):
-    pressed = False
-    enArea = True
+class SimboloPanel (SimboloBase):
     copiar = False
-    def __init__(self,parent,data,**opciones):
-        super().__init__(**opciones)
-        self.data = data
-        self.parent = parent
-        self.image = self.data['image']
-        self._nombre = self.data['nombre']
-        self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
-        self.x,self.y = 0,0
-        self.w,self.h = self.image.get_size()
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
-    def onMouseDown(self,button):
-        if button == 1:
-            self.pressed = True
-            
+    def __init__(self,parent,data,**opciones):
+        super().__init__(parent,data,**opciones)
+        self.image = self._imagen.copy()
+    
     def onMouseUp(self,button):
         if button == 1:
-            self.pressed = False
+            super().onMouseUp(button)
             if self.copiar:
                 shared.copiar(self)
                 shared.pegar('Grilla.Canvas')
@@ -139,20 +125,14 @@ class Simbolo (BaseWidget):
             super().onMouseOut()
     
     def onMouseOver(self):
-        x,y = mouse.get_pos()
-        dx = x-self.w//2
-        dy = y-self.h//2
-        self.enArea = self.parent.area.collidepoint(dx,dy)
         if self.pressed:
-            if self.enArea:
+            abs_x = mouse.get_pos()[0]
+            dx,dy = self._arrastrar()
+            if self.parent.area.collidepoint(self.rect.x+dx,self.rect.y+dy):
                 self.mover(dx,dy)
-            elif x-self.rect.x < 0:
+            elif abs_x-self.rect.x < 0:
                 self.copiar = True
         
-    def mover(self,dx=0,dy=0):
-        self.rect.topleft = dx,dy
-        self.x,self.y = dx,dy
-    
     def copy(self):
-        #datos = {'nombre':self._nombre,'image':self.image}
-        return Simbolo(self.parent,self.data)
+        self.data['rect'] = self.rect.copy()
+        return self.data

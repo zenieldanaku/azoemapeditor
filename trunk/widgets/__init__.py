@@ -1,5 +1,6 @@
 from .basewidget import BaseWidget
 from .baseopcion import BaseOpcion
+from .baseSimbolo import SimboloBase
 from .ventana import Ventana
 from .boton import Boton
 from .scroll import ScrollH, ScrollV
