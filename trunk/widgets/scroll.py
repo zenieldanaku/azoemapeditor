@@ -79,6 +79,7 @@ class _baseScroll(BaseWidget):
         self.cursor.velocidad = velocidad
     
     def update(self):
+        #self.tamanio_cursor()
         self.image.fill(color('sysScrBack'))
         self.componentes.update()
         self.cursor.enabled = self.enabled
@@ -94,7 +95,10 @@ class ScrollV(_baseScroll):
         self.BtnNeg = _btnVer(self,0,'arriba')
         self.cursor = CursorV(self,parent,0,12,1/2*C)
         self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
-    
+
+    def tamanio_cursor(self):
+        h = self.parent.doc_h
+        
     def moverCursor(self,dy):
         self.cursor.mover(dy)
 
@@ -106,6 +110,15 @@ class ScrollH(_baseScroll):
         self.BtnNeg = _btnHor(self,0,'izquierda')
         self.cursor = CursorH(self,parent,12,0,1/2*C)
         self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
+        
+    def tamanio_cursor(self):
+        doc_w = self.parent.doc_w
+        win_w = self.w
+        size = round(win_w/(doc_w/win_w))
+        if size == win_w:
+            size = 0
+        self.cursor.actualizar_tamanio(size,self.cursor.h)
+        
     
     def moverCursor(self,dx):
         self.cursor.mover(dx)
@@ -121,18 +134,26 @@ class _baseCursor(BaseWidget):
         self.parent = parent
         self.x,self.y = x,y
         self.w,self.h = w,h
-        cF,cL,cS = color('sysElmFace'),color('sysElmLight'),color('sysElmShadow') 
-        self.image = self._biselar(self._agregar_barras(self._crear(w,h,cF),cL,cS),cL,cS)
+        self.crear(w,h)
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.pressed = False
         self.dirty = 1
+    
+    def crear(self,w,h):
+        cF,cL,cS = color('sysElmFace'),color('sysElmLight'),color('sysElmShadow')
+        self.image = self._biselar(self._agregar_barras(self._crear(w,h,cF),cL,cS),cL,cS)
     
     @staticmethod
     def _crear(w,h,color):
         imagen = Surface((w,h)) # crear la base absoluta
         imagen.fill(color)
         return imagen
-
+    
+    def actualizar_tamanio(self,new_w,new_h):
+        self.w,self.h = new_w,new_h
+        self.crear(new_w,new_h)
+        self.rect.size = new_w,new_h
+    
     def onMouseDown(self,button):
         if button == 1:
             self.pressed = True

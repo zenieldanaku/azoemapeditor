@@ -18,18 +18,18 @@ class Grilla(Marco):
     def __init__(self):
         super().__init__(0,1*C,15*C+15,15*C+16,False)
         self.nombre = 'Grilla'
-        self.canvas = Canvas(self,self.x+16,self.y+16,25*C,25*C,(15*C,15*C))
+        self.canvas = Canvas(self,self.x+16,self.y+16,15*C,15*C,(15*C,15*C))
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
-        self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,32*C,32*C)
+        self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
         self.BtnVerGr = Boton(self,19*C+6,2*C+4,'BtnVerGr',self.cmdVerGr,'Gr')
         self.BtnVerCapa = Boton(self,19*C+6,1*C+4,'BtnVerCapa',self.cmdVerCapa,'Cp')
         
         self.BtnVerCapa.descripcion = "Alterna entre el mapa de colisiones y la imagen de fondo"
         self.BtnVerGr.descripcion = "Muestra u oculta la grilla"
         
-        self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,32*C)
-        self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,32*C)
+        self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,15*C+1)
+        self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,15*C+1)
         self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
         
         self.agregar(self.canvas)
@@ -83,13 +83,20 @@ class _grilla(BaseWidget):
         marco = Rect(0,0,w,h)
         base = Surface(marco.size)
         _color = (100,200,100)
-        for i in range(1*C,32*C,C):
-            draw.line(base, _color, (i,marco.top), (i,marco.bottom),1)
-            draw.line(base, _color, (marco.left,i), (marco.right,i),1)
+        for x in range(1*C,(h//32)*32,C):
+            draw.line(base, _color, (x,marco.top), (x,marco.bottom),1)
+        for y in range(1*C,(w//32)*32,C):
+            draw.line(base, _color, (marco.left,y), (marco.right,y),1)
+            
         base.set_colorkey((0,0,0))
         
         return base
     
+    def actualizar_tamanio(self,w,h):
+        self.FONDO = self._crear(w,h)
+        self.clip.topleft = 0,0
+        self.image = self.FONDO.subsurface(self.clip)
+        
     def scroll(self,dx,dy):
         self.clip.y += dy
         self.clip.x += dx
@@ -116,6 +123,11 @@ class BaseRegla(BaseWidget):
         spr.rect = spr.image.get_rect(topleft=(x,y))
         spr.dirty = 2
         return spr
+    
+    def actualizar_tamanio(self,nuevotamanio):
+        self.FONDO = self.crear(nuevotamanio)
+        self.clip.topleft = 0,0
+        self.image = self.FONDO.subsurface(self.clip)
         
     def onMouseDown(self,button):
         if button == 1:
@@ -137,7 +149,6 @@ class BaseRegla(BaseWidget):
             self.moverLinea()
 
 class ReglaH(BaseRegla):
-    
     def __init__(self,parent,x,y,w,**opciones):
         super().__init__(parent,x,y,**opciones)
         self.nombre = self.parent.nombre+'.ReglaH'
