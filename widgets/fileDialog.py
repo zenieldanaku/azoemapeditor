@@ -180,14 +180,15 @@ class listaDeArchivos(Marco):
             opcion = _Opcion(self,nom,self.x,dy,self.w-16)
             h = opcion.image.get_height()
             self.items.add(opcion)
-            self.agregar(opcion)
+            if self.rect.contains(opcion.rect):
+                self.agregar(opcion)
        
     def borrarLista(self):
         for item in self.items:
             self.items.remove(item)
             self.quitar(item)
     
-    def scroll(self,dy):
+    def scroll(self,dy=0):
         pass
     
     def actualizarLista(self,carpeta,tipo):

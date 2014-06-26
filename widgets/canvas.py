@@ -1,6 +1,6 @@
 from pygame.sprite import LayeredDirty, DirtySprite
 from globales import GLOBALES as G, SharedFunctions as shared
-from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT,mask
+from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT,mask,transform
 from . import BaseWidget, SimboloBase
 from constantes import * 
 
@@ -10,6 +10,8 @@ class Canvas(BaseWidget):
     tiles = None
     clip = None
     FONDO = None
+    doc_w = None
+    doc_h = None
     pressed = False
     def __init__(self,parent,x,y,w,h,clip,**opciones):
         if 'colorFondo' not in opciones:
@@ -24,6 +26,7 @@ class Canvas(BaseWidget):
         self.w,self.h = clip
         self.Tw,self.Th = w,h
         self.FONDO = Surface((w,h))
+        self.doc_w,self.doc_h = w,h
         self.pintarFondoCuadriculado()
         self.image = self.FONDO.subsurface(0,0,self.w,self.h)
         self.image.set_clip((0,0,self.w,self.h))
@@ -127,12 +130,24 @@ class Canvas(BaseWidget):
         datos['index'] = index
         tile = SimboloCNVS(self,datos)
         self.tiles.add(tile)
-
+    
+    def actualizar_tamanio_fondo (self,w,h):
+        self.FONDO = transform.scale(self.FONDO,(w,h))
+        self.image = self.FONDO.subsurface(self.clip)
+        self.ReglaX.actualizar_tamanio(w)
+        self.ReglaY.actualizar_tamanio(h)
+        self.Grilla.actualizar_tamanio(w,h)
+        self.doc_w,self.doc_h = w,h
+        self.Th,self.Tw = w,h
+        
     def update(self):
         if not G.HabilitarTodo:
             self.guias.empty()
             self.capas.empty()
             self.tiles.empty()
+            self.clip.topleft = 0,0
+            self.actualizar_tamanio_fondo(15*C+1,15*C+1)
+            
             
         if len(G.IMGs_cargadas) <= 0:
             self.capas.empty()
@@ -141,6 +156,8 @@ class Canvas(BaseWidget):
         else:
             for idx in G.IMGs_cargadas:
                 spr = G.IMGs_cargadas[idx]
+                if self.FONDO.get_size() != spr.rect.size:
+                    self.actualizar_tamanio_fondo(*spr.rect.size)
                 if spr not in self.capas:
                     self.capas.add(spr)
             self.capas.draw(self.FONDO)

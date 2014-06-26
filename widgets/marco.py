@@ -7,6 +7,8 @@ from renderer import Renderer
 class Marco(BaseWidget):
     contenido = None
     indexes = []
+    doc_w = None
+    doc_h = None
     def __init__(self,x,y,w,h,borde=True,**opciones):
         self.contenido = LayeredDirty()
         super().__init__(**opciones)
