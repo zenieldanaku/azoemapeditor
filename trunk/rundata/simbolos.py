@@ -14,7 +14,7 @@ class PanelSimbolos(Marco):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
 
-        super().__init__(16*C,1*C,4*C+8,16*C-1,**opciones)
+        super().__init__(16*C,19,4*C+8,16*C-1,**opciones)
         self.nombre = 'PanelSimbolos'
         self.simbolos = LayeredDirty()
         self.PrevArea = area_prev(self,self.x+3,self.y+3*C,self.w-6,13*C-2)
@@ -34,7 +34,7 @@ class PanelSimbolos(Marco):
             {n:'addProp',c:lambda:FileDiag({s:'A',t:'A',c:self.addProp}),s:"Pr",d:"Cargar símbolo de prop"},
             ]
         x = self.x+4
-        y = 1*C+4
+        y = 19+4
         for e in elementos:
             if e['nom'] != 'barra':
                 boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],descripcion = e['des'])

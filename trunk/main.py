@@ -6,7 +6,7 @@ from rundata import *
 import pygame,sys,os
 
 pygame.init()
-tamanio = 20*C+8,18*C-7
+tamanio = 20*C+8,18*C-19
 os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
 pantalla.set_caption("MapGen")
 fondo = pantalla.set_mode(tamanio)
@@ -17,7 +17,7 @@ ventana.onFocusIn()
 hayCambios = True
 FPS = time.Clock()
 while hayCambios:
-    FPS.tick(60)
+    FPS.tick(20)
     events = pygame.event.get()
     hayCambios = Renderer.update(events,fondo)
     if hayCambios:

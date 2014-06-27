@@ -1,8 +1,8 @@
-from pygame import Surface,Rect,font,mouse
+from pygame import Surface,Rect,font,mouse,draw
 from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 from renderer import Renderer
-from . import BaseWidget, BaseOpcion
+from . import BaseWidget
 from colores import color
 
 class Menu (BaseWidget):
@@ -11,12 +11,13 @@ class Menu (BaseWidget):
     visible = 0
     nombre = ''
     def __init__(self,nombre,ops,x,y):
+        self.fuente = font.SysFont('Tahoma',11)
         self.cascada = None
         self.boton = None
         super().__init__()
         self.boton = _Boton(self,nombre,x,y)
         h = self.boton.rect.h
-        self.cascada = _Cascada(self,nombre,ops,x,h,h)
+        self.cascada = _Cascada(self,nombre,ops,x,h-1)
         
     def showMenu(self):
         self.cascada.showMenu()
@@ -48,8 +49,8 @@ class _Boton(BaseWidget):
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.Boton'
-        self.img_des = self.crear_boton(nombre,color(opciones['colorTexto']),color(self.opciones['colorFondo']))
-        self.img_sel = self.crear_boton(nombre,color(opciones['colorTexto']),color(self.opciones['colorBgSel']))
+        self.img_des = self.crear_boton(nombre,parent.fuente,color(opciones['colorTexto']),color(self.opciones['colorFondo']))
+        self.img_sel = self.crear_boton(nombre,parent.fuente,color(opciones['colorTexto']),color(self.opciones['colorBgSel']))
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
@@ -57,10 +58,9 @@ class _Boton(BaseWidget):
         Renderer.addWidget(self,4)
     
     @staticmethod
-    def crear_boton(nombre,fgcolor,bgcolor):
-        fuente = font.SysFont('Verdana',14)
+    def crear_boton(nombre,fuente,fgcolor,bgcolor):
         w,h = fuente.size(nombre)
-        rect = Rect(-1,-1,w,h+1)
+        rect = Rect(-1,-1,w+15,h+1)
         render = render_textrect(nombre,fuente,rect,fgcolor,bgcolor,1)
         return render
         
@@ -81,74 +81,122 @@ class _Cascada (BaseWidget):
     parent = None
     mostrar = False
     
-    def __init__(self,parent,nombre,opciones,x,y,j=19):
+    def __init__(self,parent,nombre,opciones,x,y):
         super().__init__()
         self.opciones = LayeredDirty()
         self.parent = parent
         self.nombre = parent.nombre+'.Cascada.'+nombre
-        # Determinar el ancho de la opcion con mas caracteres
-        l = [opciones[n]['nom'] for n in range(len(opciones))]
-        w_max = len(max(l,key=lambda n:len(n)))
-        # Agregar una cantidad de espacios igual a la diferencia mediante format
-        # mocho, porque limita la fuente de la opcion a una de fixed width
-        # pero funciona
-        for n in range(len(opciones)):
-            if '{}' not in opciones[n]['nom']:
-                opciones[n]['nom'] += '{}'
-            opciones[n]['nom']= opciones[n]['nom'].format(' '*int(w_max-len(l[n])))            
-        
-        alto,ancho,h = 0,0,0
+        self.layer+=2
+        _fuente = font.SysFont('Tahoma',11)
+        _w = 0
         for n in range(len(opciones)):
             _nom = opciones[n]['nom']
-            dy = j+(n*h)+5
-            opcion = _Opcion(self,_nom,x,dy)
-            w,h = opcion.image.get_size()
+            __w = _fuente.size(_nom)[0]
+            if __w > _w:
+                _w = __w
             if 'csc' in opciones[n]:
-                opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x+w,dy,h*(n+1))
-            elif 'cmd' in opciones[n]:
-                opcion.command = opciones[n]['cmd']
-            alto += h+1
-            if w > ancho: ancho = w
+                opciones[n]['scr'] = 'flecha'
+            elif 'win' in opciones[n]:
+                opciones[n]['scr'] = '...'
+            else:
+                opciones[n]['scr'] = None
+        h = 19
+        for n in range(len(opciones)):
+            _nom = opciones[n]['nom']
+            dy = y+(n*h)+5
+            if _nom != 'barra':
+                opcion = OpcionCascada(self,opciones[n],x,dy,_w,19)
+                w = opcion.image.get_size()[0]
+                if 'csc' in opciones[n]:
+                    opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x+w-3,h*(n+1)-5)
+                elif 'win' in opciones[n]:
+                    opcion.command = opciones[n]['win']
+                else:
+                    opcion.command = opciones[n]['cmd']
+            
             self.opciones.add(opcion)
-
-        self.rect = Rect(x,y+5,ancho,alto-8)
-
+    
+    def getRelMousePos(self):
+        abs_x,abs_y = mouse.get_pos()
+        dx = abs_x-self.x
+        dy = abs_y-self.y
+        
+        return dx,dy
+    def get_component(self):
+        x,y = self.getRelMousePos()
+        if self.componentes.get_sprites_at((x,y)) != []:
+            return self.componentes.get_sprites_at((x,y))[-1]
+        return self
+    def onMouseDown(self,button):
+        pass
+    def onMouseUp(self,button):
+        pass
     def showMenu(self):
         self.mostrar = True
         for opcion in self.opciones:
             Renderer.addWidget(opcion,2)
-
     def hideMenu(self):
         self.mostrar = False
         for opcion in self.opciones:
             Renderer.delWidget(opcion)
-
     def onFocusIn(self):
         super().onFocusIn()
         self.showMenu()
-    
     def onFocusOut(self):
         super().onFocusOut()
         recursion = True
-        parent = self.parent
+        ancestro = self.parent
         while recursion:
-            if hasattr(parent,'parent'):
-                parent = parent.parent
+            if hasattr(ancestro,'parent'):
+                ancestro = ancestro.parent
             else:
                 recursion = False
-        parent.hideMenu()
-    
+        ancestro.hideMenu()
     def onMouseIn(self):
         if self._visible:
             self.onFocusIn()
+    def update(self):
+        pass
 
-class _Opcion(BaseOpcion):
+class OpcionCascada(BaseWidget):
     command = None
     setFocus_onIn = True
     
-    def __init__(self,parent,nombre,x,y):
-        super().__init__(parent,nombre,x,y)
-
+    def __init__(self,parent,data,x,y,w,h,**opciones):
+        super().__init__(**opciones)
+        if 'Fuente' not in self.opciones:
+            self.opciones['fontType'] = 'Tahoma'
+        if 'fontSize' not in self.opciones:
+            self.opciones['fontSize'] = 11
+        fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
+        self.x,self.y = x,y
+        self.parent = parent
+        self.nombre = self.parent.nombre+'.Opcion.'+data['nom']
+        self.img_des = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h)
+        self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),w,h)
+        self.image = self.img_des
+        self.w,self.h = self.image.get_size()
+        self.rect = self.image.get_rect(topleft = (self.x,self.y))
+        self.dirty = 1
+        
+    @staticmethod
+    def crear(data,fuente,fgcolor,bgcolor,w,h):
+        imagen = Surface((w+25,h))
+        imagen.fill(bgcolor)
+        
+        nombre = data['nom']
+        if data['scr'] == '...':
+            nombre += data['scr']
+        elif data['scr'] == 'flecha':
+            flecha = Surface((9,9))
+            flecha.fill(bgcolor)
+            draw.polygon(flecha, fgcolor, [[1,1],[1,8],[6,4]])
+            imagen.blit(flecha,(w+10,4))
+        
+        render = fuente.render(nombre,True,fgcolor,bgcolor)
+        imagen.blit(render,(4,2))
+        return imagen
+    
     def onMouseDown(self,button):
         if isinstance(self.command,_Cascada):
             self.command.showMenu()

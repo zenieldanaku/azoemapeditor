@@ -92,11 +92,15 @@ class DropDownList(BaseWidget):
                 item.enabled = False
         self.rect = self.collapsedRect
     
+    def onFocusOut(self):
+        super().onFocusOut()
+        self.hideItems()
+        
     def update(self):
         self.image.fill((255,0,0)) #clear with transparent color
         self.componentes.update()
         self.componentes.draw(self.image)
-        self.dirty = 2
+        self.dirty = 1
 
 class _Flecha(BaseWidget):
     def __init__(self,parent,w,**opciones):

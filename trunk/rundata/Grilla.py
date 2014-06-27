@@ -16,14 +16,15 @@ class Grilla(Marco):
     verGrilla = False
     verRegla = False
     def __init__(self):
-        super().__init__(0,1*C,15*C+15,15*C+16,False)
+        super().__init__(0,19,15*C+15,15*C+16,False)
         self.nombre = 'Grilla'
         self.canvas = Canvas(self,self.x+16,self.y+16,15*C,15*C,(15*C,15*C))
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
         self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
-        self.BtnVerGr = Boton(self,19*C+6,2*C+4,'BtnVerGr',self.cmdVerGr,'Gr')
-        self.BtnVerCapa = Boton(self,19*C+6,1*C+4,'BtnVerCapa',self.cmdVerCapa,'Cp')
+        self.BtnVerCapa = Boton(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,'Cp')
+        self.BtnVerGr = Boton(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,'Gr')
+        
         
         self.BtnVerCapa.descripcion = "Alterna entre el mapa de colisiones y la imagen de fondo"
         self.BtnVerGr.descripcion = "Muestra u oculta la grilla"
@@ -83,10 +84,10 @@ class _grilla(BaseWidget):
         marco = Rect(0,0,w,h)
         base = Surface(marco.size)
         _color = (100,200,100)
-        for x in range(1*C,(h//32)*32,C):
+        for x in range(C,(h//32)*32,C):
             draw.line(base, _color, (x,marco.top), (x,marco.bottom),1)
-        for y in range(1*C,(w//32)*32,C):
-            draw.line(base, _color, (marco.left,y), (marco.right,y),1)
+        for y in range(C,(w//32)*32,C):
+            draw.line(base, _color, (marco.left,y-1), (marco.right,y-1),1)
             
         base.set_colorkey((0,0,0))
         
@@ -165,7 +166,7 @@ class ReglaH(BaseRegla):
         regla = Surface((w,C//2))
         regla.fill((255,255,255),(1,1,w-2,14))
         j = -1
-        for i in range(1,31):
+        for i in range(1,33):
             j+=1
             draw.line(regla,(0,0,0),(i*C,0),(i*C,16))
             digitos = [i for i in str(j*C)]
@@ -208,7 +209,7 @@ class ReglaV(BaseRegla):
         regla.fill((255,255,255),(1,1,14,h-2))
         
         j = -1
-        for i in range(1,31):
+        for i in range(1,33):
             j+=1
             draw.line(regla,(0,0,0),(0,i*C),(C//2,i*C))
             digitos = [i for i in str(j*C)]
@@ -251,8 +252,8 @@ class HandlerRegla(BaseWidget):
     def _crear():
         imagen =  Surface((16,16))
         imagen.fill((255,255,255),(1,1,14,14))
-        draw.line(imagen,(0,0,0),(0,10),(15,10))
-        draw.line(imagen,(0,0,0),(10,0),(10,15))
+        draw.line(imagen,(0,0,0),(0,10),(14,10))
+        draw.line(imagen,(0,0,0),(10,0),(10,14))
         return imagen
     
     @staticmethod
@@ -292,11 +293,11 @@ class HandlerRegla(BaseWidget):
     
     def ToggleSel(self,select):
         if select:
-            draw.line(self.image,(125,255,255),(1,10),(15,10))
-            draw.line(self.image,(125,255,255),(10,1),(10,15))
+            draw.line(self.image,(125,255,255),(1,10),(14,10))
+            draw.line(self.image,(125,255,255),(10,1),(10,14))
         else:
-            draw.line(self.image,(0,0,0),(0,10),(15,10))
-            draw.line(self.image,(0,0,0),(10,0),(10,15))
+            draw.line(self.image,(0,0,0),(0,10),(14,10))
+            draw.line(self.image,(0,0,0),(10,0),(10,14))
     
     def moverLineas(self):
         x,y = self.parent.getRelMousePos()

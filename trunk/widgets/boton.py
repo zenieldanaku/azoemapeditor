@@ -125,5 +125,5 @@ class Boton(BaseWidget):
             self.comando()
     
     def onMouseOver(self):
-        #print(self.descripcion)
-        G.estado = self.descripcion
+        if self.enabled:
+            G.estado = self.descripcion
