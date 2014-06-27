@@ -7,9 +7,9 @@ class Menu_Mapa (Menu):
         self.nombre = 'Menu.Mapa'
         self.barra = barra
         cascadas = {'imagen':[
-                {'nom':'Fondo','cmd':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo})},
-                {'nom':'Colisiones','cmd':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis})}]}
-        opciones = [{'nom':'Grilla...{}','cmd':lambda:print('grilla')},
-                   {'nom':'Capas...{}','cmd':lambda:print('capas')},
-                   {'nom':'Imagen{}>','csc':cascadas['imagen']}]
+                {'nom':'Fondo','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo})},
+                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis})}]}
+        opciones = [{'nom':'Grilla','cmd':lambda:print('grilla')},
+                   {'nom':'Capas','cmd':lambda:print('capas')},
+                   {'nom':'Imagen','csc':cascadas['imagen']}]
         super().__init__('Mapa',opciones,x,y)

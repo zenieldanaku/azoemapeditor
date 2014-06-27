@@ -10,7 +10,7 @@ class Entry(BaseWidget):
     cur_x = 4
     idx = 0
     cur_visible = False
-    ticks,max_tick = 0,30
+    ticks,max_tick = 0,10
     seleccionando = False
     sel_start,sel_end = 0,0
     seleccion = None
