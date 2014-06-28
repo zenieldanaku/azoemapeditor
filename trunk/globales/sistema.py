@@ -15,6 +15,7 @@ class Sistema:
     HabilitarTodo = False
     portapapeles = None
     preferencias = {}
+    Guardado = False
     
     @staticmethod
     def cargar_imagen(layer):
@@ -87,6 +88,7 @@ class Sistema:
             data = Sistema.MAPA.guardar()
             Resources.guardar_json(ruta,data)
             Sistema.estado = "Mapa '"+ruta+"' guardado."
+            Sistema.Guardado = ruta
         except: 
             Sistema.estado ='Error: Es necesario cargar un mapa.'
     

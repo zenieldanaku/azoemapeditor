@@ -14,6 +14,9 @@ class Menu_Archivo(Menu):
             {'nom':'Salir','cmd':Sys.salir}]
         super().__init__('Archivo',opciones,x,y)
     
-    def Guardar(self):
-        # acá habria que ver si hay cambios.
-        FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarMapa})
+    @staticmethod
+    def Guardar():
+        if not Sys.Guardado:
+            FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarMapa})
+        else:
+            Sys.guardarMapa(Sys.Guardado)
