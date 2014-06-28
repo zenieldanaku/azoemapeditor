@@ -1,8 +1,8 @@
 from libs.textrect import render_textrect
 from pygame import font,Rect,Surface
-from colores import color
+from globales.constantes import *
+from globales import color
 from . import BaseWidget
-from constantes import *
 
 class Label (BaseWidget):
     texto = ''

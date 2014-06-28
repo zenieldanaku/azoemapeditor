@@ -3,9 +3,9 @@ from . import Label, ScrollV, ScrollH, Tree, BaseOpcion
 from pygame import Rect, font
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
-from renderer import Renderer
-from constantes import *
-from colores import color
+from globales import EventHandler, color
+from globales.constantes import *
+
 import os, os.path
 
 class FileDiag(subVentana):
@@ -27,7 +27,7 @@ class FileDiag(subVentana):
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,12*C+25,'')
         self.BtnAccion = Boton(self,x+14*C+32,y+8*C+21,'Accion',self.ejecutar_comando,comando['scr'])
         self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,12*C+25,dummyList)
-        self.BtnCancelar = Boton(self,x+15*C,y+9*C+15,'Cancelar',lambda:Renderer.delWidget(self),'C')
+        self.BtnCancelar = Boton(self,x+15*C,y+9*C+15,'Cancelar',lambda:EventHandler.delWidget(self),'C')
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+18,texto = "Tipo:")
         self.lblNombre = Label(self,'Nombre',x+4,y+8*C+24, texto = 'Nombre:')    
         
@@ -57,7 +57,7 @@ class FileDiag(subVentana):
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo)
         
         self.comando(ruta)
-        Renderer.delWidget(self)
+        EventHandler.delWidget(self)
 
     def update(self):
         tipo = self.tipos.ItemActual.lstrip('*')

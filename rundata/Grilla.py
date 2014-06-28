@@ -1,10 +1,7 @@
 from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco, Canvas
+from globales import Sistema as Sys, EventHandler, color, C
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Surface,Rect,draw,font,K_SPACE
-from globales import GLOBALES as G
-from renderer import Renderer
-from constantes import *
-from colores import color
 import os
 
 class Grilla(Marco):
@@ -24,7 +21,6 @@ class Grilla(Marco):
         self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
         self.BtnVerCapa = Boton(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,'Cp')
         self.BtnVerGr = Boton(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,'Gr')
-        
         
         self.BtnVerCapa.descripcion = "Alterna entre el mapa de colisiones y la imagen de fondo"
         self.BtnVerGr.descripcion = "Muestra u oculta la grilla"
@@ -55,7 +51,7 @@ class Grilla(Marco):
         self.canvas.capas.switch_layer(LAYER_COLISIONES,LAYER_FONDO)
         
     def update(self):
-        if G.HabilitarTodo:
+        if Sys.HabilitarTodo:
             if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = True
             if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = True
             if not self.BtnVerCapa.enabled: self.BtnVerCapa.serHabilitado()

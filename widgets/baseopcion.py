@@ -1,11 +1,11 @@
 from . import BaseWidget
 from pygame import font,Rect
-from colores import color
+from globales import color
 from libs.textrect import render_textrect
 
 class BaseOpcion(BaseWidget):
         
-    def __init__(self,parent,nombre,x,y,w=0,**opciones):
+    def __init__(self,parent,nombre,x,y,w=0,h=0,**opciones):
         super().__init__(**opciones)
         self.x,self.y = x,y
         self.parent = parent

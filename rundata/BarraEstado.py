@@ -1,9 +1,6 @@
+from globales import Sistema as Sys, EventHandler, C, color
 from pygame import Rect,Surface,draw
-from globales import GLOBALES as G
 from widgets import Marco, Label
-from renderer import Renderer
-from colores import color
-from constantes import *
 
 class barraEstado (Marco):
     _estado = ''
@@ -15,8 +12,8 @@ class barraEstado (Marco):
         self._estado = ''
         self.lblEstado = Label(self,'Estado',self.x+4,self.y+3)
         self.draw_area = Rect(4,3,self.w-8,self.h-8)
-        Renderer.addWidget(self)
-        Renderer.addWidget(self.lblEstado,2)
+        EventHandler.addWidget(self)
+        EventHandler.addWidget(self.lblEstado,2)
     
     def mostrar_estado(self,mensaje):
         bgcolor = color(self.opciones.get('colorFondo', 'sysElmFace'))
@@ -26,7 +23,7 @@ class barraEstado (Marco):
             self.lblEstado.setText(mensaje)
             
     def update(self):
-        msj = G.estado
+        msj = Sys.estado
         self.mostrar_estado(msj)
         self.dirty = 1
     

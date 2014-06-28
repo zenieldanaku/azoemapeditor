@@ -1,10 +1,9 @@
-from . import Marco, BaseWidget, BaseOpcion
-from colores import color
-from constantes import *
 from pygame import font, Rect, Surface, draw
-from pygame.sprite import LayeredDirty
-from renderer import Renderer
+from . import Marco, BaseWidget, BaseOpcion
 from libs.textrect import render_textrect
+from globales import EventHandler, color
+from pygame.sprite import LayeredDirty
+from globales.constantes import *
 
 class Tree (Marco):
     ItemActual = ''
@@ -81,12 +80,12 @@ class Item (BaseWidget):
         w = self.cursor.rect.w+3+self.opcion.rect.w
         self.rect = Rect(x,y,w,h)
         self.w,self.h = self.rect.size
-        Renderer.addWidget(self.opcion,self.layer+1)
-        Renderer.addWidget(self.cursor,self.layer+1)      
+        EventHandler.addWidget(self.opcion,self.layer+1)
+        EventHandler.addWidget(self.cursor,self.layer+1)      
                 
     def onDestruction(self):
-        Renderer.delWidget(self.opcion)
-        Renderer.delWidget(self.cursor)
+        EventHandler.delWidget(self.opcion)
+        EventHandler.delWidget(self.cursor)
     
     def colapsarHijos(self):
         for hijo in self.hijos:

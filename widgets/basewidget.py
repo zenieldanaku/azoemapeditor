@@ -1,5 +1,5 @@
 from pygame.sprite import DirtySprite
-from colores import color
+from globales import color
 from pygame import draw
 
 class BaseWidget(DirtySprite):

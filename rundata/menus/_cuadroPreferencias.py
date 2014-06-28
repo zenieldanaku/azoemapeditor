@@ -1,6 +1,5 @@
+from globales import C, Sistema as Sys, EventHandler
 from widgets import subVentana, Label, Entry, Boton
-from globales import C, GLOBALES
-from renderer import Renderer
 
 class cuadroPreferencias (subVentana):    
     def __init__(self):
@@ -18,8 +17,8 @@ class cuadroPreferencias (subVentana):
         self.agregar(self.btnCancelar)
     
     def Aceptar(self):
-        GLOBALES.preferencias['ModFolder'] = self.entryModFolder.devolver_texto()
+        Sys.preferencias['ModFolder'] = self.entryModFolder.devolver_texto()
         self.cerrar()
     
     def cerrar(self):
-        Renderer.delWidget(self)
+        EventHandler.delWidget(self)
