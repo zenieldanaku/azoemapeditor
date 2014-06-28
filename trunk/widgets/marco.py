@@ -1,8 +1,7 @@
 from pygame.sprite import LayeredDirty
 from pygame import Surface,draw
 from . import BaseWidget
-from colores import color
-from renderer import Renderer
+from globales import color, EventHandler
 
 class Marco(BaseWidget):
     contenido = None
@@ -20,7 +19,7 @@ class Marco(BaseWidget):
         self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         
-        Renderer.addWidget(self,self._layer)
+        EventHandler.addWidget(self,self._layer)
         
         if borde:self.image = self._biselar(self.image,
                 color(self.opciones.get('colorLuz','sysElmLight')),
@@ -28,12 +27,12 @@ class Marco(BaseWidget):
             
     def agregar(self,objeto, layer=1):
         self.contenido.add(objeto)
-        Renderer.addWidget(objeto,self._layer+layer)
+        EventHandler.addWidget(objeto,self._layer+layer)
     
     def quitar(self,objeto):
         if objeto in self.contenido:
             self.contenido.remove(objeto)
-            Renderer.delWidget(objeto)
+            EventHandler.delWidget(objeto)
         else:
             raise IndexError('El objeto '+objeto.nombre+' no pertenece a este marco')
     

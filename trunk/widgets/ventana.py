@@ -1,6 +1,6 @@
 from pygame import Rect,Surface
 from . import BaseWidget
-from colores import color
+from globales import color
 
 class Ventana(BaseWidget):
     def __init__(self,tamanio,**opciones):

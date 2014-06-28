@@ -1,5 +1,4 @@
 from widgets import Menu
-from globales import SharedFunctions as shared, C
 from ._cuadroPreferencias import cuadroPreferencias
 
 class Menu_Editar(Menu):

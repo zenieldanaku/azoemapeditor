@@ -1,9 +1,9 @@
 from pygame import Surface,Rect,font,mouse,draw
 from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
-from renderer import Renderer
+from globales import EventHandler, color
 from . import BaseWidget
-from colores import color
+from os import getcwd
 
 class Menu (BaseWidget):
     cascada = None
@@ -11,7 +11,7 @@ class Menu (BaseWidget):
     visible = 0
     nombre = ''
     def __init__(self,nombre,ops,x,y):
-        self.fuente = font.SysFont('Tahoma',11)
+        self.fuente = font.Font(getcwd()+'/rundata/menus/fonts_tahoma.ttf',12)
         self.cascada = None
         self.boton = None
         super().__init__()
@@ -55,7 +55,7 @@ class _Boton(BaseWidget):
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
         self.dirty = 1
-        Renderer.addWidget(self,4)
+        EventHandler.addWidget(self,4)
     
     @staticmethod
     def crear_boton(nombre,fuente,fgcolor,bgcolor):
@@ -108,7 +108,7 @@ class _Cascada (BaseWidget):
                 opcion = OpcionCascada(self,opciones[n],x,dy,_w,19)
                 w = opcion.image.get_size()[0]
                 if 'csc' in opciones[n]:
-                    opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x+w-3,h*(n+1)-5)
+                    opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x+w-6,h*(n+1)-5)
                 elif 'win' in opciones[n]:
                     opcion.command = opciones[n]['win']
                 else:
@@ -134,11 +134,11 @@ class _Cascada (BaseWidget):
     def showMenu(self):
         self.mostrar = True
         for opcion in self.opciones:
-            Renderer.addWidget(opcion,2)
+            EventHandler.addWidget(opcion,2)
     def hideMenu(self):
         self.mostrar = False
         for opcion in self.opciones:
-            Renderer.delWidget(opcion)
+            EventHandler.delWidget(opcion)
     def onFocusIn(self):
         super().onFocusIn()
         self.showMenu()

@@ -1,8 +1,8 @@
-from pygame.sprite import LayeredDirty, DirtySprite
-from globales import GLOBALES as G, SharedFunctions as shared
 from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT,mask,transform
+from pygame.sprite import LayeredDirty, DirtySprite
 from . import BaseWidget, SimboloBase
-from constantes import * 
+from globales import Sistema as Sys
+from globales.constantes import *
 
 class Canvas(BaseWidget):
     capas = None
@@ -120,7 +120,7 @@ class Canvas(BaseWidget):
         rect.center=self.getRelMousePos()
         datos['pos'] = rect.topleft
         if datos['tipo'] == 'Prop':
-            root = G.MAPA.script['capa_ground']['props']
+            root = Sys.MAPA.script['capa_ground']['props']
             if datos['nombre'] not in root:
                 root[datos['nombre']] = [[]]
                 index = 0
@@ -141,7 +141,7 @@ class Canvas(BaseWidget):
         self.Th,self.Tw = w,h
         
     def update(self):
-        if not G.HabilitarTodo:
+        if not Sys.HabilitarTodo:
             self.guias.empty()
             self.capas.empty()
             self.tiles.empty()
@@ -149,13 +149,13 @@ class Canvas(BaseWidget):
             self.actualizar_tamanio_fondo(15*C+1,15*C+1)
             
             
-        if len(G.IMGs_cargadas) <= 0:
+        if len(Sys.IMGs_cargadas) <= 0:
             self.capas.empty()
             self.pintarFondoCuadriculado()
 
         else:
-            for idx in G.IMGs_cargadas:
-                spr = G.IMGs_cargadas[idx]
+            for idx in Sys.IMGs_cargadas:
+                spr = Sys.IMGs_cargadas[idx]
                 if self.FONDO.get_size() != spr.rect.size:
                     self.actualizar_tamanio_fondo(*spr.rect.size)
                 if spr not in self.capas:
@@ -216,7 +216,7 @@ class SimboloCNVS (SimboloBase):
     
     def mover(self,dx,dy):
         super().mover(dx,dy)
-        G.estado = self.tipo+' '+self._nombre+' '+str(self.index)+' @ '+str(self.rect.topleft)
+        Sys.estado = self.tipo+' '+self._nombre+' '+str(self.index)+' @ '+str(self.rect.topleft)
     
     def update(self):
         if self.selected:
@@ -227,10 +227,10 @@ class SimboloCNVS (SimboloBase):
         
             #esto no le correponde al simbolo en sí.          
             if self.tipo == "Prop":
-                #G.addProp(self._nombre,self.index,self.rect.topleft)
-                root = G.MAPA.script['capa_ground']['props']
+                #Sys.addProp(self._nombre,self.index,self.rect.topleft)
+                root = Sys.MAPA.script['capa_ground']['props']
                 root[self._nombre][self.index] = self.rect.topleft
-            shared.addRef(self._nombre,self.ruta)
+            Sys.addRef(self._nombre,self.ruta)
             
         else:
             self.image = self.img_uns

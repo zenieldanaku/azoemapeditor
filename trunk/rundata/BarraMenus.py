@@ -1,8 +1,6 @@
+from globales import EventHandler, color, C
 from pygame import Surface,draw
 from widgets import Marco
-from renderer import Renderer
-from constantes import C
-from colores import color
 from .menus import *
 
 class barraMenus (Marco):
@@ -17,7 +15,7 @@ class barraMenus (Marco):
             menu = eval('Menu_'+menu_nom+'(prev,3,self)')
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
-        Renderer.addWidget(self)
+        EventHandler.addWidget(self)
     
     def onFocusIn(self):
         super().onFocusIn()

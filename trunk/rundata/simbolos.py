@@ -1,11 +1,8 @@
-from pygame import Rect,Surface,draw,mouse
-from pygame.sprite import LayeredDirty
+from globales import Sistema as Sys, Resources as r, EventHandler, C, color
 from widgets import Marco, BaseWidget, FileDiag, SimboloBase
 from widgets import Boton, DropDownList, Entry
-from renderer import Renderer
-from colores import color
-from constantes import *
-from globales import SharedFunctions as shared, GLOBALES as G, Resources as r
+from pygame import Rect,Surface,draw,mouse
+from pygame.sprite import LayeredDirty
 
 class PanelSimbolos(Marco):
     simbolos = None
@@ -20,16 +17,16 @@ class PanelSimbolos(Marco):
         self.PrevArea = area_prev(self,self.x+3,self.y+3*C,self.w-6,13*C-2)
         n,s,t,c,d = 'nom','scr','tipo','cmd','des'
         elementos = [
-            {n:'Nuevo',c:shared.nuevoMapa,s:"N",d:"Crear un mapa nuevo"},
-            {n:'Abrir',c:lambda:FileDiag({s:'A',t:'A',c:shared.abrirMapa}),s:"A",d:"Abrir un mapa existente"},
+            {n:'Nuevo',c:Sys.nuevoMapa,s:"N",d:"Crear un mapa nuevo"},
+            {n:'Abrir',c:lambda:FileDiag({s:'A',t:'A',c:Sys.abrirMapa}),s:"A",d:"Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:"G",d:"Guardar el mapa actual"},
             {n:'barra'},
             {n:'Cortar',c:self.Cortar,s:"X",d:"Cortar"},
             {n:'Copiar',c:self.Copiar,s:"C",d:"Copiar"},
             {n:'Pegar',c:self.Pegar,s:"P",d:"Pegar"},
             {n:'barra'},
-            {n:'SetFondo',c:lambda:FileDiag({s:'A',t:'A',c:shared.setRutaFondo}),s:"Fd",d:"Cargar imagen de fondo"},
-            {n:'SetColis',c:lambda:FileDiag({s:'A',t:'A',c:shared.setRutaColis}),s:"Cl",d:"Cargar imagen de colisiones"},
+            {n:'SetFondo',c:lambda:FileDiag({s:'A',t:'A',c:Sys.setRutaFondo}),s:"Fd",d:"Cargar imagen de fondo"},
+            {n:'SetColis',c:lambda:FileDiag({s:'A',t:'A',c:Sys.setRutaColis}),s:"Cl",d:"Cargar imagen de colisiones"},
             {n:'addMob',c:lambda:FileDiag({s:'A',t:'A',c:self.addMob}),s:"Mb",d:"Cargar símbolo de mob (no funciona)"},
             {n:'addProp',c:lambda:FileDiag({s:'A',t:'A',c:self.addProp}),s:"Pr",d:"Cargar símbolo de prop"},
             ]
@@ -40,14 +37,14 @@ class PanelSimbolos(Marco):
                 boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],descripcion = e['des'])
                 x = boton.rect.right-2
                 self.botones.append(boton)
-                Renderer.addWidget(boton,2)
+                EventHandler.addWidget(boton,2)
             else:
                 x = self.x+4
                 y += 32
                    
     def Guardar(self):
         #tendría que fijarse si hay cambios.
-        FileDiag({'scr':'G','tipo':'G','cmd':shared.guardarMapa})
+        FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarMapa})
 
     # barra
     def Cortar(self):
@@ -68,10 +65,10 @@ class PanelSimbolos(Marco):
         self.PrevArea.agregarSimbolo(datos)
     
     def update(self):
-        if G.HabilitarTodo:
-            G.habilitarItems(self.botones[2:])
+        if Sys.HabilitarTodo:
+            Sys.habilitarItems(self.botones[2:])
         else:
-            G.deshabilitarItems(self.botones[2:])
+            Sys.deshabilitarItems(self.botones[2:])
             
 class area_prev(Marco):
     simbolos = None
@@ -117,8 +114,8 @@ class SimboloPanel (SimboloBase):
         if button == 1:
             super().onMouseUp(button)
             if self.copiar:
-                shared.copiar(self)
-                shared.pegar('Grilla.Canvas')
+                Sys.copiar(self)
+                Sys.pegar('Grilla.Canvas')
     
     def onMouseOut(self):
         if not self.pressed:

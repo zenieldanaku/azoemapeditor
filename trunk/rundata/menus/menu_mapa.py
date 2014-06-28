@@ -1,5 +1,4 @@
-from globales import GLOBALES as G, Resources as r
-from globales import SharedFunctions as shared
+from globales import Sistema as Sys
 from widgets import Menu, FileDiag
 
 class Menu_Mapa (Menu):
@@ -7,8 +6,8 @@ class Menu_Mapa (Menu):
         self.nombre = 'Menu.Mapa'
         self.barra = barra
         cascadas = {'imagen':[
-                {'nom':'Fondo','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaFondo})},
-                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':shared.setRutaColis})}]}
+                {'nom':'Fondo','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':Sys.setRutaFondo})},
+                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':Sys.setRutaColis})}]}
         opciones = [{'nom':'Grilla','cmd':lambda:print('grilla')},
                    {'nom':'Capas','cmd':lambda:print('capas')},
                    {'nom':'Imagen','csc':cascadas['imagen']}]
