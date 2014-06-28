@@ -1,7 +1,8 @@
+from .constantes import LAYER_FONDO, LAYER_COLISIONES
 from pygame import image, quit as py_quit, Rect
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
-from .constantes import *
+from .resources import Resources
 from .mapa import Mapa
 import os.path
 
@@ -107,8 +108,8 @@ class Sistema:
     
     @staticmethod
     def pegar(destino):
-        from renderer import Renderer
-        widget = Renderer.getWidget(destino)
+        from . import EventHandler
+        widget = EventHandler.getWidget(destino)
         if hasattr(widget,'pegar'):
             if Sistema.HabilitarTodo:
                 widget.pegar(Sistema.portapapeles)

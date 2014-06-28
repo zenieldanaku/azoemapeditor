@@ -2,8 +2,7 @@ from pygame.constants import  K_END, K_HOME, K_LEFT, K_RIGHT, KMOD_LSHIFT, KMOD_
 from pygame.constants import K_BACKSPACE, K_DELETE, K_RETURN, K_KP_ENTER
 from pygame import Rect,Surface,font,draw,mouse,cursors,key
 from . import BaseWidget
-from globales.constantes import *
-from globales import color
+from globales import color, C
 
 class Entry(BaseWidget):
     texto = []

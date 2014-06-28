@@ -1,8 +1,7 @@
 from pygame import Rect,Surface,mouse,draw
 from pygame.sprite import LayeredDirty
 from . import BaseWidget, Boton
-from globales import color
-from globales.constantes import *
+from globales import color, C
 
 class _baseScroll(BaseWidget):
     nombre = ''

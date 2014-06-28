@@ -1,5 +1,5 @@
 from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco, Canvas
-from globales import Sistema as Sys, EventHandler, color, C
+from globales import Sistema as Sys, EventHandler, color, C, LAYER_COLISIONES,LAYER_FONDO
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Surface,Rect,draw,font,K_SPACE
 import os
