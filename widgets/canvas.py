@@ -1,4 +1,4 @@
-from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT,mask,transform
+from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT, K_DELETE,mask,transform
 from pygame.sprite import LayeredDirty, DirtySprite
 from . import BaseWidget, SimboloBase
 from globales import Sistema as Sys, C
@@ -80,7 +80,12 @@ class Canvas(BaseWidget):
     def onKeyDown(self,event):
         for tile in self.tiles:
             if tile.selected:
-                tile.onKeyDown(event.key)
+                if tile.onKeyDown(event.key): #delete
+                    index = tile.index
+                    self.tiles.remove(tile)
+                    for tile in self.tiles:
+                        if tile.index > index:
+                            tile.index -= 1
     
     def onKeyUp(self,event):
         for tile in self.tiles:
@@ -148,7 +153,6 @@ class Canvas(BaseWidget):
             self.clip.topleft = 0,0
             self.actualizar_tamanio_fondo(15*C+1,15*C+1)
             
-            
         if len(Sys.IMGs_cargadas) <= 0:
             self.capas.empty()
             self.pintarFondoCuadriculado()
@@ -205,6 +209,8 @@ class SimboloCNVS (SimboloBase):
                 dy = +1
             elif tecla == K_UP:
                 dy = -1
+            elif tecla == K_DELETE:
+                return True
             self.dx,self.dy = dx,dy
             self.mover(self.dx,self.dy)
     

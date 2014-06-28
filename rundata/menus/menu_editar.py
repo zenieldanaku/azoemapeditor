@@ -9,6 +9,7 @@ class Menu_Editar(Menu):
             {"nom":'Cortar',"cmd":self.Cortar},
             {"nom":'Copiar',"cmd":self.Copiar},
             {"nom":'Pegar',"cmd":self.Pegar},
+            {"nom":'barra'},
             {"nom":'Entradas',"cmd":self.Entrada},
             {'nom':'Preferencias','win':lambda:cuadroPreferencias()}]
         super().__init__('Editar',opciones,x,y)
