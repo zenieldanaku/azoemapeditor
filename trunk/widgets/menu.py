@@ -1,7 +1,7 @@
 from pygame import Surface,Rect,font,mouse,draw
 from libs.textrect import render_textrect
-from pygame.sprite import LayeredDirty
 from globales import EventHandler, color
+from pygame.sprite import LayeredDirty
 from . import BaseWidget
 from os import getcwd
 
@@ -17,7 +17,7 @@ class Menu (BaseWidget):
         super().__init__()
         self.boton = _Boton(self,nombre,x,y)
         h = self.boton.rect.h
-        self.cascada = _Cascada(self,nombre,ops,x,h-1)
+        self.cascada = _Cascada(self,nombre,ops,x,h+1)
         
     def showMenu(self):
         self.cascada.showMenu()
@@ -83,17 +83,17 @@ class _Cascada (BaseWidget):
     
     def __init__(self,parent,nombre,opciones,x,y):
         super().__init__()
-        self.opciones = LayeredDirty()
+        self.visible = False
+        self.componentes = LayeredDirty()
         self.parent = parent
         self.nombre = parent.nombre+'.Cascada.'+nombre
-        self.layer+=2
+        self.layer = self.parent.layer +20
+        self.x,self.y = x,y
         _fuente = font.SysFont('Tahoma',11)
-        _w = 0
+        self.w = 0
         for n in range(len(opciones)):
-            _nom = opciones[n]['nom']
-            __w = _fuente.size(_nom)[0]
-            if __w > _w:
-                _w = __w
+            w = _fuente.size(opciones[n]['nom'])[0]
+            if w > self.w: self.w = w
             if 'csc' in opciones[n]:
                 opciones[n]['scr'] = 'flecha'
             elif 'win' in opciones[n]:
@@ -101,47 +101,90 @@ class _Cascada (BaseWidget):
             else:
                 opciones[n]['scr'] = None
         h = 19
+        ajuste = 0
+        self.h = h*len(opciones)+2
+        self.w += 20
         for n in range(len(opciones)):
             _nom = opciones[n]['nom']
-            dy = y+(n*h)+5
             if _nom != 'barra':
-                opcion = OpcionCascada(self,opciones[n],x,dy,_w,19)
+                opcion = OpcionCascada(self,opciones[n],1,n*h+ajuste+1,self.w-22,h)
                 w = opcion.image.get_size()[0]
                 if 'csc' in opciones[n]:
-                    opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x+w-6,h*(n+1)-5)
+                    x = self.x+self.w-3
+                    y = (n+1)*h+ajuste-1
+                    opcion.command = _Cascada(self,_nom,opciones[n]['csc'],x,y)
                 elif 'win' in opciones[n]:
                     opcion.command = opciones[n]['win']
                 else:
                     opcion.command = opciones[n]['cmd']
+            else:
+                opcion = BaseWidget()
+                opcion.image = self._linea_horizontal(self.w-1)
+                opcion.rect = opcion.image.get_rect(topleft=(3,n*h+5))
+                ajuste += -10
             
-            self.opciones.add(opcion)
+            self.componentes.add(opcion)
+        self.image = Surface((self.w+5,self.h+ajuste))
+        self.image.fill((255,255,255),(1,1,self.w+3,self.h+ajuste-2))
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        EventHandler.addWidget(self,self.layer)
+    
+    @staticmethod
+    def _linea_horizontal(w):
+        line = Surface((w,2))
+        draw.line(line,(100,100,100),[0,0],[w,0])
+        draw.line(line,(200,200,200),[0,1],[w,1])
+        return line
     
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()
         dx = abs_x-self.x
         dy = abs_y-self.y
-        
         return dx,dy
+    
     def get_component(self):
         x,y = self.getRelMousePos()
         if self.componentes.get_sprites_at((x,y)) != []:
             return self.componentes.get_sprites_at((x,y))[-1]
         return self
+    
     def onMouseDown(self,button):
-        pass
+        item = self.get_component()
+        if item != self:
+            item.onMouseDown(button)
+        if not self.parent._visible:
+            self._visible = False
+        
     def onMouseUp(self,button):
-        pass
+        item = self.get_component()
+        if item != self:
+            item.onMouseUp(button)
+    
     def showMenu(self):
         self.mostrar = True
-        for opcion in self.opciones:
-            EventHandler.addWidget(opcion,2)
+        self._visible = True
+            
     def hideMenu(self):
         self.mostrar = False
-        for opcion in self.opciones:
-            EventHandler.delWidget(opcion)
+        for componente in self.componentes:
+            if isinstance(componente,OpcionCascada):
+                componente.serDeseleccionado()
+                if isinstance(componente.command,_Cascada):
+                    componente.command.hideMenu()
+        self._visible = False
+    
+    def onMouseOver(self):
+        if self.mostrar:
+            for item in self.componentes:
+                item.onMouseOut()
+            item = self.get_component()
+            if item != self:
+                item.onMouseIn()
+    
     def onFocusIn(self):
         super().onFocusIn()
         self.showMenu()
+        
     def onFocusOut(self):
         super().onFocusOut()
         recursion = True
@@ -152,11 +195,11 @@ class _Cascada (BaseWidget):
             else:
                 recursion = False
         ancestro.hideMenu()
-    def onMouseIn(self):
-        if self._visible:
-            self.onFocusIn()
+        
     def update(self):
-        pass
+        self.componentes.update()
+        self.componentes.draw(self.image)
+        self.dirty = 1
 
 class OpcionCascada(BaseWidget):
     command = None
@@ -171,7 +214,7 @@ class OpcionCascada(BaseWidget):
         fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
         self.x,self.y = x,y
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Opcion.'+data['nom']
+        self.nombre = self.parent.nombre+'.OpcionCascada.'+data['nom']
         self.img_des = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h)
         self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),w,h)
         self.image = self.img_des
@@ -207,10 +250,16 @@ class OpcionCascada(BaseWidget):
     def onMouseIn(self):
         if self.enabled:
             super().onMouseIn()
-            self.image = self.img_sel
+            self.serSeleccionado()
     
     def onMouseOut(self):
         super().onMouseOut()
+        self.serDeseleccionado()
+    
+    def serSeleccionado(self):
+        self.image = self.img_sel
+    
+    def serDeseleccionado(self):
         self.image = self.img_des
     
     def onMouseOver(self):
