@@ -1,8 +1,8 @@
 from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT,mask,transform
 from pygame.sprite import LayeredDirty, DirtySprite
 from . import BaseWidget, SimboloBase
-from globales import Sistema as Sys
-from globales.constantes import *
+from globales import Sistema as Sys, C
+
 
 class Canvas(BaseWidget):
     capas = None

@@ -1,6 +1,5 @@
 from libs.textrect import render_textrect
 from pygame import font,Rect,Surface
-from globales.constantes import *
 from globales import color
 from . import BaseWidget
 

@@ -3,8 +3,7 @@ from . import Label, ScrollV, ScrollH, Tree, BaseOpcion
 from pygame import Rect, font
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
-from globales import EventHandler, color
-from globales.constantes import *
+from globales import EventHandler, color, C
 
 import os, os.path
 

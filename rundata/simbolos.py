@@ -3,6 +3,7 @@ from widgets import Marco, BaseWidget, FileDiag, SimboloBase
 from widgets import Boton, DropDownList, Entry
 from pygame import Rect,Surface,draw,mouse
 from pygame.sprite import LayeredDirty
+from os import path
 
 class PanelSimbolos(Marco):
     simbolos = None
@@ -60,7 +61,7 @@ class PanelSimbolos(Marco):
         
     def addProp(self,ruta):
         sprite = r.cargar_imagen(ruta)
-        nombre = os.path.split(ruta)[1][0:-4]
+        nombre = path.split(ruta)[1][0:-4]
         datos = {'nombre':nombre,'image':sprite,'tipo':'Prop','ruta':ruta}
         self.PrevArea.agregarSimbolo(datos)
     

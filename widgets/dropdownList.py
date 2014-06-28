@@ -2,8 +2,7 @@ from . import BaseWidget, Entry, BaseOpcion
 from pygame import Surface,draw, Rect,font, mouse
 from pygame.sprite import LayeredDirty,DirtySprite
 from libs.textrect import render_textrect
-from globales import color
-from globales.constantes import *
+from globales import color, C
 
 class DropDownList(BaseWidget):
     componentes = None # LayeredDirty

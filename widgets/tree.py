@@ -1,9 +1,8 @@
 from pygame import font, Rect, Surface, draw
 from . import Marco, BaseWidget, BaseOpcion
 from libs.textrect import render_textrect
-from globales import EventHandler, color
+from globales import EventHandler, color, C
 from pygame.sprite import LayeredDirty
-from globales.constantes import *
 
 class Tree (Marco):
     ItemActual = ''
