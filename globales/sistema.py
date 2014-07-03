@@ -10,6 +10,7 @@ class Sistema:
     MAPA = None
     estado = ''
     ruta = ''
+    referencias = {}
     IMG_ID = -1
     IMGs_cargadas = {}
     HabilitarTodo = False
@@ -46,7 +47,7 @@ class Sistema:
     def setRutaFondo(ruta):
         try:
             Sistema.ruta = ruta
-            _ruta = 'maps/fondos/'+os.path.split(ruta)[1]
+            _ruta = Sistema.referencias['fondo']+os.path.split(ruta)[1]
             Sistema.cargar_imagen(LAYER_FONDO)
             Sistema.MAPA.script["capa_background"]["fondo"] = _ruta
         except:
@@ -56,20 +57,34 @@ class Sistema:
     def setRutaColis(ruta):
         try:
             Sistema.ruta = ruta
-            _ruta = 'maps/colisiones/'+os.path.split(ruta)[1]
+            _ruta = Sistema.referencias['colisiones']+os.path.split(ruta)[1]
             Sistema.cargar_imagen(LAYER_COLISIONES)
             Sistema.MAPA.script["capa_background"]["colisiones"]= _ruta
         except:
             Sistema.estado = 'No se ha selecionado ninguna imagen'
     
     @staticmethod
+    def addProp(nombre,ruta):
+        root = Sistema.MAPA.script['capa_ground']['props']
+        if nombre not in root:
+            root[nombre] = [[]]
+            index = 0
+            Sistema.addRef(nombre,Sistema.referencias['props'])
+        else:
+            root[nombre].append([])
+            index = len(root[nombre])-1
+        return index
+    
+    
+    @staticmethod
     def addRef(nombre,ruta):
-        _ruta = ruta.replace('\\','/')
+        #chapuza: nombre deberia ser distinto de filename.
         if nombre not in Sistema.MAPA.script['refs']:
-            Sistema.MAPA.script['refs'][nombre] = _ruta
+            Sistema.MAPA.script['refs'][nombre] = ruta+nombre+'.png'
             
     @staticmethod
-    def nuevoMapa():
+    def nuevoMapa(data):
+        Sistema.referencias.update(data)
         Sistema.HabilitarTodo = True
         Sistema.MAPA = Mapa()
     

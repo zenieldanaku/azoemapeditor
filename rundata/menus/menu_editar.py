@@ -1,5 +1,5 @@
 from widgets import Menu
-from ._cuadroPreferencias import cuadroPreferencias
+#from ._cuadroPreferencias import cuadroPreferencias
 
 class Menu_Editar(Menu):
     def  __init__(self,x,y,barra):
@@ -11,7 +11,8 @@ class Menu_Editar(Menu):
             {"nom":'Pegar',"cmd":self.Pegar},
             {"nom":'barra'},
             {"nom":'Entradas',"cmd":self.Entrada},
-            {'nom':'Preferencias','win':lambda:cuadroPreferencias()}]
+            #{'nom':'Preferencias','win':lambda:cuadroPreferencias()}
+            ]
         super().__init__('Editar',opciones,x,y)
 
     def Cortar(self):

@@ -12,7 +12,7 @@ class Label (BaseWidget):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysElmFace'
         # algo más custom.. esta bien así?
-        if 'Fuente' not in opciones:
+        if 'fontType' not in opciones:
             opciones['fontType'] = 'Verdana'
         if 'fontSize' not in opciones:
             opciones['fontSize'] = 14

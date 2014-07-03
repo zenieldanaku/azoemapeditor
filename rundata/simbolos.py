@@ -1,6 +1,7 @@
 from globales import Sistema as Sys, Resources as r, EventHandler, C, color
 from widgets import Marco, BaseWidget, FileDiag, SimboloBase
 from widgets import Boton, DropDownList, Entry
+from .menus.menu_mapa import CuadroMapa
 from pygame import Rect,Surface,draw,mouse
 from pygame.sprite import LayeredDirty
 from os import path
@@ -18,7 +19,7 @@ class PanelSimbolos(Marco):
         self.PrevArea = area_prev(self,self.x+3,self.y+3*C,self.w-6,13*C-2)
         n,s,t,c,d = 'nom','scr','tipo','cmd','des'
         elementos = [
-            {n:'Nuevo',c:Sys.nuevoMapa,s:"N",d:"Crear un mapa nuevo"},
+            {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:"N",d:"Crear un mapa nuevo"},
             {n:'Abrir',c:lambda:FileDiag({s:'A',t:'A',c:Sys.abrirMapa}),s:"A",d:"Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:"G",d:"Guardar el mapa actual"},
             {n:'barra'},
