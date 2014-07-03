@@ -19,7 +19,8 @@ class EventHandler:
             widget = EventHandler.widgets[widget]
         widget.onDestruction()
         EventHandler.contents.remove(widget)
-        del EventHandler.widgets[widget.nombre]
+        if widget.nombre in EventHandler.widgets:
+            del EventHandler.widgets[widget.nombre]
     
     @staticmethod
     def getWidget(widget):

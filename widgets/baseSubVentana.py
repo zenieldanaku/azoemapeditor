@@ -6,9 +6,9 @@ class subVentana(Marco):
     x,y,w,h = 0,0,0,0
     layer = 3
     
-    def __init__(self,x,y,w,h,**opciones):      
+    def __init__(self,x,y,w,h,nombre,**opciones):      
         super().__init__(x,y,w,h,**opciones)
-        self.titular(self.nombre)
+        self.titular(nombre)
     
     def titular(self,texto):
         fuente = font.SysFont('verdana',12)

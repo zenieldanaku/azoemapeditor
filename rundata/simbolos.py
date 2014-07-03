@@ -20,17 +20,17 @@ class PanelSimbolos(Marco):
         n,s,t,c,d = 'nom','scr','tipo','cmd','des'
         elementos = [
             {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:"N",d:"Crear un mapa nuevo"},
-            {n:'Abrir',c:lambda:FileDiag({s:'A',t:'A',c:Sys.abrirMapa}),s:"A",d:"Abrir un mapa existente"},
+            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirMapa}),s:"A",d:"Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:"G",d:"Guardar el mapa actual"},
             {n:'barra'},
             {n:'Cortar',c:self.Cortar,s:"X",d:"Cortar"},
             {n:'Copiar',c:self.Copiar,s:"C",d:"Copiar"},
             {n:'Pegar',c:self.Pegar,s:"P",d:"Pegar"},
             {n:'barra'},
-            {n:'SetFondo',c:lambda:FileDiag({s:'A',t:'A',c:Sys.setRutaFondo}),s:"Fd",d:"Cargar imagen de fondo"},
-            {n:'SetColis',c:lambda:FileDiag({s:'A',t:'A',c:Sys.setRutaColis}),s:"Cl",d:"Cargar imagen de colisiones"},
-            {n:'addMob',c:lambda:FileDiag({s:'A',t:'A',c:self.addMob}),s:"Mb",d:"Cargar símbolo de mob (no funciona)"},
-            {n:'addProp',c:lambda:FileDiag({s:'A',t:'A',c:self.addProp}),s:"Pr",d:"Cargar símbolo de prop"},
+            {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo}),s:"Fd",d:"Cargar imagen de fondo"},
+            {n:'SetColis',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaColis}),s:"Cl",d:"Cargar imagen de colisiones"},
+            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob}),s:"Mb",d:"Cargar símbolo de mob (no funciona)"},
+            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProp}),s:"Pr",d:"Cargar símbolo de prop"},
             ]
         x = self.x+4
         y = 19+4
@@ -47,7 +47,7 @@ class PanelSimbolos(Marco):
     @staticmethod
     def Guardar():
         if not Sys.Guardado:
-            FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarMapa})
+            FileDiag({'scr':'Aceptar','tipo':'G','cmd':Sys.guardarMapa})
         else:
             Sys.guardarMapa(Sys.Guardado)
 
