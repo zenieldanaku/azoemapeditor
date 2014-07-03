@@ -9,6 +9,10 @@ tamanio = 20*C+8,18*C-19
 os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
 pantalla.set_caption("MapGen")
 fondo = pantalla.set_mode(tamanio)
+BarraMenus = barraMenus()
+BarraEstado = barraEstado()
+Grilla = Grilla()
+Simbolos = PanelSimbolos()
 ventana = EventHandler.addWidget(Ventana(fondo.get_size()),0)
 EventHandler.currentFocus = ventana
 ventana.onFocusIn()

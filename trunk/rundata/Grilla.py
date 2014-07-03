@@ -70,19 +70,19 @@ class _grilla(BaseWidget):
         self.parent = parent
         self.focusable = False
         self.nombre = self.parent.nombre+'._grilla'
-        self.FONDO = self._crear(w,h)
+        self.FONDO = self._crear(w,h,C)
         self.clip = Rect(0,0,15*C,15*C)
         self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.FONDO.get_rect(topleft=(self.x,self.y))
     
     @staticmethod
-    def _crear(w,h):
+    def _crear(w,h,cuadro):
         marco = Rect(0,0,w,h)
         base = Surface(marco.size)
         _color = (100,200,100)
-        for x in range(C,(h//32)*32,C):
+        for x in range(cuadro,(h//cuadro)*cuadro,cuadro):
             draw.line(base, _color, (x,marco.top), (x,marco.bottom),1)
-        for y in range(C,(w//32)*32,C):
+        for y in range(cuadro,(w//cuadro)*cuadro,cuadro):
             draw.line(base, _color, (marco.left,y-1), (marco.right,y-1),1)
             
         base.set_colorkey((0,0,0))
@@ -90,7 +90,7 @@ class _grilla(BaseWidget):
         return base
     
     def actualizar_tamanio(self,w,h):
-        self.FONDO = self._crear(w,h)
+        self.FONDO = self._crear(w,h,C)
         self.clip.topleft = 0,0
         self.image = self.FONDO.subsurface(self.clip)
         

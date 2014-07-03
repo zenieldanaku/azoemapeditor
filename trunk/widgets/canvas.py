@@ -83,6 +83,7 @@ class Canvas(BaseWidget):
                 if tile.onKeyDown(event.key): #delete
                     index = tile.index
                     self.tiles.remove(tile)
+                    del Sys.MAPA.script['capa_ground']['props'][tile._nombre][index]
                     for tile in self.tiles:
                         if tile.index > index:
                             tile.index -= 1
@@ -125,13 +126,7 @@ class Canvas(BaseWidget):
         rect.center=self.getRelMousePos()
         datos['pos'] = rect.topleft
         if datos['tipo'] == 'Prop':
-            root = Sys.MAPA.script['capa_ground']['props']
-            if datos['nombre'] not in root:
-                root[datos['nombre']] = [[]]
-                index = 0
-            else:
-                root[datos['nombre']].append([])
-                index = len(root[datos['nombre']])-1
+            index = Sys.addProp(datos['nombre'],datos['ruta'])
         datos['index'] = index
         tile = SimboloCNVS(self,datos)
         self.tiles.add(tile)
@@ -231,14 +226,14 @@ class SimboloCNVS (SimboloBase):
                 dx,dy = self._arrastrar()
                 self.mover(dx,dy)
         
-            #esto no le correponde al simbolo en sí.          
-            if self.tipo == "Prop":
-                #Sys.addProp(self._nombre,self.index,self.rect.topleft)
-                root = Sys.MAPA.script['capa_ground']['props']
-                root[self._nombre][self.index] = self.rect.topleft
-            Sys.addRef(self._nombre,self.ruta)
             
         else:
             self.image = self.img_uns
+        
+        if self.tipo == "Prop":
+            #esto no le correponde al simbolo en sí.
+            #Sys.addProp(self._nombre,self.index,self.rect.topleft)
+            root = Sys.MAPA.script['capa_ground']['props']
+            root[self._nombre][self.index] = self.rect.topleft
         
         self.dirty = 1

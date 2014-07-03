@@ -23,11 +23,13 @@ class Boton(BaseWidget):
         colorDText   = color(self.opciones['colorDisabled'])
         colorBLuz    = color(self.opciones['colorBordeLuz'])
         colorBSombra = color(self.opciones['colorBordeSombra'])
-            
-        self.img_uns = self._biselar(self._crear(scr, colorTexto, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
-        self.img_sel = self._biselar(self._crear(scr, colorSText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
-        self.img_pre = self._biselar(self._crear(scr, colorSText, colorFondo,self.w,self.h),colorBSombra,colorBLuz)
-        self.img_dis = self._biselar(self._crear(scr, colorDText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
+        
+        if type(scr) != list: #suponemos string
+            scr = [scr,scr,scr,scr]
+        self.img_uns = self._biselar(self._crear(scr[0], colorTexto, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
+        self.img_sel = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
+        self.img_pre = self._biselar(self._crear(scr[2], colorSText, colorFondo,self.w,self.h),colorBSombra,colorBLuz)
+        self.img_dis = self._biselar(self._crear(scr[3], colorDText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
@@ -58,9 +60,10 @@ class Boton(BaseWidget):
         if type (scr) == str:
             if os.path.isfile(scr):
                 img = r.cargar_imagen(scr)
-                render = Surface((img.get_width()+3,img.get_height()+4))
+                img_rect = img.get_rect(center=_rect.center)
+                render = Surface((_rect.w,_rect.h))
                 render.fill(color_fondo)
-                render.blit(img,(1,1))
+                render.blit(img,img_rect)
             else:
                 fuente = font.SysFont('verdana',16)
                 try:

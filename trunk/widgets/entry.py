@@ -21,10 +21,15 @@ class Entry(BaseWidget):
             opciones['colorTexto'] = 'sysElmText'
         if 'colorSelect' not in opciones:
             opciones['colorSelect'] = 'sysBoxSelBack'
+        if 'fontType' not in opciones:
+            opciones['fontType'] = 'courier new'
+        if 'fontSize' not in opciones:
+            opciones['fontSize'] = 14
         super().__init__(**opciones)
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Entry.'+nombre
-        self.fuente = font.SysFont('courier new',14)
+        self._nombre = nombre
+        self.nombre = self.parent.nombre+'.Entry.'+self._nombre
+        self.fuente = font.SysFont(opciones['fontType'],opciones['fontSize'])
         self.x,self.y,self.w = x,y,w
         self.cursor =  ("        ",
                         "ooo ooo ",
@@ -44,9 +49,10 @@ class Entry(BaseWidget):
                         "ooo ooo ")
         self.h = self.fuente.get_height()+4#21
         self.rect = Rect(self.x,self.y,self.w,self.h)
-        self.image = Surface(self.rect.size)
         self.erase_area = Rect(1,1,self.w-2,self.h-2)
         self.write_area = Rect(4,2,self.w-2,self.h-4)
+        self.image = Surface(self.rect.size)
+        self.image.set_clip(self.erase_area)
         self.dx = x+4
         self.setText(texto)
     
@@ -91,13 +97,17 @@ class Entry(BaseWidget):
 
         self.image.blit(render,self.write_area)
     
-    def dibujar_cursor(self):
+    def dibujar_cursor(self,orden=None):
         x = self.cur_x
-        if not self.cur_visible:
+        if orden == None:
+            if not self.cur_visible:
+                draw.line(self.image,color(self.opciones['colorTexto']),(x,3),(x,16),1)
+            else:
+                draw.line(self.image,color(self.opciones['colorFondo']),(x,3),(x,16),1)
+        elif orden:
             draw.line(self.image,color(self.opciones['colorTexto']),(x,3),(x,16),1)
         else:
             draw.line(self.image,color(self.opciones['colorFondo']),(x,3),(x,16),1)
-    
     def insertar_cursor(self):
         self.set_x()
         if self.idx > len(self.texto):
@@ -261,4 +271,6 @@ class Entry(BaseWidget):
             self.borrar_todo()
             self.imprimir()
             self.dibujar_cursor()
+        else:
+            self.dibujar_cursor(False)
         self.dirty = 1
