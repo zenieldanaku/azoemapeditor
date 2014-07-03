@@ -238,6 +238,7 @@ class HandlerRegla(BaseWidget):
         super().__init__(**opciones)        
         self.x,self.y = x,y
         self.parent = parent
+        self.nombre = self.parent.nombre+'.HandlerRegla'
         self.image = self._crear()
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.w,self.h = self.image.get_size()

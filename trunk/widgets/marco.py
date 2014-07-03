@@ -44,6 +44,12 @@ class Marco(BaseWidget):
                 if sprite == objeto:
                     return sprite
     
+    def __contains__(self,item):
+        if item in self.contenido:
+            return True
+        else:
+            return False
+    
     def onDestruction(self):
         for widget in self.contenido:
             self.quitar(widget)

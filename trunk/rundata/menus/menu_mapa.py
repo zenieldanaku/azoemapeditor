@@ -19,14 +19,14 @@ class CuadroMapa(subVentana):
     labels = []
     entrys = []
     def __init__(self,nombre):
-        self.nombre = nombre
-        super().__init__(4*C+16,6*C,11*C,4*C+12)
+        self.nombre = 'Nuevo Mapa'
+        super().__init__(4*C+16,6*C,11*C,4*C+12,nombre)
         x,y,w,h = self.x,self.y,self.w,self.h
         ops = {'fontType':'Tahoma','fontSize':12}
         dx,dy,dw = 210,23,214
         
-        self.btnAceptar = Boton(self,x+w-150,y+h-28,'Aceptar',self.Aceptar,'Aceptar',**ops)
-        self.btnCancelar = Boton(self,x+w-80,y+h-28,'Cancelar',self.cerrar,'Cancelar',**ops)
+        self.btnAceptar = Boton(self,x+w-142,y+h-26,'Aceptar',self.Aceptar,'Aceptar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        self.btnCancelar = Boton(self,x+w-72,y+h-26,'Cancelar',self.cerrar,'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.labels.append(Label(self,'Fondo',x+2,y+dy*1,'Carpeta de imágenes fondo:',**ops))
         self.labels.append(Label(self,'Colisiones',x+2,y+dy*2,'Carpeta de mapas de colisiones:',**ops))
         self.labels.append(Label(self,'Props',x+2,y+dy*3,'Ruta de archivo de datos para Props:',**ops))

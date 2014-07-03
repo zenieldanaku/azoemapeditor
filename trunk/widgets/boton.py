@@ -17,6 +17,7 @@ class Boton(BaseWidget):
         self.comando = cmd
         self.descripcion = descripcion
         
+        fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
         colorFondo   = color(self.opciones['colorFondo'])
         colorTexto   = color(self.opciones['colorText'])
         colorSText   = color(self.opciones['colorSelect'])
@@ -26,10 +27,10 @@ class Boton(BaseWidget):
         
         if type(scr) != list: #suponemos string
             scr = [scr,scr,scr,scr]
-        self.img_uns = self._biselar(self._crear(scr[0], colorTexto, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
-        self.img_sel = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
-        self.img_pre = self._biselar(self._crear(scr[2], colorSText, colorFondo,self.w,self.h),colorBSombra,colorBLuz)
-        self.img_dis = self._biselar(self._crear(scr[3], colorDText, colorFondo,self.w,self.h),colorBLuz,colorBSombra)
+        self.img_uns = self._biselar(self._crear(scr[0], colorTexto, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        self.img_sel = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        self.img_pre = self._biselar(self._crear(scr[2], colorSText, colorFondo,self.w,self.h,fuente),colorBSombra,colorBLuz)
+        self.img_dis = self._biselar(self._crear(scr[3], colorDText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
@@ -51,11 +52,15 @@ class Boton(BaseWidget):
             opciones['w'] = 28
         if 'h' not in opciones:
             opciones['h'] = 25
+        if 'fontType' not in opciones:
+            opciones['fontType'] = 'Verdana'
+        if 'fontSize' not in opciones:
+            opciones['fontSize'] = 16
         
         return opciones
     
     @staticmethod
-    def  _crear(scr, color_texto, color_fondo,w,h):
+    def  _crear(scr, color_texto, color_fondo,w,h,fuente):
         _rect = Rect(-1,-1,w,h)
         if type (scr) == str:
             if os.path.isfile(scr):
@@ -65,16 +70,13 @@ class Boton(BaseWidget):
                 render.fill(color_fondo)
                 render.blit(img,img_rect)
             else:
-                fuente = font.SysFont('verdana',16)
                 try:
                     render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
                 except:
-                    img = fuente.render(scr,True,color_texto,color_fondo)
-                    render = Surface((img.get_width()+6,img.get_height()+4))
-                    render.fill(color_fondo)
-                    rect_render = render.get_rect()
-                    rect_img = img.get_rect(centerx=rect_render.centerx,centery=rect_render.centery-1)
-                    render.blit(img,rect_img)                    
+                    w,h = fuente.size(scr)
+                    _rect = Rect(-1,-1,w,h+1)
+                    render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
+                 
         elif type (scr) == Surface:
             if scr.get_width() < w or scr.get_height() < h:
                 render = Surface((scr.get_width()+3,scr.get_height()+3))
