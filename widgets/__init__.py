@@ -7,7 +7,7 @@ from .scroll import ScrollH, ScrollV
 from .marco import Marco
 from .entry import Entry
 from .label import Label
-from .menu import Menu
+from .menu import Menu, ContextMenu
 from .dropdownList import DropDownList
 from .tree import Tree
 from .baseSubVentana import subVentana

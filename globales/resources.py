@@ -1,4 +1,4 @@
-from pygame import image
+from pygame import image, Rect
 import json
 
 class Resources:
@@ -11,9 +11,12 @@ class Resources:
         return data
     
     @staticmethod
-    def guardar_json (archivo,datos):
+    def guardar_json (archivo,datos,odenar=True):
         ex = open(archivo,'w')
-        json.dump(datos,ex, sort_keys=True,indent=4, separators=(',', ': '))
+        if odenar:
+            json.dump(datos,ex, sort_keys=True,indent=4, separators=(',', ': '))
+        else:
+            json.dump(datos,ex)
         ex.close()
     
     @staticmethod

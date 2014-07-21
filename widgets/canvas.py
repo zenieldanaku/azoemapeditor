@@ -1,8 +1,8 @@
-from pygame import Surface, mouse, K_UP,K_DOWN,K_RIGHT,K_LEFT, K_DELETE,mask,transform
+from pygame import Surface, mouse, mask,transform
+from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, K_DELETE,K_RSHIFT,K_LSHIFT
 from pygame.sprite import LayeredDirty, DirtySprite
-from . import BaseWidget, SimboloBase
+from . import BaseWidget, SimboloBase, ContextMenu
 from globales import Sistema as Sys, C
-
 
 class Canvas(BaseWidget):
     capas = None
@@ -13,6 +13,7 @@ class Canvas(BaseWidget):
     doc_w = None
     doc_h = None
     pressed = False
+    shift = False
     def __init__(self,parent,x,y,w,h,clip,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = (255,255,245)
@@ -49,15 +50,16 @@ class Canvas(BaseWidget):
     
     def onMouseDown(self,button):
         x,y = self.getRelMousePos()
-        if button == 1:
-            for tile in self.tiles:
-                tile.selected = False
+        if button == 1 or button == 3:
+            if not self.shift:
+                for tile in self.tiles:
+                    tile.selected = False
             tiles = self.tiles.get_sprites_at((x,y))
             if tiles != []:
                 item = tiles[-1]
                 mascara = mask.from_surface(item.image)
                 if mascara.get_at((x-item.x,y-item.y)):
-                    item.onMouseDown(1)
+                    item.onMouseDown(button)
             else:
                 self.pressed = True
                 
@@ -78,17 +80,22 @@ class Canvas(BaseWidget):
                 self.pressed = False
             
     def onKeyDown(self,event):
+        if event.key == K_RSHIFT or event.key == K_LSHIFT:
+            self.shift = True
         for tile in self.tiles:
             if tile.selected:
-                if tile.onKeyDown(event.key): #delete
+                if tile.onKeyDown(event.key,self.shift): #delete
                     index = tile.index
                     self.tiles.remove(tile)
-                    del Sys.MAPA.script['capa_ground']['props'][tile._nombre][index]
+                    del Sys.PROYECTO.script['capa_ground'][tile.grupo][tile._nombre][index]
                     for tile in self.tiles:
                         if tile.index > index:
                             tile.index -= 1
     
     def onKeyUp(self,event):
+        if event.key == K_RSHIFT or event.key == K_LSHIFT:
+            self.shift = False
+            
         for tile in self.tiles:
             if tile.selected:
                 tile.onKeyUp(event.key)
@@ -124,13 +131,14 @@ class Canvas(BaseWidget):
     def pegar(self,datos):
         rect = datos['rect']
         rect.center=self.getRelMousePos()
-        datos['pos'] = rect.topleft
-        if datos['tipo'] == 'Prop':
-            index = Sys.addProp(datos['nombre'],datos['ruta'])
-        datos['index'] = index
+        datos['pos'] = rect.topleft    
+        datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'])
+        self.addTile(datos)
+    
+    def addTile(self,datos):
         tile = SimboloCNVS(self,datos)
         self.tiles.add(tile)
-    
+        
     def actualizar_tamanio_fondo (self,w,h):
         self.FONDO = transform.scale(self.FONDO,(w,h))
         self.image = self.FONDO.subsurface(self.clip)
@@ -164,6 +172,8 @@ class Canvas(BaseWidget):
         self.tiles.update()
         self.tiles.draw(self.FONDO)
         self.guias.draw(self.FONDO)
+        for tile in self.tiles:
+            Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft)
         self.dirty = 1
 
 class SimboloCNVS (SimboloBase):
@@ -172,6 +182,7 @@ class SimboloCNVS (SimboloBase):
     def __init__(self,parent,data,**opciones):
         super().__init__(parent,data,**opciones)
         
+        self.grupo = self.data['grupo']
         self.tipo = self.data['tipo']
         self.index = self.data['index']
         self.ruta = self.data['ruta']
@@ -179,6 +190,7 @@ class SimboloCNVS (SimboloBase):
         self.img_uns = self._imagen.copy()
         self.img_sel = self.crear_img_sel(self.img_uns)
         self.image = self.img_uns
+        self.context = ContextMenu(self)
 
     @staticmethod
     def crear_img_sel(imagebase):
@@ -187,26 +199,30 @@ class SimboloCNVS (SimboloBase):
         return over
     
     def onMouseDown(self,button):
-        if button == 1:
+        if button == 1 or button == 3:
             self.onFocusIn()
             self.image = self.img_sel
             self.selected = not self.selected
-            super().onMouseDown(button)
+            self.pressed = True
+            x,y = mouse.get_pos()
+            self.px = x-self.x
+            self.py = y-self.y
+            if button == 3:
+                self.pressed = False
+                self.context.show()
 
-    def onKeyDown(self,tecla):
+    def onKeyDown(self,tecla,shift):
         if self.selected:
-            dx,dy = 0,0
-            if tecla == K_RIGHT:
-                dx = +1
-            elif tecla == K_LEFT:
-                dx = -1
-            elif tecla == K_DOWN:
-                dy = +1
-            elif tecla == K_UP:
-                dy = -1
+            x,y,d = 0,0,1
+            if shift: d = 10
+                
+            if tecla == K_RIGHT:  x = +1*d
+            elif tecla == K_LEFT: x = -1*d
+            elif tecla == K_DOWN: y = +1*d
+            elif tecla == K_UP:   y = -1*d
             elif tecla == K_DELETE:
                 return True
-            self.dx,self.dy = dx,dy
+            self.dx,self.dy = x,y
             self.mover(self.dx,self.dy)
     
     def onKeyUp(self,tecla):
@@ -217,23 +233,14 @@ class SimboloCNVS (SimboloBase):
     
     def mover(self,dx,dy):
         super().mover(dx,dy)
-        Sys.estado = self.tipo+' '+self._nombre+' '+str(self.index)+' @ '+str(self.rect.topleft)
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ '+str(self.rect.topleft)
     
     def update(self):
         if self.selected:
             self.image = self.img_sel
             if self.pressed:
                 dx,dy = self._arrastrar()
-                self.mover(dx,dy)
-        
-            
+                self.mover(dx,dy)    
         else:
             self.image = self.img_uns
-        
-        if self.tipo == "Prop":
-            #esto no le correponde al simbolo en sí.
-            #Sys.addProp(self._nombre,self.index,self.rect.topleft)
-            root = Sys.MAPA.script['capa_ground']['props']
-            root[self._nombre][self.index] = self.rect.topleft
-        
         self.dirty = 1

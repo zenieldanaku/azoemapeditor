@@ -16,13 +16,6 @@ class SimboloBase (BaseWidget):
         self.rect = self._imagen.get_rect(topleft=(self.x,self.y))
         self.px,self.py = self.rect.topleft
         
-    def onMouseDown(self,button):
-        if button == 1:
-            self.pressed = True
-            x,y = mouse.get_pos()
-            self.px = x-self.x
-            self.py = y-self.y
-
     def onMouseUp(self,button):
         if button == 1:
             self.pressed = False

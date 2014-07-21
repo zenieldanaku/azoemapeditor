@@ -3,11 +3,13 @@ from pygame import image, quit as py_quit, Rect
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
 from .resources import Resources
-from .mapa import Mapa
-import os.path
+from .eventhandler import EventHandler
+from .mapa import Mapa, Proyecto
+from os import getcwd
 
 class Sistema:
     MAPA = None
+    PROYECTO = None
     estado = ''
     ruta = ''
     referencias = {}
@@ -17,6 +19,9 @@ class Sistema:
     portapapeles = None
     preferencias = {}
     Guardado = False
+    fdProyectos = getcwd()+'\\proyectos'
+    fdAssets = getcwd()+'\\assets'
+    fdExport = getcwd()+'\\export'
     
     @staticmethod
     def cargar_imagen(layer):
@@ -47,9 +52,10 @@ class Sistema:
     def setRutaFondo(ruta):
         try:
             Sistema.ruta = ruta
-            _ruta = Sistema.referencias['fondo']+os.path.split(ruta)[1]
+            #print(ruta)
+            #_ruta = Sistema.referencias['fondo']+os.path.split(ruta)[1]
             Sistema.cargar_imagen(LAYER_FONDO)
-            Sistema.MAPA.script["capa_background"]["fondo"] = _ruta
+            Sistema.PROYECTO.script["fondo"] = ruta
         except:
             Sistema.estado = 'No se ha selecionado ninguna imagen'
     
@@ -57,36 +63,77 @@ class Sistema:
     def setRutaColis(ruta):
         try:
             Sistema.ruta = ruta
-            _ruta = Sistema.referencias['colisiones']+os.path.split(ruta)[1]
+            #_ruta = Sistema.referencias['colisiones']+os.path.split(ruta)[1]
             Sistema.cargar_imagen(LAYER_COLISIONES)
-            Sistema.MAPA.script["capa_background"]["colisiones"]= _ruta
+            Sistema.PROYECTO.script["colisiones"]= ruta
         except:
             Sistema.estado = 'No se ha selecionado ninguna imagen'
     
     @staticmethod
-    def addProp(nombre,ruta):
-        root = Sistema.MAPA.script['capa_ground']['props']
+    def addItem(nombre,ruta,grupo):
+        root = Sistema.PROYECTO.script[grupo]
         if nombre not in root:
             root[nombre] = [[]]
             index = 0
-            Sistema.addRef(nombre,Sistema.referencias['props'])
+            Sistema.addRef(nombre,ruta)
         else:
             root[nombre].append([])
             index = len(root[nombre])-1
         return index
     
+    @staticmethod
+    def updateItemPos(nombre,grupo,index,pos):
+        Sistema.PROYECTO.script[grupo][nombre][index] = pos
     
     @staticmethod
     def addRef(nombre,ruta):
         #chapuza: nombre deberia ser distinto de filename.
-        if nombre not in Sistema.MAPA.script['refs']:
-            Sistema.MAPA.script['refs'][nombre] = ruta+nombre+'.png'
+        if nombre not in Sistema.PROYECTO.script['refs']:
+            Sistema.PROYECTO.script['refs'][nombre] = ruta
             
     @staticmethod
-    def nuevoMapa(data):
+    def nuevoProyecto(data):
         Sistema.referencias.update(data)
         Sistema.HabilitarTodo = True
-        Sistema.MAPA = Mapa()
+        Sistema.PROYECTO = Proyecto()
+    
+    def abrirProyecto(ruta):
+        Sistema.PROYECTO = Proyecto()
+        ar = Resources.abrir_json(ruta)
+        for key in ar:
+            Sistema.PROYECTO[key] = ar[key]
+            Sistema.ruta = ar[key]
+            if key == 'fondo':
+                if ar[key] != "":
+                    Sistema.cargar_imagen(LAYER_FONDO)
+            elif key == 'colisiones':
+                if ar[key] != "":
+                    Sistema.cargar_imagen(LAYER_COLISIONES)
+            elif key == 'props' or key == 'mobs':
+                widget = EventHandler.getWidget('Grilla.Canvas')
+                for item in ar[key]:
+                    nombre,_ruta = item,ar['refs'][item]
+                    if key == 'props':   sprite = Resources.cargar_imagen(_ruta)
+                    elif key == 'mobs':
+                        sprite = Resources.split_spritesheet(_ruta)[0]
+                        
+                    idx = -1
+                    for pos in ar[key][item]:
+                        if len(pos) != 0:
+                            idx+=1
+                            datos = {'nombre':nombre,'image':sprite,'tipo':'Prop','grupo':key,'ruta':_ruta,"pos":pos,"index":idx}
+                            widget.addTile(datos)
+        Sistema.Guardado = ruta
+        Sistema.HabilitarTodo = True
+    
+    def guardarProyecto(ruta):
+        try:
+            data = Sistema.PROYECTO.guardar()
+            Resources.guardar_json(ruta,data,False)
+            Sistema.estado = "Proyecto '"+ruta+"' guardado."
+            Sistema.Guardado = ruta
+        except: 
+            Sistema.estado ='Error: Es necesario cargar un mapa.'
     
     @staticmethod
     def abrirMapa(ruta):
@@ -98,9 +145,9 @@ class Sistema:
             Sistema.estado = 'Error: El archivo no existe.'
     
     @staticmethod
-    def guardarMapa(ruta):
+    def exportarMapa(ruta):
         try:
-            data = Sistema.MAPA.guardar()
+            data = Sistema.PROYECTO.guardar()
             Resources.guardar_json(ruta,data)
             Sistema.estado = "Mapa '"+ruta+"' guardado."
             Sistema.Guardado = ruta

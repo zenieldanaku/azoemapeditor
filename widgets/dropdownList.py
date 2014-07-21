@@ -6,11 +6,13 @@ from globales import color, C
 
 class DropDownList(BaseWidget):
     componentes = None # LayeredDirty
-    def __init__(self,parent,nombre,x,y,w,lista,**opciones):
+    layerOpciones = 125
+    def __init__(self,parent,nombre,x,y,w,lista=[],**opciones):
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.DropDownList.'+nombre
         self.layer = self.parent.layer +1
+        self.lista = lista
         self.x,self.y = x,y
         self.componentes = LayeredDirty()
         self.entry = Entry(self,nombre,0,0,w-18)
@@ -19,7 +21,7 @@ class DropDownList(BaseWidget):
         self.collapsedRect = Rect(self.x,self.y,self.w,self.h)
         self.rect = self.collapsedRect
         self.componentes.add(self.flecha,self.entry)
-        self.image = Surface((self.w,self.crearLista(lista)+2))
+        self.image = Surface((self.w,self.crearLista(self.lista)+2))
         self.image.fill((255,0,0)) #fill with some transparent
         self.image.set_colorkey((255,0,0)) # color
         self.openRect = Rect((self.x,self.y),self.image.get_size())
@@ -35,7 +37,9 @@ class DropDownList(BaseWidget):
             opcion.layer = self.layer +50
             h = opcion.image.get_height()-1
             alto += h
-            self.componentes.add(opcion)
+            self.componentes.add(opcion,layer=self.layerOpciones)
+        if alto == 0:
+            alto = self.entry.fuente.get_height()+2
         return alto
     
     def setText(self,texto):
@@ -43,6 +47,19 @@ class DropDownList(BaseWidget):
         # acá podría stripearse el texto, si fuera onda Archivo de mapa (*.json)
         # extrayendo solo el .json
         self.ItemActual = texto
+    
+    def setItem(self,item):
+        self.componentes.remove_sprites_of_layer(self.layerOpciones)
+        if item not in self.lista:
+            self.lista.append(item)
+        self.image = Surface((self.w,self.crearLista(self.lista)+4))
+        self.openRect = Rect((self.x,self.y),self.image.get_size())
+        self.setText(item)
+        self.image.fill((255,0,0)) #fill with some transparent
+        self.image.set_colorkey((255,0,0)) # color
+    
+    def getItemActual(self):
+        return self.ItemActual
     
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()
@@ -76,19 +93,18 @@ class DropDownList(BaseWidget):
                 if isinstance(opcion,_Opcion):
                     opcion.onMouseOut()
             item.onMouseIn()
-
+    
     def showItems(self):
-        for item in self.componentes:
-            if isinstance(item,_Opcion):
-                item.visible = True
-                item.enabled = True
+        self.entry.borrar_todo()
+        for item in self.componentes.get_sprites_from_layer(self.layerOpciones):
+            item.visible = True
+            item.enabled = True
         self.rect = self.openRect
     
     def hideItems(self):
-        for item in self.componentes:
-            if isinstance(item,_Opcion):
-                item.visible = False
-                item.enabled = False
+        for item in self.componentes.get_sprites_from_layer(self.layerOpciones):
+            item.visible = False
+            item.enabled = False
         self.rect = self.collapsedRect
     
     def onFocusOut(self):
@@ -146,11 +162,12 @@ class _Opcion(BaseOpcion):
         self.parent.onFocusOut()
         self.devolverTexto()
         self.parent.hideItems()
-            
+
+    def onMouseIn(self):
+        self.image = self.img_sel
+    
+    def onMouseOut(self):
+        self.image = self.img_des
+        
     def update(self):
-        if self.hasMouseOver:
-            self.image = self.img_sel
-        else:
-            self.image = self.img_des
-            
         self.dirty = 1

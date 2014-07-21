@@ -8,9 +8,10 @@ class Menu_Archivo(Menu):
         self.barra = barra
         opciones = [
             {'nom':'Nuevo','cmd':lambda:CuadroMapa('Nuevo Mapa')},
-            {'nom':'Abrir',"win":lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirMapa})},
+            {'nom':'Abrir',"win":lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirProyecto},Sys.fdProyectos)},
             {'nom':'Guardar','cmd':self.Guardar},
-            {'nom':'Guardar como','win':lambda:FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarMapa})},
+            {'nom':'Guardar como','win':lambda:FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarProyecto},Sys.fdProyectos)},
+            {'nom':'Exportar','win':lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.exportarMapa},Sys.fdExport)},
             {'nom':'Cerrar','cmd':Sys.cerrarMapa},
             {'nom':'Salir','cmd':Sys.salir}]
         super().__init__('Archivo',opciones,x,y)
@@ -18,6 +19,6 @@ class Menu_Archivo(Menu):
     @staticmethod
     def Guardar():
         if not Sys.Guardado:
-            FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarMapa})
+            FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.guardarProyecto},Sys.fdProyectos)
         else:
-            Sys.guardarMapa(Sys.Guardado)
+            Sys.guardarProyecto(Sys.Guardado)
