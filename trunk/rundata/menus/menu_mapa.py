@@ -31,7 +31,7 @@ class CuadroMapa(subVentana):
         self.labels.append(Label(self,'Colisiones',x+2,y+dy*2,'Carpeta de mapas de colisiones:',**ops))
         self.labels.append(Label(self,'Props',x+2,y+dy*3,'Ruta de archivo de datos para Props:',**ops))
         self.labels.append(Label(self,'Mobs',x+2,y+dy*4,'Ruta de archivo de datos para Mobs:',**ops))       
-        self.entrys.append(Entry(self,'Fondo',x+dx,y-3+dy*1,w-dw,'maps/fondo/'))
+        self.entrys.append(Entry(self,'Fondo',x+dx,y-3+dy*1,w-dw,'maps/fondos/'))
         self.entrys.append(Entry(self,'Colisiones',x+dx,y-3+dy*2,w-dw,'maps/colisiones/'))
         self.entrys.append(Entry(self,'Props',x+dx,y-3+dy*3,w-dw,'props/'))
         self.entrys.append(Entry(self,'Mobs',x+dx,y-3+dy*4,w-dw,'mobs/'))
@@ -48,7 +48,7 @@ class CuadroMapa(subVentana):
         data = {}
         for entry in self.entrys:
             data[entry._nombre.lower()] = entry.devolver_texto()
-        Sys.nuevoMapa(data)
+        Sys.nuevoProyecto(data)
         self.cerrar()
     
     def cerrar(self):

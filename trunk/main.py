@@ -4,6 +4,14 @@ from widgets import Ventana
 from rundata import *
 import pygame,sys,os
 
+rutas = [os.getcwd()+'\\proyectos',
+         os.getcwd()+'\\assets',
+         os.getcwd()+'\\export']
+
+for ruta in rutas:
+    if not os.path.exists(ruta):
+        os.mkdir(ruta)
+
 pygame.init()
 tamanio = 20*C+8,18*C-19
 os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)

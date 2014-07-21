@@ -59,7 +59,7 @@ class EventHandler:
                 EventHandler.currentFocus.onKeyUp(event)
                 
             elif event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if event.button in (1,3):
                     foundWidget = None
                     for widget in EventHandler.contents:
                         if widget._visible:

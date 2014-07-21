@@ -13,14 +13,14 @@ class FileDiag(subVentana):
     nombredeArchivo = ''
     tipoSeleccinado = ''
     carpetaVieja = ''
-    def __init__(self,comando,**opciones):      
+    def __init__(self,comando,carpeta_actual=os.getcwd(),**opciones):      
         self.nombre = 'FileDiag'
         super().__init__(2*C+8,3*C,16*C,10*C+18,self.nombre,**opciones)
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
         dummyList = ['*.png','*.json','*.mob','*.quest']
         x,y,w,h = self.x,self.y,self.w,self.h # abreviaturas de legibilidad
-        self.carpetas = arbolCarpetas(self,x+2,y+19,w//2-2,8*C)
+        self.carpetas = arbolCarpetas(self,x+2,y+19,w//2-2,8*C,carpeta_actual)
         self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C)
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,11*C+16,'')
         self.BtnAccion = Boton(self,x+14*C-8,y+8*C+24,'Accion',self.ejecutar_comando,comando['scr'],**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
@@ -82,14 +82,14 @@ class FileDiag(subVentana):
 class arbolCarpetas(Marco):
     CarpetaSeleccionada = ''
     layer = 3
-    def __init__(self,parent,x,y,w,h,**opciones):
+    def __init__(self,parent,x,y,w,h,carpeta_actual,**opciones):
         self.nombre = parent.nombre+'.ArbolDeCarpetas'
         super().__init__(x,y,w,h,False,**opciones)
-        self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()))
+        self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()),carpeta_actual)
         self.arbol.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y)
         self.agregar(self.arbol.ScrollY,self.layer+1)
         self.agregar(self.arbol,self.layer+1)
-        self.CarpetaSeleccionada = os.getcwd()
+        self.CarpetaSeleccionada = carpeta_actual
     
     @staticmethod #decorator! ^^ 'cause explicit is better than implicit
     def _generar_arbol(path):

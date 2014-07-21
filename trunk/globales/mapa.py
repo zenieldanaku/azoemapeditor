@@ -32,4 +32,31 @@ class Mapa:
     
     def cargar(self,data):
         self.script.update(data)
+
+class Proyecto:
+    script = {}
+    
+    def __init__(self):
+        self.script= {
+            "fondo":"",
+            "colisiones":"",
+            "props": {},
+            "mobs": {},
+            "entradas":{},
+            "salidas":{},
+            "refs":{},
+            "ambiente":""
+        }
+    def __setitem__(self,key,value):
+        if key in self.script:
+            self.script[key] = value
+            
+    def guardar(self):
+        return self.script
+    
+    def cargar(self,data):
+        self.script.update(data)
+    
+    def exportar(self):
+        pass
         

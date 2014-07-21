@@ -1,7 +1,7 @@
 from . import BaseWidget
-from pygame import font,Rect
+from pygame import font,Rect, Surface
 from globales import color
-from libs.textrect import render_textrect
+#from libs.textrect import render_textrect
 
 class BaseOpcion(BaseWidget):
         
@@ -25,9 +25,16 @@ class BaseOpcion(BaseWidget):
         
         fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
         if w == 0:
+            
             w,h = fuente.size(nombre)
         else:
             h = fuente.get_height()
-        rect = Rect(-1,-1,w,h+1)
-        render = render_textrect(nombre,fuente,rect,fgcolor,bgcolor)
-        return render
+        rect = Rect(0,0,w,h)
+        render = fuente.render(nombre,True,fgcolor,bgcolor)
+        image = Surface(rect.size)
+        image.fill(bgcolor)
+        #image.set_clip(rect)
+        image.blit(render,rect)
+        
+        
+        return image

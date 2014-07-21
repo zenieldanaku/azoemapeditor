@@ -34,7 +34,7 @@ class Menu (BaseWidget):
         
         if self.cascada.mostrar:
             self.cascada.hideMenu()
-    
+
 class _Boton(BaseWidget):
     nombre = ''
     menu = None
@@ -75,7 +75,7 @@ class _Boton(BaseWidget):
     def onMouseOut(self):
         super().onMouseOut()
         self.image = self.img_des
-        
+
 class _Cascada (BaseWidget):
     opciones = None
     parent = None
@@ -265,3 +265,22 @@ class OpcionCascada(BaseWidget):
     def onMouseOver(self):
         if isinstance(self.command,_Cascada):
             self.command.showMenu()
+
+class ContextMenu(_Cascada):
+    def __init__(self,parent,comandos = False):
+        if not comandos:
+            comandos = [{'nom':'opcion1','cmd':lambda:None},
+                        {'nom':'opcion2','cmd':lambda:None},
+                        {'nom':'opcion3','cmd':lambda:None}]
+        super().__init__(parent,'ContextMenu',comandos,0,0)
+        
+        
+    def show (self):
+        x,y = mouse.get_pos()
+        self.rect.topleft = x,y
+        self.x,self.y = x,y
+        self.showMenu()
+    
+    def onFocusOut(self):
+        self.hasFocus = False
+        self.hideMenu()

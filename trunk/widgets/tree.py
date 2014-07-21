@@ -8,7 +8,7 @@ class Tree (Marco):
     ItemActual = ''
     items = None
     layer = 4
-    def __init__(self,parent,x,y,w,h,walk,**opciones):
+    def __init__(self,parent,x,y,w,h,walk,actual,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack' 
         super().__init__(x,y,w,h,False,**opciones)
@@ -16,8 +16,8 @@ class Tree (Marco):
         self.nombre = self.parent.nombre+'.Tree'
         self.items = LayeredDirty()
         self.crearLista(walk)
-        self.ItemActual = ''
-    
+        self.ItemActual = actual #ruta
+                
     def scroll(self,dy):
         pass
     
@@ -61,6 +61,13 @@ class Tree (Marco):
                 self.ScrollY.moverCursor(dy=+10)
             if button == 4:
                 self.ScrollY.moverCursor(dy=-10)
+    
+    def update(self):
+        for item in self.items:
+            if item.opcion.path == self.ItemActual:
+                item.opcion.selected = True
+            else:
+                item.opcion.selected = False
 
 class Item (BaseWidget):
     hijos = None
@@ -116,6 +123,7 @@ class Item (BaseWidget):
     
 class _Opcion(BaseOpcion):
     path = ''
+    selected = False
     
     def __init__(self,parent,nombre,path,x,y,w=0):
         super().__init__(parent,nombre,x,y,w)
@@ -124,15 +132,19 @@ class _Opcion(BaseOpcion):
     
     def onMouseDown(self,button):
         if button == 1:
+            self.selected = True
             self.parent.parent.ItemActual = self.path
-    
-    def onFocusIn(self):
-        super().onFocusIn()
-        self.image = self.img_sel
     
     def onFocusOut(self):
         super().onFocusOut()
-        self.image = self.img_des
+        self.selected = False
+    
+    def update(self):
+        if self.selected:
+            self.image = self.img_sel
+        else:
+            self.image = self.img_des
+    
 
 class _Cursor(BaseWidget):
     def __init__(self,parent,nombre,x,y,w,h,vacio,**opciones):
@@ -143,13 +155,14 @@ class _Cursor(BaseWidget):
         self.w,self.h = w,h
         self.open = True
         self.vacio = vacio
-        self.img_cld = self._crear(False)
-        self.img_opn = self._crear(True)
+        self.img_cld = self._crear(self.w,self.h,False)
+        self.img_opn = self._crear(self.w,self.h,True)
         self.setStatus()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
     
-    def _crear(self,closed):
-        imagen = Surface((self.w,self.h))
+    @staticmethod
+    def _crear(w,h,closed):
+        imagen = Surface((w,h))
         imagen.fill(color('sysMenBack'))
         rect = imagen.get_rect()
         if closed:
