@@ -38,6 +38,7 @@ class Proyecto:
     
     def __init__(self):
         self.script= {
+            "referencias":{},
             "fondo":"",
             "colisiones":"",
             "props": {},

@@ -123,6 +123,8 @@ class Sistema:
                             idx+=1
                             datos = {'nombre':nombre,'image':sprite,'tipo':'Prop','grupo':key,'ruta':_ruta,"pos":pos,"index":idx}
                             widget.addTile(datos)
+            elif key == 'referencias':
+                Sistema.referencias = ar[key]
         Sistema.Guardado = ruta
         Sistema.HabilitarTodo = True
     

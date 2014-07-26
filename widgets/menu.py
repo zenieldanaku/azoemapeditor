@@ -274,7 +274,6 @@ class ContextMenu(_Cascada):
                         {'nom':'opcion3','cmd':lambda:None}]
         super().__init__(parent,'ContextMenu',comandos,0,0)
         
-        
     def show (self):
         x,y = mouse.get_pos()
         self.rect.topleft = x,y

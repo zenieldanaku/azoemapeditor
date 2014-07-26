@@ -1,4 +1,4 @@
-from .basewidget import BaseWidget
+from widgets import BaseWidget
 from pygame import mouse
 
 class SimboloBase (BaseWidget):
@@ -33,3 +33,18 @@ class SimboloBase (BaseWidget):
         self.rect.move_ip(dx,dy)
         self.x += dx
         self.y += dy
+    
+    def onMouseDown(self,button):
+        if button == 1:
+            self.pressed = True
+            x,y = mouse.get_pos()
+            self.px = x-self.x
+            self.py = y-self.y
+        elif button == 3:
+            self.context.show()
+    
+    def onMouseOut(self):
+        self.pressed = False
+    
+    def hideMenu(self):
+        print('dummy')

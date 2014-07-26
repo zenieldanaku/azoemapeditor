@@ -1,7 +1,8 @@
-from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco, Canvas
 from globales import Sistema as Sys, EventHandler, color, C, LAYER_COLISIONES,LAYER_FONDO
+from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Surface,Rect,draw,font,K_SPACE
+from .SpecialCanvas import SpecialCanvas
 import os
 
 class Grilla(Marco):
@@ -15,7 +16,7 @@ class Grilla(Marco):
     def __init__(self):
         super().__init__(0,19,15*C+15,15*C+16,False)
         self.nombre = 'Grilla'
-        self.canvas = Canvas(self,self.x+16,self.y+16,15*C,15*C,(15*C,15*C))
+        self.canvas = SpecialCanvas(self,self.x+16,self.y+16,15*C,15*C,(15*C,15*C))
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
         self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
