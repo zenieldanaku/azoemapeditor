@@ -27,10 +27,12 @@ class CuadroMapa(subVentana):
         
         self.btnAceptar = Boton(self,x+w-142,y+h-26,'Aceptar',self.Aceptar,'Aceptar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.btnCancelar = Boton(self,x+w-72,y+h-26,'Cancelar',self.cerrar,'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        
         self.labels.append(Label(self,'Fondo',x+2,y+dy*1,'Carpeta de imágenes fondo:',**ops))
         self.labels.append(Label(self,'Colisiones',x+2,y+dy*2,'Carpeta de mapas de colisiones:',**ops))
         self.labels.append(Label(self,'Props',x+2,y+dy*3,'Ruta de archivo de datos para Props:',**ops))
         self.labels.append(Label(self,'Mobs',x+2,y+dy*4,'Ruta de archivo de datos para Mobs:',**ops))       
+        
         self.entrys.append(Entry(self,'Fondo',x+dx,y-3+dy*1,w-dw,'maps/fondos/'))
         self.entrys.append(Entry(self,'Colisiones',x+dx,y-3+dy*2,w-dw,'maps/colisiones/'))
         self.entrys.append(Entry(self,'Props',x+dx,y-3+dy*3,w-dw,'props/'))
@@ -42,8 +44,7 @@ class CuadroMapa(subVentana):
             self.agregar(entry)
         self.agregar(self.btnAceptar)
         self.agregar(self.btnCancelar)
-
-
+    
     def Aceptar(self):
         data = {}
         for entry in self.entrys:
