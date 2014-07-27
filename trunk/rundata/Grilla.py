@@ -1,5 +1,5 @@
 from globales import Sistema as Sys, EventHandler, color, C, LAYER_COLISIONES,LAYER_FONDO
-from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco
+from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco, ToolTip
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Surface,Rect,draw,font,K_SPACE
 from .SpecialCanvas import SpecialCanvas
@@ -20,11 +20,8 @@ class Grilla(Marco):
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
         self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
-        self.BtnVerCapa = Boton(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,'Cp')
-        self.BtnVerGr = Boton(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,'Gr')
-        
-        self.BtnVerCapa.descripcion = "Alterna entre el mapa de colisiones y la imagen de fondo"
-        self.BtnVerGr.descripcion = "Muestra u oculta la grilla"
+        self.BtnVerCapa = Boton(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,'Cp',"Alterna entre el mapa de colisiones y la imagen de fondo")
+        self.BtnVerGr = Boton(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,'Gr',"Muestra u oculta la grilla")
         
         self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,15*C+1)
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,15*C+1)
@@ -107,6 +104,7 @@ class _grilla(BaseWidget):
         
 class BaseRegla(BaseWidget):
     pressed = False
+    tip = 'Haga clic y arrastre para generar una guía '
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
         self.x,self.y = x,y
@@ -141,10 +139,12 @@ class BaseRegla(BaseWidget):
     def onMouseOut(self):
         if not self.pressed:
             super().onMouseOut()
+        self.tooltip.hide()
 
     def onMouseOver(self):
         if self.pressed:
             self.moverLinea()
+        self.tooltip.show()
 
 class ReglaH(BaseRegla):
     def __init__(self,parent,x,y,w,**opciones):
@@ -156,7 +156,8 @@ class ReglaH(BaseRegla):
         self.clip = Rect(0,0,15*C+1,self.h)
         self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.image.get_rect(topleft =(self.x,self.y))
-    
+        self.tooltip = ToolTip(self,self.tip+'horizontal',self.x,self.y)
+        
     @staticmethod
     def crear(w):
         fuente = font.SysFont('verdana',8)
@@ -198,6 +199,7 @@ class ReglaV(BaseRegla):
         self.clip = Rect(0,0,self.w,15*C+1)
         self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        self.tooltip = ToolTip(self,self.tip+'vertical',self.x,self.y)
     
     @staticmethod
     def crear(h):
@@ -234,7 +236,7 @@ class ReglaV(BaseRegla):
 class HandlerRegla(BaseWidget):
     selected = False
     pressed = False
-    
+    tip = 'Haga clic y arrastre para generar dos guías'
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
         self.x,self.y = x,y
@@ -245,6 +247,7 @@ class HandlerRegla(BaseWidget):
         self.w,self.h = self.image.get_size()
         self.linX = -1,0,1,self.parent.Th
         self.linY = 0,-1,self.parent.Tw,1
+        self.tooltip = ToolTip(self,self.tip,self.x,self.y)
     
     @staticmethod
     def _crear():
@@ -284,10 +287,12 @@ class HandlerRegla(BaseWidget):
         self.ToggleSel(False)
         if not self.pressed:
             super().onMouseOut()
+            self.tooltip.hide()
     
     def onMouseOver(self):
         if self.pressed:
             self.moverLineas()
+        self.tooltip.show()
     
     def ToggleSel(self,select):
         if select:

@@ -11,7 +11,7 @@ class barraMenus (Marco):
         self.menus = {}
         self.image.fill(color(opciones.get('colorFondo', 'sysMenBack')))
         prev  = 0
-        for menu_nom in ['Archivo','Editar','Mapa','Simbolo']:
+        for menu_nom in ['Archivo','Editar','Mapa']:
             menu = eval('Menu_'+menu_nom+'(prev,3,self)')
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu

@@ -1,5 +1,5 @@
 from pygame import display as pantalla,time
-from globales import EventHandler, C
+from globales import EventHandler, ANCHO,ALTO
 from widgets import Ventana
 from rundata import *
 import pygame,sys,os
@@ -13,7 +13,7 @@ for ruta in rutas:
         os.mkdir(ruta)
 
 pygame.init()
-tamanio = 20*C+8,18*C-19
+tamanio = ANCHO,ALTO
 os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
 pantalla.set_caption("MapGen")
 fondo = pantalla.set_mode(tamanio)

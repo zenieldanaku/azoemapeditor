@@ -22,7 +22,7 @@ try:
     sysMenText =          hexa(7)     #color de texto en menus
     sysScrBack =          hexa(0)     #color de fondo de la barras de scroll
     sysScrArrow =         hexa(9)     #color de las flechas de barras de scroll
-except:                   
+except:
     sysElmFace = Color   (*[125]*3)   #color de frente de elementos
     sysElmShadow = Color (*[100]*3)   #color del borde de abajo de elementos 3D (botones, etc)
     sysElmLight = Color  (*[150]*3)   #color del borde de arriba de elementos 3D

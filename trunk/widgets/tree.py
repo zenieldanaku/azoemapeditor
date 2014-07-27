@@ -1,7 +1,7 @@
+from . import Marco, BaseWidget, BaseOpcion, ToolTip
 from pygame import font, Rect, Surface, draw
-from . import Marco, BaseWidget, BaseOpcion
-from libs.textrect import render_textrect
 from globales import EventHandler, color, C
+from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 
 class Tree (Marco):
@@ -129,6 +129,7 @@ class _Opcion(BaseOpcion):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
         self.path = path
+        self.tooltip = ToolTip(self,path,x,y)
     
     def onMouseDown(self,button):
         if button == 1:
@@ -144,6 +145,12 @@ class _Opcion(BaseOpcion):
             self.image = self.img_sel
         else:
             self.image = self.img_des
+        
+        if self.hasMouseOver:
+            self.tooltip.show()
+        else:
+            self.tooltip.hide()
+        
     
 
 class _Cursor(BaseWidget):

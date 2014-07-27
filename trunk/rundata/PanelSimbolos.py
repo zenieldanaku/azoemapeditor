@@ -30,14 +30,14 @@ class PanelSimbolos(Marco):
             {n:'barra'},
             {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},Sys.fdAssets),s:"Fd",d:"Cargar imagen de fondo"},
             {n:'SetColis',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaColis},Sys.fdAssets),s:"Cl",d:"Cargar imagen de colisiones"},
-            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},Sys.fdAssets),s:"Mb",d:"Cargar símbolo de mob (no funciona)"},
+            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},Sys.fdAssets),s:"Mb",d:"Cargar símbolo de mob"},
             {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProp},Sys.fdAssets),s:"Pr",d:"Cargar símbolo de prop"},
             ]
         x = self.x+4
         y = 19+4
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],descripcion = e['des'])
+                boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],e['des'])
                 x = boton.rect.right-2
                 self.botones.append(boton)
                 self.agregar(boton,2)
