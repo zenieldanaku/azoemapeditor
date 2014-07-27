@@ -1,13 +1,13 @@
-from libs.textrect import render_textrect
 from pygame import font,Rect,draw,Surface, Color 
-from . import BaseWidget
-from globales import Resources as r, Sistema as Sys, color
+from globales import Resources as r, color
+from libs.textrect import render_textrect
+from . import BaseWidget, ToolTip
 import os.path
 
 class Boton(BaseWidget):
     comando = None
     presionado = False
-    def __init__(self,parent,x,y,nombre,cmd,scr,descripcion='', **opciones):
+    def __init__(self,parent,x,y,nombre,cmd,scr,tip='', **opciones):
         opciones = self._opcionesPorDefault(opciones)
         super().__init__(**opciones)
         self.x,self.y = x,y
@@ -15,7 +15,7 @@ class Boton(BaseWidget):
         self.parent = parent
         self.nombre = self.parent.nombre+'.Boton.'+nombre
         self.comando = cmd
-        self.descripcion = descripcion
+        self.tooltip = ToolTip(self,tip,self.x,self.y)
         
         fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
         colorFondo   = color(self.opciones['colorFondo'])
@@ -128,6 +128,10 @@ class Boton(BaseWidget):
             self.serElegido()
             self.comando()
     
-    def onMouseOver(self):
+    def update(self):
         if self.enabled:
-            Sys.estado = self.descripcion
+            if self.hasMouseOver:
+                self.tooltip.show()
+            else:
+                self.tooltip.hide()
+            

@@ -44,6 +44,7 @@ class SimboloBase (BaseWidget):
             self.context.show()
     
     def onMouseOut(self):
+        super().onMouseOut()
         self.pressed = False
     
     def hideMenu(self):

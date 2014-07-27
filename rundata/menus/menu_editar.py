@@ -1,5 +1,4 @@
 from widgets import Menu
-#from ._cuadroPreferencias import cuadroPreferencias
 
 class Menu_Editar(Menu):
     def  __init__(self,x,y,barra):

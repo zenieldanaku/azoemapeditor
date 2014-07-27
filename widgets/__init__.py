@@ -1,4 +1,5 @@
 from .basewidget import BaseWidget
+from .tooltip import ToolTip
 from .baseopcion import BaseOpcion
 from .ventana import Ventana
 from .boton import Boton

@@ -53,3 +53,5 @@ class Marco(BaseWidget):
     def onDestruction(self):
         for widget in self.contenido:
             self.quitar(widget)
+            if hasattr(widget,'tooltip'):
+                EventHandler.delWidget(widget.tooltip)

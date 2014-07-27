@@ -1,5 +1,5 @@
 from . import BaseWidget,Marco, Entry, Boton, DropDownList, subVentana
-from . import Label, ScrollV, ScrollH, Tree, BaseOpcion
+from . import Label, ScrollV, ScrollH, Tree, BaseOpcion, ToolTip
 from pygame import Rect, font
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
@@ -26,8 +26,8 @@ class FileDiag(subVentana):
         self.BtnAccion = Boton(self,x+14*C-8,y+8*C+24,'Accion',self.ejecutar_comando,comando['scr'],**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,11*C+16,dummyList)
         self.BtnCancelar = Boton(self,x+14*C-8,y+9*C+20,'Cancelar',lambda:EventHandler.delWidget(self),'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
-        self.lblTipo = Label(self,'Tipo',x+4,y+9*C+18,texto = "Tipo:",**{'fontType':'Tahoma','fontSize':12})
-        self.lblNombre = Label(self,'Nombre',x+4,y+8*C+24, texto = 'Nombre:',**{'fontType':'Tahoma','fontSize':12})    
+        self.lblNombre = Label(self,'Nombre',x+4,y+9*C-7, texto = 'Nombre:',**{'fontType':'Tahoma','fontSize':13})
+        self.lblTipo = Label(self,'Tipo',x+4,y+9*C+19,texto = "Tipo:",**{'fontType':'Tahoma','fontSize':13})
         
         self.agregar(self.carpetas,self.layer+1)
         self.agregar(self.archivos,self.layer+1)
@@ -81,7 +81,7 @@ class FileDiag(subVentana):
 
 class arbolCarpetas(Marco):
     CarpetaSeleccionada = ''
-    layer = 3
+    layer = 4
     def __init__(self,parent,x,y,w,h,carpeta_actual,**opciones):
         self.nombre = parent.nombre+'.ArbolDeCarpetas'
         super().__init__(x,y,w,h,False,**opciones)
@@ -136,7 +136,7 @@ class arbolCarpetas(Marco):
         self.dirty = 1
 
 class listaDeArchivos(Marco):
-    layer = 3
+    layer = 4
     def __init__(self,parent,x,y,w,h,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack'
@@ -166,16 +166,17 @@ class listaDeArchivos(Marco):
         lista = []
         for item in os.listdir(fold):
             if os.path.isfile(os.path.join(fold,item)):
-                lista.append(item)
+                lista.append([item,os.path.join(fold,item)])
         return lista
     
     def crearLista(self,opciones,ext):
         lista = self._FiltrarExtS(opciones,ext)
         h = 0
         for n in range(len(lista)):
-            nom = lista[n]
+            nom = lista[n][0]
+            ruta = lista[n][1]
             dy = self.y+(n*h)
-            opcion = _Opcion(self,nom,self.x,dy,self.w-16)
+            opcion = _Opcion(self,nom,ruta,self.x,dy,self.w-16)
             h = opcion.image.get_height()
             self.items.add(opcion)
             if self.rect.contains(opcion.rect):
@@ -212,9 +213,10 @@ class _Opcion(BaseOpcion):
     isSelected = False
     texto = ''
     
-    def __init__(self,parent,nombre,x,y,w=0,**opciones):
+    def __init__(self,parent,nombre,ruta,x,y,w=0,**opciones):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
+        self.tooltip = ToolTip(self,ruta,x,y)
        
     def onFocusIn(self):
         super().onFocusIn()
@@ -225,4 +227,9 @@ class _Opcion(BaseOpcion):
         super().onFocusOut()
         self.image = self.img_des
         self.isSelected = False
-
+    
+    def update(self):
+        if self.hasMouseOver:
+            self.tooltip.show()
+        else:
+            self.tooltip.hide()

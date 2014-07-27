@@ -6,12 +6,10 @@ class Menu_Mapa (Menu):
         self.nombre = 'Menu.Mapa'
         self.barra = barra
         cascadas = {'imagen':[
-                {'nom':'Fondo','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':Sys.setRutaFondo})},
-                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'A','tipo':'A','cmd':Sys.setRutaColis})}]}
-        opciones = [{'nom':'Grilla','cmd':lambda:print('grilla')},
-                   {'nom':'Capas','cmd':lambda:print('capas')},
-                   {'nom':'Imagen','csc':cascadas['imagen']},
-                   {'nom':'Ajustes','win':lambda:CuadroMapa('Ajustar Mapa')}]
+                {'nom':'Fondo','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaFondo},Sys.fdAssets)},
+                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaColis},Sys.fdAssets)}]}
+        opciones = [{'nom':'Imagen','csc':cascadas['imagen']},
+                    {'nom':'Ajustes','win':lambda:CuadroMapa('Ajustar Mapa')}]
         super().__init__('Mapa',opciones,x,y)
 
 class CuadroMapa(subVentana):
