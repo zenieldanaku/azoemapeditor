@@ -22,6 +22,7 @@ class Sistema:
     fdProyectos = getcwd()+'\\proyectos'
     fdAssets = getcwd()+'\\assets'
     fdExport = getcwd()+'\\export'
+    fdLibs = getcwd()+'\\libs'
     
     @staticmethod
     def cargar_imagen(layer):

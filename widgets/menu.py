@@ -1,9 +1,8 @@
+from globales import EventHandler, color, Sistema as Sys
 from pygame import Surface,Rect,font,mouse,draw
 from libs.textrect import render_textrect
-from globales import EventHandler, color
 from pygame.sprite import LayeredDirty
 from . import BaseWidget
-from os import getcwd
 
 class Menu (BaseWidget):
     cascada = None
@@ -11,7 +10,7 @@ class Menu (BaseWidget):
     visible = 0
     nombre = ''
     def __init__(self,nombre,ops,x,y):
-        self.fuente = font.Font(getcwd()+'/rundata/menus/fonts_tahoma.ttf',12)
+        self.fuente = font.Font(Sys.fdLibs+'\\fonts_tahoma.ttf',12)
         self.cascada = None
         self.boton = None
         super().__init__()
