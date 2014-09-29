@@ -91,6 +91,7 @@ class Sistema:
             
     @staticmethod
     def nuevoProyecto(data):
+        Sistema.cerrarProyecto()
         Sistema.referencias.update(data)
         Sistema.HabilitarTodo = True
         Sistema.PROYECTO = Proyecto()
@@ -139,9 +140,9 @@ class Sistema:
     @staticmethod
     def cerrarProyecto():
         Sistema.Proyecto = None
-        Sistema.IMGs_cargadas.clear()
-        Sistema.IMG_ID = -1
+        Sistema.IMG_FONDO = None
         Sistema.HabilitarTodo = False
+        EventHandler.contents.update()
     
     @staticmethod
     def abrirMapa(ruta):

@@ -26,7 +26,7 @@ Ventana(fondo.get_size())
 hayCambios = True
 FPS = time.Clock()
 while hayCambios:
-    FPS.tick(20)
+    #FPS.tick(20)
     events = pygame.event.get()
     hayCambios = EventHandler.update(events,fondo)
     if hayCambios:

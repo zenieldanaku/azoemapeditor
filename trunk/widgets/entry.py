@@ -81,6 +81,7 @@ class Entry(BaseWidget):
         
     def borrar_todo(self):
         self.image.fill(color(self.opciones['colorFondo']),self.erase_area)
+        self.texto = ''
     
     def imprimir(self):
         txt = ''.join(self.texto)

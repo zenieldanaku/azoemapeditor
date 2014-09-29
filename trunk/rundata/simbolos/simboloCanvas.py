@@ -33,7 +33,7 @@ class SimboloCNVS (SimboloBase):
     def onMouseDown(self,button):
         if button == 1 or button == 3:
             self.onFocusIn()
-            self.img_sel = self.crear_img_sel(self.image)
+            self.img_sel = self.crear_img_sel(self._imagen.copy())
             self.image = self.img_sel
             self.selected = not self.selected
             self.pressed = True
@@ -69,11 +69,11 @@ class SimboloCNVS (SimboloBase):
         
     def mover(self,dx,dy):
         super().mover(dx,dy)
-        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ '+str(self.rect.topleft)
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
     
     def change_layer(self,mod):
         self.parent.cambiar_layer(self,mod)
-        print(self.layer)
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
     
     def update(self):
         if self.selected:
