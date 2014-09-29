@@ -139,7 +139,14 @@ class area_prev(Marco):
                 self.parent.Items.delItem(simbolo)
                 break
     
+    def clear(self):
+        self.simbolos.empty()
+        self.limpiar()
+        self.parent.Items.clear()
+    
     def update(self):
+        if not Sys.HabilitarTodo:
+            self.clear()
         nombre = self.parent.Items.getItemActual()
         if nombre != self.simbolo_actual:
             for simbolo in self.simbolos:

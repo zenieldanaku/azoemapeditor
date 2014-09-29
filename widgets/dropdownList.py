@@ -58,8 +58,6 @@ class DropDownList(BaseWidget):
         self.image = Surface((self.w,self.crearLista(self.lista)+4))
         self.openRect = Rect((self.x,self.y),self.image.get_size())
         self.setText(item)
-        self.image.fill((255,0,0)) #fill with some transparent
-        self.image.set_colorkey((255,0,0)) # color
     
     def getItemActual(self): return self.ItemActual
     
@@ -74,6 +72,10 @@ class DropDownList(BaseWidget):
         self.componentes.remove_sprites_of_layer(self.layerOpciones)
         self.lista.remove(opcion.texto)
         self.crearLista(self.lista)
+    
+    def clear(self):
+        self.componentes.remove_sprites_of_layer(self.layerOpciones)
+        self.entry.borrar_todo()
         
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()
