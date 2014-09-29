@@ -13,8 +13,9 @@ class Sistema:
     estado = ''
     ruta = ''
     referencias = {}
-    IMG_ID = -1
-    IMGs_cargadas = {}
+
+    IMG_FONDO = None
+    capa_actual = None
     HabilitarTodo = False
     portapapeles = None
     preferencias = {}
@@ -23,19 +24,6 @@ class Sistema:
     fdAssets = getcwd()+'\\assets'
     fdExport = getcwd()+'\\export'
     fdLibs = getcwd()+'\\libs'
-    
-    @staticmethod
-    def cargar_imagen(layer):
-        img = Resources.cargar_imagen(Sistema.ruta)
-        Sistema.IMG_ID += 1
-        
-        spr = DirtySprite()
-        spr.image = img
-        spr.idx = Sistema.IMG_ID
-        spr.rect = spr.image.get_rect()
-        spr._layer = layer
-        spr.dirty = 2
-        Sistema.IMGs_cargadas[spr.idx] = spr
     
     @staticmethod
     def habilitarItems(lista_de_items):
@@ -50,25 +38,34 @@ class Sistema:
                 item.serDeshabilitado()
 
     @staticmethod
+    def cargar_imagen(layer):
+        spr = DirtySprite()      
+        spr.image = Resources.cargar_imagen(Sistema.ruta)
+        spr.rect = spr.image.get_rect()
+        spr._layer = layer
+        spr.dirty = 2
+        
+        Sistema.IMG_FONDO = spr
+
+    @staticmethod
     def setRutaFondo(ruta):
         try:
             Sistema.ruta = ruta
-            #print(ruta)
-            #_ruta = Sistema.referencias['fondo']+os.path.split(ruta)[1]
             Sistema.cargar_imagen(LAYER_FONDO)
             Sistema.PROYECTO.script["fondo"] = ruta
+            Sistema.capa_actual = LAYER_FONDO
         except:
             Sistema.estado = 'No se ha selecionado ninguna imagen'
     
-    @staticmethod
-    def setRutaColis(ruta):
-        try:
-            Sistema.ruta = ruta
-            #_ruta = Sistema.referencias['colisiones']+os.path.split(ruta)[1]
-            Sistema.cargar_imagen(LAYER_COLISIONES)
-            Sistema.PROYECTO.script["colisiones"]= ruta
-        except:
-            Sistema.estado = 'No se ha selecionado ninguna imagen'
+    #@staticmethod
+    #def setRutaColis(ruta):
+    #    try:
+    #        Sistema.ruta = ruta
+    #        #_ruta = Sistema.referencias['colisiones']+os.path.split(ruta)[1]
+    #        Sistema.cargar_imagen(LAYER_COLISIONES)
+    #        Sistema.PROYECTO.script["colisiones"]= ruta
+    #    except:
+    #        Sistema.estado = 'No se ha selecionado ninguna imagen'
     
     @staticmethod
     def addItem(nombre,ruta,grupo):
@@ -107,6 +104,7 @@ class Sistema:
             if key == 'fondo':
                 if ar[key] != "":
                     Sistema.cargar_imagen(LAYER_FONDO)
+                    Sistema.capa_actual = LAYER_FONDO
             elif key == 'colisiones':
                 if ar[key] != "":
                     Sistema.cargar_imagen(LAYER_COLISIONES)
@@ -139,6 +137,13 @@ class Sistema:
             Sistema.estado ='Error: Es necesario cargar un mapa.'
     
     @staticmethod
+    def cerrarProyecto():
+        Sistema.Proyecto = None
+        Sistema.IMGs_cargadas.clear()
+        Sistema.IMG_ID = -1
+        Sistema.HabilitarTodo = False
+    
+    @staticmethod
     def abrirMapa(ruta):
         try:
             data = Resources.abrir_json(ruta)
@@ -156,13 +161,6 @@ class Sistema:
             Sistema.Guardado = ruta
         except: 
             Sistema.estado ='Error: Es necesario cargar un mapa.'
-    
-    @staticmethod
-    def cerrarMapa():
-        Sistema.MAPA = None
-        Sistema.IMGs_cargadas.clear()
-        Sistema.IMG_ID = -1
-        Sistema.HabilitarTodo = False
     
     @staticmethod
     def salir():

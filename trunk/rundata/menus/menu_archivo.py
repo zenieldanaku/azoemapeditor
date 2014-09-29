@@ -8,11 +8,11 @@ class Menu_Archivo(Menu):
         self.barra = barra
         opciones = [
             {'nom':'Nuevo','cmd':lambda:CuadroMapa('Nuevo Mapa')},
-            {'nom':'Abrir',"win":lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirProyecto},Sys.fdProyectos)},
+            {'nom':'Abrir',"win":lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirProyecto},['json'],carpeta_actual=Sys.fdProyectos)},
             {'nom':'Guardar','cmd':self.Guardar},
-            {'nom':'Guardar como','win':lambda:FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarProyecto},Sys.fdProyectos)},
-            {'nom':'Exportar','win':lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.exportarMapa},Sys.fdExport)},
-            {'nom':'Cerrar','cmd':Sys.cerrarMapa},
+            {'nom':'Guardar como','win':lambda:FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarProyecto},carpeta_actual=Sys.fdProyectos)},
+            {'nom':'Exportar','win':lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.exportarMapa},carpeta_actual=Sys.fdExport)},
+            {'nom':'Cerrar','cmd':Sys.cerrarProyecto},
             {'nom':'Salir','cmd':Sys.salir}]
         super().__init__('Archivo',opciones,x,y)
     

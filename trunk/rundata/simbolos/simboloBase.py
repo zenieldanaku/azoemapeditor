@@ -1,5 +1,5 @@
 from widgets import BaseWidget
-from pygame import mouse
+from pygame import mouse, PixelArray
 
 class SimboloBase (BaseWidget):
     pressed = False
@@ -49,3 +49,13 @@ class SimboloBase (BaseWidget):
     
     def hideMenu(self):
         print('dummy')
+    
+    @staticmethod
+    def _crear_transparencia(imagen):
+        pxArray = PixelArray(imagen)
+        for y in range(imagen.get_height()):
+            for x in range(imagen.get_width()):
+                _color = imagen.unmap_rgb(pxArray[x,y])
+                if _color.a == 255: _color.a = 200
+                pxArray[x,y] = _color
+        return pxArray.surface

@@ -23,15 +23,20 @@ class SimboloSimple (MetaSimbolo):
     
     def __init__(self,parent,data,**opciones):
         super().__init__(parent,data,**opciones)
-        self.image = self._imagen.copy()
+        self.img_pos = self._imagen.copy()
+        self.img_neg = self._crear_transparencia(self._imagen.copy())
+        self.image = self.img_pos
         self.context = ContextMenu(self)
 
 class SimboloMultiple(MetaSimbolo):
     def __init__(self,parent,data,**opciones):
-        self.images = self.cargar_anims(data['imagenes'],['S','I','D'])
-        data['image'] = self.images['Sabajo']
+        self.imgs_pos = self.cargar_anims(data['imagenes'],['S','I','D'])
+        self.imgs_neg = self.cargar_anims(data['imagenes'],['S','I','D'],True)
+        data['image'] = self.imgs_pos['Sabajo']
         super().__init__(parent,data,**opciones)
-        self.image = self._imagen.copy()
+        self.img_pos = self.imgs_pos['Sabajo']
+        self.img_neg = self.imgs_neg['Sabajo']
+        self.image = self.img_pos
         
         cmds = [
             {'nom':"Arriba",'cmd':lambda:self.cambiar_imagen('arriba')},
@@ -42,11 +47,13 @@ class SimboloMultiple(MetaSimbolo):
         self.context = ContextMenu(self,cmds)
     
     def cambiar_imagen(self,direccion):
-        self.image = self.images['S'+direccion]
+        #self.image = self.images['S'+direccion]
+        self.img_pos = self.imgs_pos['S'+direccion]
+        self.img_neg = self.imgs_neg['S'+direccion]
+        self.image = self.img_pos
         self.data['image'] = self.image
     
-    @staticmethod
-    def cargar_anims(spritesheet,seq,alpha=False):
+    def cargar_anims(self,spritesheet,seq,alpha=False):
         dicc,keys = {},[]
         dires = ['abajo','arriba','izquierda','derecha']
         
@@ -55,7 +62,10 @@ class SimboloMultiple(MetaSimbolo):
                 keys.append(L+D)
         
         for key in keys:
-            dicc[key] = spritesheet[keys.index(key)]
+            if not alpha:
+                dicc[key] = spritesheet[keys.index(key)]
+            else:
+                dicc[key] = self._crear_transparencia(spritesheet[keys.index(key)])
             
         return dicc
 

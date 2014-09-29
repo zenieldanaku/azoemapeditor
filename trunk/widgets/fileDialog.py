@@ -13,18 +13,18 @@ class FileDiag(subVentana):
     nombredeArchivo = ''
     tipoSeleccinado = ''
     carpetaVieja = ''
-    def __init__(self,comando,carpeta_actual=os.getcwd(),**opciones):      
+    def __init__(self,comando,filetypes=[],carpeta_actual=os.getcwd(),**opciones):      
         self.nombre = 'FileDiag'
         super().__init__(2*C+8,3*C,16*C,10*C+18,self.nombre,**opciones)
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
-        dummyList = ['*.png','*.json','*.mob','*.quest']
+        if len(filetypes) == 0: filetypes = ['*.png','*.json','*.mob','*.quest']
         x,y,w,h = self.x,self.y,self.w,self.h # abreviaturas de legibilidad
         self.carpetas = arbolCarpetas(self,x+2,y+19,w//2-2,8*C,carpeta_actual)
         self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C)
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,11*C+16,'')
         self.BtnAccion = Boton(self,x+14*C-8,y+8*C+24,'Accion',self.ejecutar_comando,comando['scr'],**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
-        self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,11*C+16,dummyList)
+        self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,11*C+16,filetypes)
         self.BtnCancelar = Boton(self,x+14*C-8,y+9*C+20,'Cancelar',lambda:EventHandler.delWidget(self),'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.lblNombre = Label(self,'Nombre',x+4,y+9*C-7, texto = 'Nombre:',**{'fontType':'Tahoma','fontSize':13})
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+19,texto = "Tipo:",**{'fontType':'Tahoma','fontSize':13})
@@ -152,8 +152,9 @@ class listaDeArchivos(Marco):
         if extension != '':
             filtrado = []
             for archivo in archivos:
+                print(archivo)
                 if extension != '':
-                    split = archivo.split('.')
+                    split = archivo[0].split('.')
                     ext = split[-1]
                     if ext == extension:
                         filtrado.append(archivo)    

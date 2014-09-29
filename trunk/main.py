@@ -21,9 +21,7 @@ BarraMenus = barraMenus()
 BarraEstado = barraEstado()
 Grilla = Grilla()
 Simbolos = PanelSimbolos()
-ventana = EventHandler.addWidget(Ventana(fondo.get_size()),0)
-EventHandler.currentFocus = ventana
-ventana.onFocusIn()
+Ventana(fondo.get_size())
 
 hayCambios = True
 FPS = time.Clock()

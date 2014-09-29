@@ -9,20 +9,10 @@ class SimboloVirtual(SimboloBase):
         data = {'nombre':'Virtual',
                 'image':imagen,'pos':_rect.topleft}
         super().__init__(parent,data,**opciones)
-        self.image = self._crear(self._imagen)
+        self.image = self._crear_transparencia(self._imagen)
         if not self.nombre in EventHandler.widgets:
             EventHandler.addWidget(self,20)
         self.pressed = True
-    
-    @staticmethod
-    def _crear(imagen):
-        pxArray = PixelArray(imagen)
-        for y in range(imagen.get_height()):
-            for x in range(imagen.get_width()):
-                _color = imagen.unmap_rgb(pxArray[x,y])
-                if _color.a == 255: _color.a = 200
-                pxArray[x,y] = _color
-        return pxArray.surface
     
     def onMouseOut(self):
         if not self.pressed:
@@ -36,7 +26,10 @@ class SimboloVirtual(SimboloBase):
     def onMouseUp(self,button):
         self.pressed = False
         Sys.copiar(self)
-        Sys.pegar('Grilla.Canvas')
+        x,y = mouse.get_pos()
+        widget = EventHandler.getWidget('Grilla.Canvas')
+        if widget.rect.collidepoint((x,y)):
+            Sys.pegar(widget.nombre)
     
     def copy(self):
         self.datos['rect'] = self.rect.copy()

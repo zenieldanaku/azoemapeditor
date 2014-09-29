@@ -31,7 +31,8 @@ class EventHandler:
     @staticmethod
     def setFocus(widget):
         if widget!=EventHandler.currentFocus and widget!=None:
-            EventHandler.currentFocus.onFocusOut()
+            if EventHandler.currentFocus != None:
+                EventHandler.currentFocus.onFocusOut()
             EventHandler.currentFocus = widget
             EventHandler.currentFocus.onFocusIn()
     

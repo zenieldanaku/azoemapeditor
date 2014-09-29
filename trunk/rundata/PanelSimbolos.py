@@ -1,9 +1,9 @@
-from globales import Sistema as Sys, Resources as r, C, color
+from globales import Sistema as Sys, Resources as r, C, color, LAYER_COLISIONES, LAYER_FONDO
 from widgets import Marco, FileDiag, Boton, DropDownList
 from .simbolos import SimboloSimple,SimboloMultiple
 from .menus.menu_mapa import CuadroMapa
 from pygame.sprite import LayeredDirty
-from pygame import Rect,draw
+from pygame import Rect,draw, Surface
 from os import path
 
 class PanelSimbolos(Marco):
@@ -21,17 +21,17 @@ class PanelSimbolos(Marco):
         n,s,t,c,d = 'nom','scr','tipo','cmd','des'
         elementos = [
             {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:"N",d:"Crear un mapa nuevo"},
-            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},Sys.fdProyectos),s:"A",d:"Abrir un mapa existente"},
+            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos),s:"A",d:"Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:"G",d:"Guardar el mapa actual"},
             {n:'barra'},
             {n:'Cortar',c:self.Cortar,s:"X",d:"Cortar"},
             {n:'Copiar',c:self.Copiar,s:"C",d:"Copiar"},
             {n:'Pegar',c:self.Pegar,s:"P",d:"Pegar"},
             {n:'barra'},
-            {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},Sys.fdAssets),s:"Fd",d:"Cargar imagen de fondo"},
-            {n:'SetColis',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaColis},Sys.fdAssets),s:"Cl",d:"Cargar imagen de colisiones"},
-            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},Sys.fdAssets),s:"Mb",d:"Cargar símbolo de mob"},
-            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProp},Sys.fdAssets),s:"Pr",d:"Cargar símbolo de prop"},
+            {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},carpeta_actual=Sys.fdAssets),s:"Fd",d:"Cargar imagen de fondo"},
+            #{n:'SetColis',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaColis},carpeta_actual=Sys.fdAssets),s:"Cl",d:"Cargar imagen de colisiones"},
+            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},carpeta_actual=Sys.fdAssets),s:"Mb",d:"Cargar símbolo de mob"},
+            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProp},carpeta_actual=Sys.fdAssets),s:"Pr",d:"Cargar símbolo de prop"}            
             ]
         x = self.x+4
         y = 19+4
@@ -101,10 +101,16 @@ class area_prev(Marco):
         self.nombre = self.parent.nombre+'.AreaPrev'
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
-        grilla = self.opciones['colorGrilla']
-        self.image = self._dibujar_grilla(self._biselar(self.image,sombra,luz),grilla)
+        grilla = self.opciones['colorGrilla']       
+        self.img_pos = self._dibujar_grilla(self._biselar(self.image,sombra,luz),grilla)
+        self.img_neg = self._dibujar_grilla(self._biselar(Surface((w,h)),sombra,luz),grilla)
+        self.image = self.img_pos
         self.area = Rect(self.x+2,self.y+2,self.w-4,self.h-18)
         self.simbolos = LayeredDirty()
+        
+        self.btnDel = Boton(self,self.rect.right-31,self.rect.bottom+2,'delSim',self.eliminarSimboloActual,'D',"Eliminar este símbolo")
+        self.btnDel.serDeshabilitado()
+        self.agregar(self.btnDel,4)
         
     @staticmethod
     def _dibujar_grilla(imagen,color):
@@ -116,7 +122,7 @@ class area_prev(Marco):
         for y in range(1*C,13*C,C):
             draw.line(imagen, color, (marco.left,y), (marco.right,y))
         return imagen
-    
+       
     def agregarSimbolo(self,nuevoSimbolo):
         for simbolo in self.simbolos:
             simbolo.visible = False
@@ -124,6 +130,14 @@ class area_prev(Marco):
         if nuevoSimbolo not in self.simbolos:
             self.simbolos.add(nuevoSimbolo)
         self.agregar(nuevoSimbolo)
+    
+    def eliminarSimboloActual(self):
+        for simbolo in self.simbolos:
+            if simbolo._nombre == self.simbolo_actual:
+                self.simbolos.remove(simbolo)
+                self.quitar(simbolo)
+                self.parent.Items.delItem(simbolo)
+                break
     
     def update(self):
         nombre = self.parent.Items.getItemActual()
@@ -134,3 +148,17 @@ class area_prev(Marco):
                 else:
                     self.simbolo_actual = simbolo._nombre
                     simbolo.visible = True
+                    self.parent.Items.setText(self.simbolo_actual)
+        
+        if len(self.simbolos)!= 0:
+            self.btnDel.serHabilitado()
+        
+        capa = Sys.capa_actual
+        if capa == LAYER_FONDO:
+            self.image = self.img_pos
+            for simbolo in self.simbolos:
+                simbolo.image = simbolo.img_pos
+        elif capa == LAYER_COLISIONES:
+            self.image = self.img_neg
+            for simbolo in self.simbolos:
+                simbolo.image = simbolo.img_neg

@@ -46,7 +46,13 @@ class Grilla(Marco):
             self.verGrilla = True
         
     def cmdVerCapa(self):
-        self.canvas.capas.switch_layer(LAYER_COLISIONES,LAYER_FONDO)
+        capas = self.canvas.capas
+        capas.switch_layer(LAYER_COLISIONES,LAYER_FONDO)
+        
+        if Sys.capa_actual == LAYER_FONDO:
+            Sys.capa_actual = LAYER_COLISIONES
+        elif Sys.capa_actual == LAYER_COLISIONES:
+            Sys.capa_actual = LAYER_FONDO
         
     def update(self):
         if Sys.HabilitarTodo:
