@@ -45,26 +45,28 @@ class Canvas(BaseWidget):
         x,y = self.getRelMousePos()
         if button == 1 or button == 3:
             if not self.shift:
-                for tile in self.tiles:
-                    tile.selected = False
-            tiles = self.tiles.get_sprites_at((x,y))
-            if tiles != []:
-                item = tiles[-1]
-                mascara = mask.from_surface(item.image)
-                if mascara.get_at((x-item.x,y-item.y)):
-                    item.onMouseDown(button)
-            else:
-                self.pressed = True
+                if hasattr(self,'tiles'):
+                    for tile in self.tiles:
+                        tile.selected = False
+                    tiles = self.tiles.get_sprites_at((x,y))
+                    if tiles != []:
+                        item = tiles[-1]
+                        mascara = mask.from_surface(item.image)
+                        if mascara.get_at((x-item.x,y-item.y)):
+                            item.onMouseDown(button)
+                    else:
+                        self.pressed = True
     
     def onMouseUp(self,button):
         x,y = self.getRelMousePos()
         if button == 1:
-            tiles = self.tiles.get_sprites_at((x,y))
-            if tiles != []:
-                for tile in tiles:
-                    tile.onMouseUp(1)
-            else:
-                self.pressed = False
+            if hasattr(self,'tiles'):
+                tiles = self.tiles.get_sprites_at((x,y))
+                if tiles != []:
+                    for tile in tiles:
+                        tile.onMouseUp(1)
+                else:
+                    self.pressed = False
     
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()

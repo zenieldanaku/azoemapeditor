@@ -26,7 +26,7 @@ class Boton(BaseWidget):
         colorBSombra = color(self.opciones['colorBordeSombra'])
         
         if type(scr) != list: #suponemos string
-            scr = [scr,scr,scr,scr]
+            scr = [scr,scr,scr,scr] #porque si no, serian cuatro imagenes.
         self.img_uns = self._biselar(self._crear(scr[0], colorTexto, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
         self.img_sel = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
         self.img_pre = self._biselar(self._crear(scr[2], colorSText, colorFondo,self.w,self.h,fuente),colorBSombra,colorBLuz)

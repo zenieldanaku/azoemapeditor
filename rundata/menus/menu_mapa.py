@@ -7,7 +7,8 @@ class Menu_Mapa (Menu):
         self.barra = barra
         cascadas = {'imagen':[
                 {'nom':'Fondo','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaFondo},Sys.fdAssets)},
-                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaColis},Sys.fdAssets)}]}
+                #{'nom':'Colisiones','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaColis},Sys.fdAssets)}
+                ]}
         opciones = [{'nom':'Imagen','csc':cascadas['imagen']},
                     {'nom':'Ajustes','win':lambda:CuadroMapa('Ajustar Mapa')}]
         super().__init__('Mapa',opciones,x,y)

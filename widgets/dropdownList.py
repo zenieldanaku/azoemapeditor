@@ -31,6 +31,8 @@ class DropDownList(BaseWidget):
     def crearLista(self,opciones):        
         alto,h = 0,0
         for n in range(len(opciones)):
+            if n == 0:
+                self.setText(opciones[n])
             nom = opciones[n]
             dy = self.h+(n*h)-19
             opcion = _Opcion(self,nom,4,dy,self.w-23)
@@ -40,6 +42,7 @@ class DropDownList(BaseWidget):
             self.componentes.add(opcion,layer=self.layerOpciones)
         if alto == 0:
             alto = self.entry.fuente.get_height()+2
+        
         return alto
     
     def setText(self,texto):
@@ -58,9 +61,20 @@ class DropDownList(BaseWidget):
         self.image.fill((255,0,0)) #fill with some transparent
         self.image.set_colorkey((255,0,0)) # color
     
-    def getItemActual(self):
-        return self.ItemActual
+    def getItemActual(self): return self.ItemActual
     
+    def getItem(self,item):
+        for opcion in self.componentes.get_sprites_from_layer(self.layerOpciones):
+            if hasattr(item,'_nombre'):
+                if opcion.texto == item._nombre:
+                    return opcion
+    
+    def delItem(self,item):
+        opcion = self.getItem(item)
+        self.componentes.remove_sprites_of_layer(self.layerOpciones)
+        self.lista.remove(opcion.texto)
+        self.crearLista(self.lista)
+        
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()
         dx = abs_x-self.x
@@ -79,6 +93,8 @@ class DropDownList(BaseWidget):
             item = self.get_component()
             if item != self:
                 item.onMouseDown(button)
+            else:
+                self.hideItems()
     
     def onMouseUp(self,button):
         if button == 1:
@@ -95,7 +111,6 @@ class DropDownList(BaseWidget):
             item.onMouseIn()
     
     def showItems(self):
-        self.entry.borrar_todo()
         for item in self.componentes.get_sprites_from_layer(self.layerOpciones):
             item.visible = True
             item.enabled = True

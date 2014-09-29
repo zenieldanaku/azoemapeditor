@@ -4,7 +4,8 @@ from .basewidget import BaseWidget
 
 class ToolTip(BaseWidget):
     focusable = False
-
+    aparicion = -1
+    
     def __init__(self,parent,mensaje,x,y,**opciones):
         opciones = self._opciones_por_default(opciones)
         super().__init__(**opciones)
@@ -52,9 +53,13 @@ class ToolTip(BaseWidget):
                 self.rect.y = self.parent.y+self.h+16
                 break
     
-    def show(self):
+    def show(self,delay=20):
+        self.aparicion += 1
         if self.mensaje != '':
-            alpha = self.image.get_alpha()
-            self.image.set_alpha(alpha+60)
+            if self.aparicion >= delay:
+                alpha = self.image.get_alpha()
+                self.image.set_alpha(alpha+60)
     
-    def hide(self): self.image.set_alpha(0)
+    def hide(self):
+        self.image.set_alpha(0)
+        self.i = -1

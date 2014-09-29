@@ -1,6 +1,6 @@
 from pygame import mouse, K_RIGHT,K_LEFT,K_UP,K_DOWN,K_DELETE
 from .simboloBase import SimboloBase
-from globales import Sistema as Sys
+from globales import Sistema as Sys, LAYER_FONDO, LAYER_COLISIONES
 from widgets import ContextMenu
 
 class SimboloCNVS (SimboloBase):
@@ -15,7 +15,7 @@ class SimboloCNVS (SimboloBase):
         self.ruta = self.data['ruta']
 
         self.img_uns = self._imagen.copy()
-        self.img_sel = self.crear_img_sel(self.img_uns)
+        self.img_neg = self._crear_transparencia(self._imagen.copy())
         self.image = self.img_uns
         
         comandos = [
@@ -33,6 +33,7 @@ class SimboloCNVS (SimboloBase):
     def onMouseDown(self,button):
         if button == 1 or button == 3:
             self.onFocusIn()
+            self.img_sel = self.crear_img_sel(self.image)
             self.image = self.img_sel
             self.selected = not self.selected
             self.pressed = True
@@ -80,6 +81,8 @@ class SimboloCNVS (SimboloBase):
             if self.pressed:
                 dx,dy = self._arrastrar()
                 self.mover(dx,dy)    
-        else:
+        elif Sys.capa_actual == LAYER_COLISIONES:
+            self.image = self.img_neg
+        elif Sys.capa_actual == LAYER_FONDO:
             self.image = self.img_uns
         self.dirty = 1

@@ -1,7 +1,7 @@
 from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, \
                    K_DELETE,K_RSHIFT,K_LSHIFT, \
-                   transform
-from pygame.sprite import LayeredDirty
+                   transform, Surface
+from pygame.sprite import LayeredDirty, DirtySprite
 from globales import Sistema as Sys, C
 from .simbolos import SimboloCNVS
 from widgets import Canvas
@@ -56,11 +56,19 @@ class SpecialCanvas (Canvas):
         self.Grilla.actualizar_tamanio(w,h)
         self.doc_w,self.doc_h = w,h
         self.Th,self.Tw = w,h
+    
+    @staticmethod
+    def _imagen_colisiones (w,h):
+        spr = DirtySprite()
+        spr.image = Surface((w,h))
+        spr.rect = spr.image.get_rect()
+        spr.dirty = 2
+        return spr
         
     def pegar(self,datos):
         rect = datos['rect']
         rect.center=self.getRelMousePos()
-        datos['pos'] = rect.topleft    
+        datos['pos'] = rect.topleft
         datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'])
         self.addTile(datos)
     
@@ -90,17 +98,19 @@ class SpecialCanvas (Canvas):
             self.clip.topleft = 0,0
             self.actualizar_tamanio_fondo(15*C+1,15*C+1)
             
-        if len(Sys.IMGs_cargadas) <= 0:
+        if Sys.IMG_FONDO == None:
             self.capas.empty()
             self.pintarFondoCuadriculado()
 
         else:
-            for idx in Sys.IMGs_cargadas:
-                spr = Sys.IMGs_cargadas[idx]
-                if self.FONDO.get_size() != spr.rect.size:
-                    self.actualizar_tamanio_fondo(*spr.rect.size)
-                if spr not in self.capas:
-                    self.capas.add(spr)
+            spr = Sys.IMG_FONDO
+            if self.FONDO.get_size() != spr.rect.size:
+                self.actualizar_tamanio_fondo(*spr.rect.size)
+                img = self._imagen_colisiones(*spr.rect.size)
+                
+            if spr not in self.capas:
+                self.capas.add(spr)
+                self.capas.add(img)
             self.capas.draw(self.FONDO)
         
         self.tiles.update()
