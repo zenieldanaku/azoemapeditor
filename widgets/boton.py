@@ -104,6 +104,7 @@ class Boton(BaseWidget):
         if self.enabled:
             self.image = self.img_dis
             self.enabled = False
+            self.tooltip.hide()
     
     def serHabilitado(self):
         if not self.enabled:

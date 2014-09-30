@@ -6,8 +6,9 @@ from .menus import *
 class barraMenus (Marco):
     menus = {}
     def __init__(self, **opciones):
-        super().__init__(0,0,24*C,19,False,**opciones)
         self.nombre = 'Barra_Menus'
+        super().__init__(0,0,24*C,19,False,**opciones)
+        
         self.menus = {}
         self.image.fill(color(opciones.get('colorFondo', 'sysMenBack')))
         prev  = 0
@@ -15,7 +16,7 @@ class barraMenus (Marco):
             menu = eval('Menu_'+menu_nom+'(prev,3,self)')
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
-        EventHandler.addWidget(self)
+        #EventHandler.addWidget(self)
     
     def onFocusIn(self):
         super().onFocusIn()

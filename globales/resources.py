@@ -20,10 +20,10 @@ class Resources:
         ex.close()
     
     @staticmethod
-    def cargar_imagen(ruta):
-        ar = image.load(ruta).convert_alpha()
-        return ar
-     
+    def cargar_imagen(ruta): return image.load(ruta).convert_alpha()
+    @staticmethod
+    def guardar_imagen(imagen,ruta): image.save(imagen,ruta)
+    
     @staticmethod
     def split_spritesheet(ruta,w=32,h=32):
         spritesheet = Resources.cargar_imagen(ruta)
@@ -36,3 +36,6 @@ class Resources:
                 rect = Rect((int(ancho/(ancho/w))*x,int(alto/(alto/h))*y),tamanio)
                 sprites.append(spritesheet.subsurface(rect))
         return sprites
+    
+    
+    

@@ -2,6 +2,10 @@ from widgets import BaseWidget
 from pygame import mouse, PixelArray
 
 class SimboloBase (BaseWidget):
+    img_pos = None #imagen normal
+    img_neg = None #imagen semitransparente
+    img_sel = None #imagen seleccionada
+    img_cls = None #imagen de colisiones
     pressed = False
     dx,dy = 0,0
     def __init__(self,parent,data,**opciones):

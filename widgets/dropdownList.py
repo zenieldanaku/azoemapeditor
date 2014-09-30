@@ -130,6 +130,7 @@ class DropDownList(BaseWidget):
         
     def update(self):
         self.image.fill((255,0,0)) #clear with transparent color
+        self.image.set_colorkey((255,0,0))
         self.componentes.update()
         self.componentes.draw(self.image)
         self.dirty = 1

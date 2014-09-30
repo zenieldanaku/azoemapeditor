@@ -2,7 +2,7 @@ from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, \
                    K_DELETE,K_RSHIFT,K_LSHIFT, \
                    transform, Surface
 from pygame.sprite import LayeredDirty, DirtySprite
-from globales import Sistema as Sys, C
+from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES
 from .simbolos import SimboloCNVS
 from widgets import Canvas
 
@@ -89,7 +89,13 @@ class SpecialCanvas (Canvas):
         self.ReglaX.scroll(dx)
         self.ReglaY.scroll(dy)
         self.Grilla.scroll(dx,dy)
-        
+    
+    def render(self):
+        base = self.capas.get_sprites_from_layer(LAYER_COLISIONES)[0].image
+        for tile in self.tiles:
+            base.blit(tile.img_cls,tile.rect)
+        return base
+    
     def update(self):
         if not Sys.HabilitarTodo:
             self.guias.empty()
@@ -109,8 +115,8 @@ class SpecialCanvas (Canvas):
                 img = self._imagen_colisiones(*spr.rect.size)
                 
             if spr not in self.capas:
-                self.capas.add(spr)
-                self.capas.add(img)
+                self.capas.add(spr,layer = LAYER_FONDO)
+                self.capas.add(img,layer = LAYER_COLISIONES)
             self.capas.draw(self.FONDO)
         
         self.tiles.update()

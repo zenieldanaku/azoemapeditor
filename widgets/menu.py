@@ -124,7 +124,7 @@ class _Cascada (BaseWidget):
             
             self.componentes.add(opcion)
         self.image = Surface((self.w+5,self.h+ajuste))
-        self.image.fill((255,255,255),(1,1,self.w+3,self.h+ajuste-2))
+        self.image.fill(color('sysMenBack'),(1,1,self.w+3,self.h+ajuste-2))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         EventHandler.addWidget(self,self.layer)
     

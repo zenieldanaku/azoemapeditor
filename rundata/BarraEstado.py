@@ -7,8 +7,9 @@ class barraEstado (Marco):
     lblEstado = None
     
     def __init__(self,**opciones):
-        super().__init__(0,16*C+19,20*C+8,26,**opciones)
         self.nombre = 'BarraEstado'
+        super().__init__(0,16*C+19,20*C+8,26,**opciones)
+        
         self._estado = ''
         self.lblEstado = Label(self,'Estado',self.x+4,self.y+3)
         self.draw_area = Rect(4,3,self.w-8,self.h-8)

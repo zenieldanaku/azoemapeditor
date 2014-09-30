@@ -7,9 +7,10 @@ class subVentana(Marco):
     x,y,w,h = 0,0,0,0
     layer = 4
     
-    def __init__(self,x,y,w,h,nombre,**opciones):
+    def __init__(self,x,y,w,h,nombre,titular=True,**opciones):
         super().__init__(x,y,w,h,**opciones)
-        self.titular(nombre)
+        if titular:
+            self.titular(nombre)
         self.btnCerrar = Boton(self,x+w-16,y+1,'Cerrar',
                                lambda:EventHandler.delWidget(self),'X',
                                **{'fontSize':12,'w':16,'h':18})

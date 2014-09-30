@@ -14,8 +14,9 @@ class Grilla(Marco):
     verGrilla = False
     verRegla = False
     def __init__(self):
-        super().__init__(0,19,15*C+15,15*C+16,False)
         self.nombre = 'Grilla'
+        super().__init__(0,19,15*C+15,15*C+16,False)
+        
         self.canvas = SpecialCanvas(self,self.x+16,self.y+16,15*C,15*C,(15*C,15*C))
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
