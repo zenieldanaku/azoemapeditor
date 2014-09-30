@@ -152,7 +152,6 @@ class listaDeArchivos(Marco):
         if extension != '':
             filtrado = []
             for archivo in archivos:
-                print(archivo)
                 if extension != '':
                     split = archivo[0].split('.')
                     ext = split[-1]

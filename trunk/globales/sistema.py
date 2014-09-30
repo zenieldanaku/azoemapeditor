@@ -57,15 +57,11 @@ class Sistema:
         except:
             Sistema.estado = 'No se ha selecionado ninguna imagen'
     
-    #@staticmethod
-    #def setRutaColis(ruta):
-    #    try:
-    #        Sistema.ruta = ruta
-    #        #_ruta = Sistema.referencias['colisiones']+os.path.split(ruta)[1]
-    #        Sistema.cargar_imagen(LAYER_COLISIONES)
-    #        Sistema.PROYECTO.script["colisiones"]= ruta
-    #    except:
-    #        Sistema.estado = 'No se ha selecionado ninguna imagen'
+    @staticmethod
+    def GuardarMapaDeColisiones(ruta):
+        widget = EventHandler.getWidget('Grilla.Canvas')
+        imagen = widget.render()
+        Resources.guardar_imagen(imagen,ruta)
     
     @staticmethod
     def addItem(nombre,ruta,grupo):

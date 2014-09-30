@@ -6,12 +6,16 @@ class Menu_Archivo(Menu):
     def  __init__(self,x,y,barra):
         self.nombre = 'Menu.Archivo'
         self.barra = barra
+        cascadas = {
+            'exportar':[
+                {'nom':'Colisiones','win':lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.GuardarMapaDeColisiones},carpeta_actual=Sys.fdExport)},
+                {'nom':'Mapa','win':lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.exportarMapa},carpeta_actual=Sys.fdExport)}]}
         opciones = [
             {'nom':'Nuevo','cmd':lambda:CuadroMapa('Nuevo Mapa')},
             {'nom':'Abrir',"win":lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirProyecto},['json'],carpeta_actual=Sys.fdProyectos)},
             {'nom':'Guardar','cmd':self.Guardar},
             {'nom':'Guardar como','win':lambda:FileDiag({'scr':'G','tipo':'G','cmd':Sys.guardarProyecto},carpeta_actual=Sys.fdProyectos)},
-            {'nom':'Exportar','win':lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.exportarMapa},carpeta_actual=Sys.fdExport)},
+            {'nom':'Exportar','csc':cascadas['exportar']},
             {'nom':'Cerrar','cmd':Sys.cerrarProyecto},
             {'nom':'Salir','cmd':Sys.salir}]
         super().__init__('Archivo',opciones,x,y)

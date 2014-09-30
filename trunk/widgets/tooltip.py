@@ -12,7 +12,7 @@ class ToolTip(BaseWidget):
         self.x,self.y = x,y
         self.mensaje = mensaje
         self.parent = parent
-        self.nombre = self.parent.nombre+'ToolTip'
+        self.nombre = self.parent.nombre+'.ToolTip'
         self.image = self._crear(mensaje,opciones)
         self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))

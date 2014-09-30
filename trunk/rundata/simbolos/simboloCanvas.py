@@ -14,9 +14,10 @@ class SimboloCNVS (SimboloBase):
         self.index = self.data['index']
         self.ruta = self.data['ruta']
 
-        self.img_uns = self._imagen.copy()
+        self.img_pos = self._imagen.copy()
         self.img_neg = self._crear_transparencia(self._imagen.copy())
-        self.image = self.img_uns
+        self.img_cls = self.data['colisiones']
+        self.image = self.img_pos
         
         comandos = [
             {'nom':'subir','cmd':lambda:self.change_layer(+1)},
@@ -82,7 +83,7 @@ class SimboloCNVS (SimboloBase):
                 dx,dy = self._arrastrar()
                 self.mover(dx,dy)    
         elif Sys.capa_actual == LAYER_COLISIONES:
-            self.image = self.img_neg
+            self.image = self.img_cls
         elif Sys.capa_actual == LAYER_FONDO:
-            self.image = self.img_uns
+            self.image = self.img_pos
         self.dirty = 1

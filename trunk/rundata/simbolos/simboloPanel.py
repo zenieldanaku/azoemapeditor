@@ -12,11 +12,20 @@ class MetaSimbolo(SimboloBase):
             pos = mouse.get_pos()
             dx,dy = self._arrastrar()
             if dx != 0 or dy != 0:
+                self.data['colisiones'] =self.img_cls
                 self.copia = SimboloVirtual(self,self.image.copy(),pos,self.data)
                 EventHandler.setFocus(self.copia)
                 self.pressed = False
         else:
             pass #showTooltip()
+    
+    def imagen_positiva(self):
+        self.image = self.img_pos
+    
+    def imagen_negativa(self):
+        img = self.img_cls.copy()
+        img.blit(self.img_neg,(0,0),special_flags=6)
+        self.image = img    
 
 class SimboloSimple (MetaSimbolo):
     copiar = False

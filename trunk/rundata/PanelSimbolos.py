@@ -13,8 +13,9 @@ class PanelSimbolos(Marco):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
 
-        super().__init__(16*C,19,4*C+8,16*C-1,**opciones)
+        
         self.nombre = 'PanelSimbolos'
+        super().__init__(16*C,19,4*C+8,16*C-1,**opciones)
         self.simbolos = LayeredDirty()
         self.Items = DropDownList(self,'Items',self.x+3,self.y+3*C,self.w-6)
         self.PrevArea = area_prev(self,self.x+3,self.y+4*C-8,self.w-6,4*C)
@@ -45,6 +46,9 @@ class PanelSimbolos(Marco):
                 x = self.x+4
                 y += 32
         self.agregar(self.Items,4)
+        self.PrevArea.btnDel = Boton(self.PrevArea,self.x+self.w-34,y,'delSim',self.PrevArea.eliminarSimboloActual,'D',"Eliminar este símbolo")
+        self.PrevArea.btnDel.serDeshabilitado()
+        self.agregar(self.PrevArea.btnDel,4)
     
     @staticmethod
     def Guardar():
@@ -96,21 +100,21 @@ class area_prev(Marco):
     def __init__(self,parent,x,y,w,h,**opciones):
         if 'colorGrilla' not in opciones:
             opciones['colorGrilla'] = (150,200,200)
-        super().__init__(x,y,w,h,False,**opciones)
+        
         self.parent = parent
         self.nombre = self.parent.nombre+'.AreaPrev'
+        super().__init__(x,y,w,h,False,**opciones)
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
         grilla = self.opciones['colorGrilla']       
         self.img_pos = self._dibujar_grilla(self._biselar(self.image,sombra,luz),grilla)
         self.img_neg = self._dibujar_grilla(self._biselar(Surface((w,h)),sombra,luz),grilla)
         self.image = self.img_pos
+        
         self.area = Rect(self.x+2,self.y+2,self.w-4,self.h-18)
         self.simbolos = LayeredDirty()
         
-        self.btnDel = Boton(self,self.rect.right-31,self.rect.bottom+2,'delSim',self.eliminarSimboloActual,'D',"Eliminar este símbolo")
-        self.btnDel.serDeshabilitado()
-        self.agregar(self.btnDel,4)
+        
         
     @staticmethod
     def _dibujar_grilla(imagen,color):
@@ -132,12 +136,16 @@ class area_prev(Marco):
         self.agregar(nuevoSimbolo)
     
     def eliminarSimboloActual(self):
+        simbolo = self.get_actual()
+        
+        self.simbolos.remove(simbolo)
+        self.quitar(simbolo)
+        self.parent.Items.delItem(simbolo)
+                
+    def get_actual(self):
         for simbolo in self.simbolos:
             if simbolo._nombre == self.simbolo_actual:
-                self.simbolos.remove(simbolo)
-                self.quitar(simbolo)
-                self.parent.Items.delItem(simbolo)
-                break
+                return simbolo
     
     def clear(self):
         self.simbolos.empty()
@@ -159,13 +167,16 @@ class area_prev(Marco):
         
         if len(self.simbolos)!= 0:
             self.btnDel.serHabilitado()
+        else:
+            self.btnDel.serDeshabilitado()
         
         capa = Sys.capa_actual
         if capa == LAYER_FONDO:
             self.image = self.img_pos
             for simbolo in self.simbolos:
-                simbolo.image = simbolo.img_pos
+                simbolo.imagen_positiva()
         elif capa == LAYER_COLISIONES:
             self.image = self.img_neg
             for simbolo in self.simbolos:
-                simbolo.image = simbolo.img_neg
+                simbolo.imagen_negativa()
+        self.dirty =1
