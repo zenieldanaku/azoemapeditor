@@ -106,8 +106,7 @@ class EditarSimbolo(subVentana):
         self.cursor.alterar_tamanio(self.brocha)
     
     def aceptar(self):
-        x,y,w,h = self.tile.rect
-        self.origin.img_cls = self.area.image.subsurface((x-32,y-32,w,h))
+        self.origin.img_cls = self.area.image.subsurface(self.tile.rect)
         EventHandler.delWidget(self)
     
     def alternar_transparencia(self): self.esTransparente = not self.esTransparente
@@ -159,7 +158,6 @@ class EditarSimbolo(subVentana):
             self.cursor.visible = 0
     
     def update(self):
-        
         self.background.fill((0,0,0))
         if self.pressed:
             self.pintar()

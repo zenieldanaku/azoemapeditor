@@ -62,6 +62,7 @@ class Sistema:
         widget = EventHandler.getWidget('Grilla.Canvas')
         imagen = widget.render()
         Resources.guardar_imagen(imagen,ruta)
+        Sistema.estado = 'Imagen '+ruta+' guardada exitosamente'
     
     @staticmethod
     def addItem(nombre,ruta,grupo):
