@@ -25,9 +25,9 @@ class PanelSimbolos(Marco):
             {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos),s:i['abrir'],d:"Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:[i['guardar'],i['guardar_dis']],d:"Guardar el mapa actual"},
             {n:'barra'},
-            {n:'Cortar',c:self.Cortar,s:[i['cortar'],i['cortar_dis']],d:"Cortar"},
-            {n:'Copiar',c:self.Copiar,s:[i['copiar'],i['copiar_dis']],d:"Copiar"},
-            {n:'Pegar',c:self.Pegar,s:[i['pegar'],i['pegar_dis']],d:"Pegar"},
+            {n:'Cortar',c:Sys.cortar,s:[i['cortar'],i['cortar_dis']],d:"Cortar"},
+            {n:'Copiar',c:Sys.copiar,s:[i['copiar'],i['copiar_dis']],d:"Copiar"},
+            {n:'Pegar',c:Sys.pegar,s:[i['pegar'],i['pegar_dis']],d:"Pegar"},
             {n:'barra'},
             {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},carpeta_actual=Sys.fdAssets),s:[i['fondo'],i['fondo_dis']],d:"Cargar imagen de fondo"},
             {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},carpeta_actual=Sys.fdAssets),s:[i['mob'],i['mob_dis']],d:"Cargar símbolo de mob"},
@@ -55,14 +55,6 @@ class PanelSimbolos(Marco):
             FileDiag({'scr':'Aceptar','tipo':'G','cmd':Sys.guardarProyecto},Sys.fdProyectos)
         else:
             Sys.guardarProyecto(Sys.Guardado)
-
-    # barra
-    def Cortar(self):
-        print('boton cortar')
-    def Copiar(self):
-        print('boton copiar')
-    def Pegar(self):
-        print('boton pegar')
     
     def addMob(self,ruta):
         sprite = r.split_spritesheet(ruta[0])

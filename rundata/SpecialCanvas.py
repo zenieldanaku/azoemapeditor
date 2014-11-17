@@ -1,10 +1,10 @@
 from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, \
                    K_DELETE,K_RSHIFT,K_LSHIFT, \
-                   transform, Surface,draw
+                   transform, Surface,draw,mouse,Rect
 from pygame.sprite import LayeredDirty, DirtySprite
 from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES
 from .simbolos import SimboloCNVS
-from widgets import Canvas
+from widgets import Canvas, ContextMenu
 
 class SpecialCanvas (Canvas):
     capas = None
@@ -16,6 +16,10 @@ class SpecialCanvas (Canvas):
         self.capas = LayeredDirty()
         self.guias = LayeredDirty()
         self.tiles = LayeredDirty()
+        comandos = [
+            {'nom':'Pegar','cmd':lambda:Sys.pegar(),'icon':Sys.iconos['pegar']},
+        ]
+        self.context = ContextMenu(self,comandos)
         
     def onMouseDown(self,button):
         if button == 1 or button == 3:
@@ -64,10 +68,27 @@ class SpecialCanvas (Canvas):
         spr.rect = spr.image.get_rect()
         spr.dirty = 2
         return spr
-        
-    def pegar(self,datos):
+    
+    def pegar(self,item):
+        if type(item) == dict:# copy
+            self.colocar_tile(item)
+        else:
+            pos = mouse.get_pos()
+            x,y = self.getRelMousePos()
+            if self.rect.collidepoint(pos):# cut
+                item.rect.center = x,y
+            else:
+                item.rect.center = self.rect.center
+                item.x,item.y = item.rect.topleft
+            self.tiles.add(item)
+    
+    def colocar_tile(self,datos):
+        pos = mouse.get_pos()
         rect = datos['rect']
-        rect.center=self.getRelMousePos()
+        if self.rect.collidepoint(pos):
+            rect.center = self.getRelMousePos()
+        else:
+            rect.center = self.rect.center
         datos['pos'] = rect.topleft
         datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'])
         self.addTile(datos)

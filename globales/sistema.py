@@ -1,10 +1,11 @@
 from .constantes import LAYER_FONDO, LAYER_COLISIONES
-from pygame import image, quit as py_quit, Rect
+from pygame import image, quit as py_quit, Rect, mouse
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
 from .resources import Resources
 from .eventhandler import EventHandler
 from .mapa import Mapa, Proyecto
+from .portapapeles import Portapapeles
 from os import getcwd
 
 class Sistema:
@@ -17,7 +18,8 @@ class Sistema:
     IMG_FONDO = None
     capa_actual = None
     HabilitarTodo = False
-    portapapeles = None
+    Portapapeles = None
+    selected = None
     preferencias = {}
     Guardado = False
     iconos = []
@@ -30,6 +32,7 @@ class Sistema:
     def init():
         Sistema.iconos = Sistema.cargar_iconos()
         Sistema.capa_actual = LAYER_FONDO
+        Sistema.Portapapeles = Portapapeles()
     
     @staticmethod
     def cargar_iconos():
@@ -178,16 +181,21 @@ class Sistema:
         sys_exit()
     
     @staticmethod
-    def copiar(elemento):
-        Sistema.portapapeles = elemento.copy()
+    def cortar():
+        elemento = Sistema.selected
+        parent = EventHandler.getWidget(elemento.parent)
+        Sistema.Portapapeles.cortar(elemento)
+        parent.tiles.remove(elemento)
     
     @staticmethod
-    def pegar(destino):
-        from . import EventHandler
-        widget = EventHandler.getWidget(destino)
-        if hasattr(widget,'pegar'):
-            if Sistema.HabilitarTodo:
-                widget.pegar(Sistema.portapapeles)
+    def copiar():
+        elemento = Sistema.selected
+        Sistema.Portapapeles.copiar(elemento.copiar())
+        
+    @staticmethod
+    def pegar():
+        widget = EventHandler.getWidget('Grilla.Canvas')
+        Sistema.Portapapeles.pegar(widget)
     
     @staticmethod
     def update():
