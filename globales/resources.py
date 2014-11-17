@@ -37,5 +37,18 @@ class Resources:
                 sprites.append(spritesheet.subsurface(rect))
         return sprites
     
+    @staticmethod
+    def cargar_iconos(nombres,ruta,w,h):
+        iconos = Resources.split_spritesheet(ruta,w,h)
+        d,i={},-1
+        for y in range(4):
+            for x in range(6):
+                i+= 1
+                if i <= len(nombres)-1:
+                    d[nombres[i]] = iconos[i]
+        
+        return d
+        
+
     
     

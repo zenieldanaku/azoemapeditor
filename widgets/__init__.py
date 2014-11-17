@@ -2,7 +2,7 @@ from .basewidget import BaseWidget
 from .tooltip import ToolTip
 from .baseopcion import BaseOpcion
 from .ventana import Ventana
-from .boton import Boton
+from .boton import Boton,BotonToggle
 from .scroll import ScrollH, ScrollV
 from .marco import Marco
 from .entry import Entry

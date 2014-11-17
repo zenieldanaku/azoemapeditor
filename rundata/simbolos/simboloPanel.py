@@ -2,7 +2,7 @@ from .simboloVirtual import SimboloVirtual
 from .simboloBase import SimboloBase
 from globales import EventHandler
 from widgets import ContextMenu
-from pygame import mouse
+from pygame import mouse, Surface
 
 class MetaSimbolo(SimboloBase):
     '''Metaclass para no repetir onMouseOver'''
@@ -23,9 +23,14 @@ class MetaSimbolo(SimboloBase):
         self.image = self.img_pos
     
     def imagen_negativa(self):
-        img = self.img_cls.copy()
-        img.blit(self.img_neg,(0,0),special_flags=6)
-        self.image = img    
+        if self.img_cls != None:
+            img = self.img_cls.copy()
+            img.blit(self.img_neg,(0,0),special_flags=6)
+            self.image = img
+        else:
+            img = Surface(self.image.get_size())
+            img.set_alpha(0)
+            self.image = img
 
 class SimboloSimple (MetaSimbolo):
     copiar = False

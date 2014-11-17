@@ -66,8 +66,7 @@ class EditarSimbolo(subVentana):
             self.btnAceptar.serDeshabilitado()
             titulo = self.nombre
         elif self.origin.img_cls != None:
-            x,y,w,h = self.tile.rect
-            self.area.image.blit(self.origin.img_cls,(x-C,y-C,w,h))
+            self.area.image.blit(self.origin.img_cls,(self.tile.rect))
         self.titular(titulo)
     
     @staticmethod

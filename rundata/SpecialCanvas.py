@@ -1,6 +1,6 @@
 from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, \
                    K_DELETE,K_RSHIFT,K_LSHIFT, \
-                   transform, Surface
+                   transform, Surface,draw
 from pygame.sprite import LayeredDirty, DirtySprite
 from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES
 from .simbolos import SimboloCNVS
@@ -96,7 +96,20 @@ class SpecialCanvas (Canvas):
             base.blit(tile.img_cls,tile.rect)
         return base
     
+    def mover_tiles(self,dx,dy):
+        
+        cadena = []
+        for tile in self.tiles:
+            if not tile.moviendose:#el que estamos moviendo manualmente
+                if tile.selected:
+                    cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.layer)+')')
+                    tile.mover(dx,dy)#el resto de los que estan seleccionados
+            else:
+                cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.layer)+')')
+            Sys.estado = ', '.join(cadena)
+    
     def update(self):
+        super().update()
         if not Sys.HabilitarTodo:
             self.guias.empty()
             self.capas.empty()
@@ -122,6 +135,8 @@ class SpecialCanvas (Canvas):
         self.tiles.update()
         self.tiles.draw(self.FONDO)
         self.guias.draw(self.FONDO)
+        if self.eleccion.size != (0,0):
+            draw.rect(self.FONDO,(0,255,255),self.eleccion,1)
         for tile in self.tiles:
             Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft)
         self.dirty = 1

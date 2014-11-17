@@ -1,6 +1,6 @@
 from . import BaseWidget,Marco, Entry, Boton, DropDownList, subVentana
 from . import Label, ScrollV, ScrollH, Tree, BaseOpcion, ToolTip
-from pygame import Rect, font
+from pygame import Rect, font, key, KMOD_LCTRL, KMOD_RCTRL
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
 from globales import EventHandler, color, C
@@ -9,19 +9,28 @@ import os, os.path
 class FileDiag(subVentana):
     pressed = False
     carpetaActual = ''
-    archivoActual = ''
+    ArchivosSeleccionados = []
+    UltimaSeleccion = ''
     nombredeArchivo = ''
     tipoSeleccinado = ''
     carpetaVieja = ''
-    def __init__(self,comando,filetypes=[],carpeta_actual=os.getcwd(),**opciones):      
+    def __init__(self,comando,permitirmultiple=False,filetypes=[],carpeta_actual=os.getcwd(),**opciones):      
         self.nombre = 'FileDiag'
         super().__init__(2*C+8,3*C,16*C,10*C+18,self.nombre,**opciones)
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
+        self.SeleccionMultiple = permitirmultiple
+        self.carpetaActual = ''
+        self.ArchivosSeleccionados = []
+        self.UltimaSeleccion = ''
+        self.nombredeArchivo = ''
+        self.tipoSeleccinado = ''
+        self.carpetaVieja = ''
+        
         if len(filetypes) == 0: filetypes = ['*.png','*.json','*.mob','*.quest']
         x,y,w,h = self.x,self.y,self.w,self.h # abreviaturas de legibilidad
         self.carpetas = arbolCarpetas(self,x+2,y+19,w//2-2,8*C,carpeta_actual)
-        self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C)
+        self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C,self.SeleccionMultiple)
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,11*C+16,'')
         self.BtnAccion = Boton(self,x+14*C-8,y+8*C+24,'Accion',self.ejecutar_comando,comando['scr'],**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,11*C+16,filetypes)
@@ -37,7 +46,7 @@ class FileDiag(subVentana):
         self.agregar(self.BtnCancelar,self.layer+1)
         self.agregar(self.lblTipo,self.layer+1)
         self.agregar(self.lblNombre,self.layer+1)
-    
+        
     def titular(self,texto):
         fuente = font.SysFont('verdana',12)
         rect = Rect(2,2,self.w-4,fuente.get_height()+1)
@@ -46,17 +55,25 @@ class FileDiag(subVentana):
     
     def ejecutar_comando(self):
         if self.TipoComando == 'A':
-            ruta = os.path.join(self.carpetaActual,self.archivoActual)
-        
+            if self.SeleccionMultiple:
+                rutas = []
+                for archivo in self.ArchivosSeleccionados:
+                    rutas.append(os.path.join(self.carpetaActual,archivo))
+                self.comando(rutas)
+            else:
+                
+                ruta = os.path.join(self.carpetaActual,self.UltimaSeleccion)
+                self.comando([ruta])
+                
         elif self.TipoComando == 'G':
             if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo+self.tipoSeleccinado)
             else:
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo)
-        
-        self.comando(ruta)
+            self.comando(ruta)
+            
         EventHandler.delWidget(self)
-
+    
     def update(self):
         tipo = self.tipos.ItemActual.lstrip('*')
         if self.tipoSeleccinado != tipo:
@@ -71,11 +88,17 @@ class FileDiag(subVentana):
         nombre = self.entryNombre.devolver_texto()
         if nombre != '':
             self.nombredeArchivo = nombre
-            
-        if self.archivos.ArchivoActual != '':
-            self.archivoActual = self.archivos.ArchivoActual
-            if self.nombredeArchivo == '':
-                self.entryNombre.setText(self.archivoActual)
+        
+        if self.archivos.Seleccionados != []:
+            if self.SeleccionMultiple:
+                for archivo in self.archivos.Seleccionados:
+                    if archivo not in self.ArchivosSeleccionados:
+                        self.ArchivosSeleccionados.append(archivo)
+                self.entryNombre.setMultipleTexts(self.archivos.Seleccionados)
+                    
+            elif self.archivos.UltimaSeleccion != self.nombredeArchivo:
+                self.entryNombre.setText(self.archivos.UltimaSeleccion)
+                self.UltimaSeleccion = self.archivos.UltimaSeleccion
         
         self.dirty = 1
 
@@ -137,7 +160,9 @@ class arbolCarpetas(Marco):
 
 class listaDeArchivos(Marco):
     layer = 4
-    def __init__(self,parent,x,y,w,h,**opciones):
+    SeleccionMultiple = False
+    UltimaSeleccion = ''
+    def __init__(self,parent,x,y,w,h,permitirmultiple=False,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack'
         self.nombre = parent.nombre+'.ListaDeArchivos'
@@ -145,8 +170,9 @@ class listaDeArchivos(Marco):
         self.ScrollY = ScrollV(self,self.x+self.w-16,self.y)
         self.agregar(self.ScrollY,self.layer+1)
         self.items = LayeredDirty()
-        self.ArchivoActual = ''
-    
+        self.Seleccionados = []
+        self.SeleccionMultiple = permitirmultiple
+        
     @staticmethod
     def _FiltrarExtS(archivos,extension):
         if extension != '':
@@ -170,13 +196,14 @@ class listaDeArchivos(Marco):
         return lista
     
     def crearLista(self,opciones,ext):
+        m = self.SeleccionMultiple
         lista = self._FiltrarExtS(opciones,ext)
         h = 0
         for n in range(len(lista)):
             nom = lista[n][0]
             ruta = lista[n][1]
             dy = self.y+(n*h)
-            opcion = _Opcion(self,nom,ruta,self.x,dy,self.w-16)
+            opcion = _Opcion(self,nom,ruta,self.x,dy,self.w-16,multi=m)
             h = opcion.image.get_height()
             self.items.add(opcion)
             if self.rect.contains(opcion.rect):
@@ -206,17 +233,22 @@ class listaDeArchivos(Marco):
     def update(self):
         for item in self.items:
             if item.isSelected:
-                self.ArchivoActual = item.texto
+                self.UltimaSeleccion = item.texto
+                if item.texto not in self.Seleccionados:
+                    self.Seleccionados.append(item.texto)
+                    if not self.SeleccionMultiple:
+                        break
         self.dirty = 1
 
 class _Opcion(BaseOpcion):
     isSelected = False
     texto = ''
-    
-    def __init__(self,parent,nombre,ruta,x,y,w=0,**opciones):
+    MultipleSelection  = False
+    def __init__(self,parent,nombre,ruta,x,y,w=0,multi=False,**opciones):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
         self.tooltip = ToolTip(self,ruta,x,y)
+        self.MultipleSelection = multi
        
     def onFocusIn(self):
         super().onFocusIn()
@@ -225,8 +257,10 @@ class _Opcion(BaseOpcion):
             
     def onFocusOut(self):
         super().onFocusOut()
-        self.image = self.img_des
-        self.isSelected = False
+        mods = key.get_mods()
+        if not (mods & KMOD_LCTRL or mods & KMOD_RCTRL) or not self.MultipleSelection:
+            self.image = self.img_des
+            self.isSelected = False
     
     def update(self):
         if self.hasMouseOver:

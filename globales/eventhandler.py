@@ -1,12 +1,14 @@
-from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION
-from pygame import KEYDOWN,KEYUP,K_ESCAPE,QUIT,K_F1
+from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION,KEYDOWN,KEYUP
+from pygame import K_ESCAPE,QUIT,K_F1,K_RCTRL,K_LCTRL,K_RALT,K_LALT,key
 from pygame.sprite import LayeredDirty
 
 class EventHandler:
     contents = LayeredDirty()
     widgets = {}
     currentFocus = None
-    
+    control = False
+    alt = False
+    key = None
     @staticmethod
     def addWidget(widget,layer=1):
         EventHandler.contents.add(widget,layer=layer)
@@ -39,11 +41,19 @@ class EventHandler:
     @staticmethod
     def update(events,fondo):
         args = None
+        EventHandler.key = None
         for event in events:
             if event.type == QUIT:
                 return False
             elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+                if event.key == K_RCTRL or event.key == K_LCTRL:
+                    EventHandler.control = True
+                elif event.key == K_LALT:
+                    EventHandler.alt = True
+                elif event.key == K_RALT:
+                    EventHandler.control = True
+                    EventHandler.alt = True    
+                elif event.key == K_ESCAPE:
                     return False
                 elif event.key == K_F1:
                     i = 0
@@ -54,10 +64,19 @@ class EventHandler:
                     print('--Fin de lista')
                     print('Nº Total de widgets: '+str(i))
                 else:
+                    EventHandler.key = key.name(event.key)
                     EventHandler.currentFocus.onKeyDown(event)
                 
             elif event.type == KEYUP:
-                EventHandler.currentFocus.onKeyUp(event)
+                if event.key == K_RCTRL or event.key == K_LCTRL:
+                    EventHandler.control = False
+                elif event.key == K_LALT:
+                    EventHandler.alt = False
+                elif event.key == K_RALT:
+                    EventHandler.control = False
+                    EventHandler.alt = False
+                else:
+                    EventHandler.currentFocus.onKeyUp(event)
                 
             elif event.type == MOUSEBUTTONDOWN:
                 if event.button in (1,3):

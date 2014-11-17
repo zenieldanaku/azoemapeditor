@@ -1,5 +1,5 @@
 from globales import Sistema as Sys, EventHandler, color, C, LAYER_COLISIONES,LAYER_FONDO
-from widgets import BaseWidget, ScrollH, ScrollV, Boton, Marco, ToolTip
+from widgets import BaseWidget, ScrollH, ScrollV, Boton, BotonToggle, Marco, ToolTip
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Surface,Rect,draw,font,K_SPACE
 from .SpecialCanvas import SpecialCanvas
@@ -21,8 +21,11 @@ class Grilla(Marco):
         self.canvas.ScrollX = ScrollH(self.canvas,self.x+16,self.y+self.h)
         self.canvas.ScrollY = ScrollV(self.canvas,self.x+self.w,self.y+16)
         self.canvas.Grilla = _grilla(self,self.x+16,self.y+16,15*C,15*C)
-        self.BtnVerCapa = Boton(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,'Cp',"Alterna entre el mapa de colisiones y la imagen de fondo")
-        self.BtnVerGr = Boton(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,'Gr',"Muestra u oculta la grilla")
+        
+        i = Sys.iconos #alias
+        
+        self.BtnVerCapa = BotonToggle(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,[i['ver_fondo'],i['ver_cls'],i['ver_dis']],"Alterna entre el mapa de colisiones y la imagen de fondo")
+        self.BtnVerGr = BotonToggle(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,[i['grilla'],i['grilla_tog'],i['grilla_dis']],"Muestra u oculta la grilla")
         
         self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,15*C+1)
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,15*C+1)
@@ -151,7 +154,8 @@ class BaseRegla(BaseWidget):
     def onMouseOver(self):
         if self.pressed:
             self.moverLinea()
-        self.tooltip.show()
+        if self.hasFocus:
+            self.tooltip.show()
 
 class ReglaH(BaseRegla):
     def __init__(self,parent,x,y,w,**opciones):
