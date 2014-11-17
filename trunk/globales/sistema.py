@@ -13,17 +13,29 @@ class Sistema:
     estado = ''
     ruta = ''
     referencias = {}
-
+    KeyCombinations = []
     IMG_FONDO = None
     capa_actual = None
     HabilitarTodo = False
     portapapeles = None
     preferencias = {}
     Guardado = False
+    iconos = []
     fdProyectos = getcwd()+'\\proyectos'
     fdAssets = getcwd()+'\\assets'
     fdExport = getcwd()+'\\export'
     fdLibs = getcwd()+'\\libs'
+    
+    @staticmethod
+    def init():
+        Sistema.iconos = Sistema.cargar_iconos()
+        Sistema.capa_actual = LAYER_FONDO
+    
+    @staticmethod
+    def cargar_iconos():
+        nombres = 'nuevo,abrir,guardar,cortar,copiar,pegar,grilla,grilla_tog,guardar_dis,cortar_dis,copiar_dis,pegar_dis,grilla_dis,mob,prop,borrar,ver_cls,ver_fondo,ver_dis,mob_dis,prop_dis,borrar_dis,fondo,fondo_dis'.split(',')
+        ruta = getcwd()+'/iconos.png'
+        return Resources.cargar_iconos(nombres,ruta,19,17)
     
     @staticmethod
     def habilitarItems(lista_de_items):
@@ -50,9 +62,9 @@ class Sistema:
     @staticmethod
     def setRutaFondo(ruta):
         try:
-            Sistema.ruta = ruta
+            Sistema.ruta = ruta[0]
             Sistema.cargar_imagen(LAYER_FONDO)
-            Sistema.PROYECTO.script["fondo"] = ruta
+            Sistema.PROYECTO.script["fondo"] = ruta[0]
             Sistema.capa_actual = LAYER_FONDO
         except:
             Sistema.estado = 'No se ha selecionado ninguna imagen'
@@ -176,3 +188,25 @@ class Sistema:
         if hasattr(widget,'pegar'):
             if Sistema.HabilitarTodo:
                 widget.pegar(Sistema.portapapeles)
+    
+    @staticmethod
+    def update():
+        key = EventHandler.key
+        Sistema.KeyCombinations.clear()
+        
+        if key != None:
+            if EventHandler.control:
+                Sistema.KeyCombinations.append('Ctrl')
+            if EventHandler.alt:
+                Sistema.KeyCombinations.append('Alt')
+            Sistema.KeyCombinations.append(key.upper())
+        
+        if Sistema.KeyCombinations != []:
+            combination = '+'.join(Sistema.KeyCombinations)
+            for widget in EventHandler.contents:
+                if type(widget.KeyCombination) == str:
+                    if combination == widget.KeyCombination:
+                        print('anda!')
+                else:
+                    widget.KeyCombination(combination)
+                   

@@ -19,20 +19,19 @@ class PanelSimbolos(Marco):
         self.simbolos = LayeredDirty()
         self.Items = DropDownList(self,'Items',self.x+3,self.y+3*C,self.w-6)
         self.PrevArea = area_prev(self,self.x+3,self.y+4*C-8,self.w-6,4*C)
-        n,s,t,c,d = 'nom','scr','tipo','cmd','des'
+        n,s,t,c,d,i = 'nom','scr','tipo','cmd','des',Sys.iconos #aliases
         elementos = [
-            {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:"N",d:"Crear un mapa nuevo"},
-            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos),s:"A",d:"Abrir un mapa existente"},
-            {n:'Guardar',c:self.Guardar,s:"G",d:"Guardar el mapa actual"},
+            {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:i['nuevo'],d:"Crear un mapa nuevo"},
+            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos),s:i['abrir'],d:"Abrir un mapa existente"},
+            {n:'Guardar',c:self.Guardar,s:[i['guardar'],i['guardar_dis']],d:"Guardar el mapa actual"},
             {n:'barra'},
-            {n:'Cortar',c:self.Cortar,s:"X",d:"Cortar"},
-            {n:'Copiar',c:self.Copiar,s:"C",d:"Copiar"},
-            {n:'Pegar',c:self.Pegar,s:"P",d:"Pegar"},
+            {n:'Cortar',c:self.Cortar,s:[i['cortar'],i['cortar_dis']],d:"Cortar"},
+            {n:'Copiar',c:self.Copiar,s:[i['copiar'],i['copiar_dis']],d:"Copiar"},
+            {n:'Pegar',c:self.Pegar,s:[i['pegar'],i['pegar_dis']],d:"Pegar"},
             {n:'barra'},
-            {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},carpeta_actual=Sys.fdAssets),s:"Fd",d:"Cargar imagen de fondo"},
-            #{n:'SetColis',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaColis},carpeta_actual=Sys.fdAssets),s:"Cl",d:"Cargar imagen de colisiones"},
-            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},carpeta_actual=Sys.fdAssets),s:"Mb",d:"Cargar símbolo de mob"},
-            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProp},carpeta_actual=Sys.fdAssets),s:"Pr",d:"Cargar símbolo de prop"}            
+            {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},carpeta_actual=Sys.fdAssets),s:[i['fondo'],i['fondo_dis']],d:"Cargar imagen de fondo"},
+            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},carpeta_actual=Sys.fdAssets),s:[i['mob'],i['mob_dis']],d:"Cargar símbolo de mob"},
+            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProps},True,carpeta_actual=Sys.fdAssets),s:[i['prop'],i['prop_dis']],d:"Cargar símbolo de prop"}            
             ]
         x = self.x+4
         y = 19+4
@@ -46,7 +45,7 @@ class PanelSimbolos(Marco):
                 x = self.x+4
                 y += 32
         self.agregar(self.Items,4)
-        self.PrevArea.btnDel = Boton(self.PrevArea,self.x+self.w-34,y,'delSim',self.PrevArea.eliminarSimboloActual,'D',"Eliminar este símbolo")
+        self.PrevArea.btnDel = Boton(self.PrevArea,self.x+self.w-34,y,'delSim',self.PrevArea.eliminarSimboloActual,[i['borrar'],i['borrar_dis']],"Eliminar este símbolo")
         self.PrevArea.btnDel.serDeshabilitado()
         self.agregar(self.PrevArea.btnDel,4)
     
@@ -66,20 +65,21 @@ class PanelSimbolos(Marco):
         print('boton pegar')
     
     def addMob(self,ruta):
-        sprite = r.split_spritesheet(ruta)
-        nombre = path.split(ruta)[1][0:-4]
+        sprite = r.split_spritesheet(ruta[0])
+        nombre = path.split(ruta[0])[1][0:-4]
         _rect = sprite[0].get_rect(center=self.PrevArea.area.center)
         datos = {'nombre':nombre,'imagenes':sprite,'grupo':'mobs','tipo':'Mob','ruta':ruta,'pos':_rect.topleft}
         simbolo = SimboloMultiple(self.PrevArea,datos)
         self.addToPrevArea(nombre,simbolo)
         
-    def addProp(self,ruta):
-        sprite = r.cargar_imagen(ruta)
-        nombre = path.split(ruta)[1][0:-4]
-        _rect = sprite.get_rect(center=self.PrevArea.area.center)
-        datos = {'nombre':nombre,'image':sprite,'grupo':'props','tipo':'Prop','ruta':ruta,'pos':_rect.topleft}
-        simbolo = SimboloSimple(self.PrevArea,datos)
-        self.addToPrevArea(nombre,simbolo)
+    def addProps(self,rutas):
+        for ruta in rutas:
+            sprite = r.cargar_imagen(ruta)
+            nombre = path.split(ruta)[1][0:-4]
+            _rect = sprite.get_rect(center=self.PrevArea.area.center)
+            datos = {'nombre':nombre,'image':sprite,'grupo':'props','tipo':'Prop','ruta':ruta,'pos':_rect.topleft}
+            simbolo = SimboloSimple(self.PrevArea,datos)
+            self.addToPrevArea(nombre,simbolo)
     
     def addToPrevArea(self,nombre,simbolo):
         self.Items.setItem(nombre)

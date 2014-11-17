@@ -19,6 +19,7 @@ class BaseWidget(DirtySprite):
     # las opciones con las que se inicializo
     setFocus_onIn = False
     # if True: Renderer.setFocus se dispara onMouseIn también.
+    KeyCombination = ''
     
     layer = 0
     def __init__(self, **opciones):

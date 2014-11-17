@@ -5,7 +5,8 @@ from widgets import ContextMenu
 
 class SimboloCNVS (SimboloBase):
     selected = False
-    
+    moviendose = False
+    dx,dy = 0,0
     def __init__(self,parent,data,**opciones):
         super().__init__(parent,data,**opciones)
         
@@ -17,6 +18,7 @@ class SimboloCNVS (SimboloBase):
         self.img_pos = self._imagen.copy()
         self.img_neg = self._crear_transparencia(self._imagen.copy())
         self.img_cls = self.data['colisiones']
+        self.img_sel = self.crear_img_sel(self._imagen.copy())
         self.image = self.img_pos
         
         comandos = [
@@ -34,9 +36,10 @@ class SimboloCNVS (SimboloBase):
     def onMouseDown(self,button):
         if button == 1 or button == 3:
             self.onFocusIn()
-            self.img_sel = self.crear_img_sel(self._imagen.copy())
-            self.image = self.img_sel
-            self.selected = not self.selected
+            #self.img_sel = self.crear_img_sel(self._imagen.copy())
+            if not self.selected:
+                self.image = self.img_sel
+                self.selected = True
             self.pressed = True
             x,y = mouse.get_pos()
             self.px = x-self.x
@@ -66,9 +69,10 @@ class SimboloCNVS (SimboloBase):
             self.dy = 0
     
     def onMouseOver(self):
-        print('aca')
+        return self.moviendose
         
     def mover(self,dx,dy):
+        self.moviendose = True
         super().mover(dx,dy)
         Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
     
@@ -77,11 +81,15 @@ class SimboloCNVS (SimboloBase):
         Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
     
     def update(self):
+        self.dx,self.dy = 0,0
+        self.moviendose = False
         if self.selected:
             self.image = self.img_sel
             if self.pressed:
                 dx,dy = self._arrastrar()
-                self.mover(dx,dy)    
+                if (dx,dy) != (0,0):
+                    self.mover(dx,dy)
+                self.dx,self.dy = dx,dy
         elif Sys.capa_actual == LAYER_COLISIONES:
             self.image = self.img_cls
         elif Sys.capa_actual == LAYER_FONDO:

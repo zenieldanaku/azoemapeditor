@@ -1,4 +1,4 @@
-from pygame import Surface, mouse, mask
+from pygame import Surface, mouse, mask,Rect,draw
 from . import BaseWidget
 from globales import C
 
@@ -10,6 +10,8 @@ class Canvas(BaseWidget):
     doc_h = None
     pressed = False
     shift = False
+    eleccion = Rect(0,0,0,0)
+    SeleccionMultiple = False
     def __init__(self,parent,x,y,w,h,clip,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = (255,255,245)
@@ -21,6 +23,7 @@ class Canvas(BaseWidget):
         self.layer = self.parent.layer+1
         self.x,self.y = x,y
         self.w,self.h = clip
+        self.elX,self.elY = 0,0
         self.Tw,self.Th = w,h
         self.FONDO = Surface((w,h))
         self.doc_w,self.doc_h = w,h
@@ -43,30 +46,70 @@ class Canvas(BaseWidget):
     
     def onMouseDown(self,button):
         x,y = self.getRelMousePos()
+        tiles = []
         if button == 1 or button == 3:
+            if hasattr(self,'tiles'):
+                selected = 0
+                for tile in self.tiles:
+                    if tile.selected:
+                        selected += 1
+                        if selected > 1:
+                            break
+            
             if not self.shift:
-                if hasattr(self,'tiles'):
+                if not self.SeleccionMultiple:
                     for tile in self.tiles:
                         tile.selected = False
-                    tiles = self.tiles.get_sprites_at((x,y))
-                    if tiles != []:
-                        item = tiles[-1]
-                        mascara = mask.from_surface(item.image)
-                        if mascara.get_at((x-item.x,y-item.y)):
-                            item.onMouseDown(button)
-                    else:
-                        self.pressed = True
+            tiles = self.tiles.get_sprites_at((x,y))
+            if tiles != []:
+                item = tiles[-1]
+                mascara = mask.from_surface(item.image)
+                if mascara.get_at((x-item.x,y-item.y)):
+                    item.onMouseDown(button)
+                    if selected > 1:
+                        self.SeleccionMultiple = True                    
+            else:
+                for tile in self.tiles:
+                    tile.selected = False
+
+                self.pressed = True
+                self.elX,self.elY = x,y
+                if self.eleccion.size != (0,0):
+                    self.eleccion.size=(0,0)
     
     def onMouseUp(self,button):
         x,y = self.getRelMousePos()
+        tiles = []
         if button == 1:
             if hasattr(self,'tiles'):
                 tiles = self.tiles.get_sprites_at((x,y))
-                if tiles != []:
-                    for tile in tiles:
-                        tile.onMouseUp(1)
-                else:
-                    self.pressed = False
+            if tiles != []:
+                for tile in tiles:
+                    tile.onMouseUp(button)
+            else:
+                self.pressed = False
+                self.SeleccionMultiple = False
+                
+            selected = 0
+            for tile in self.tiles:
+                if self.eleccion.contains(tile.rect):
+                    tile.selected = True
+                    selected += 1
+            if selected > 1:
+                self.SeleccionMultiple = True
+                    
+            self.eleccion.size = 0,0
+    
+    def onMouseOver(self):
+        x,y = self.getRelMousePos()
+        tiles = []
+        if hasattr(self,'tiles'):
+            tiles = self.tiles.get_sprites_at((x,y))
+        
+        for tile in tiles:
+            if tile.onMouseOver():
+                if self.SeleccionMultiple:
+                    self.mover_tiles(tile.dx,tile.dy)
     
     def getRelMousePos(self):
         abs_x,abs_y = mouse.get_pos()
@@ -85,3 +128,27 @@ class Canvas(BaseWidget):
     def cambiar_layer(self,spr,mod):
         layer = spr.layer+mod
         self.tiles.change_layer(spr,layer)
+    
+    def update(self):
+        x,y = self.elX,self.elY
+        if self.pressed:
+            nx,ny = self.getRelMousePos()
+            dx = nx-x
+            dy = ny-y
+            if dx > 0:
+                self.eleccion.x = x
+            elif dx < 0:
+                self.eleccion.left = x
+            else:
+                self.eleccion.w = 0
+            self.eleccion.w = dx
+                
+            if dy > 0:
+                self.eleccion.y = y
+            elif dy < 0:
+                self.eleccion.top = y
+            else:
+                self.eleccion.h = 0
+            self.eleccion.h = dy
+            self.eleccion.normalize()
+            

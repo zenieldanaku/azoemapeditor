@@ -1,4 +1,4 @@
-from globales import EventHandler, color, Sistema as Sys
+from globales import EventHandler, color, Sistema as Sys, Resources as r
 from pygame import Surface,Rect,font,mouse,draw
 from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
@@ -9,6 +9,7 @@ class Menu (BaseWidget):
     boton = None
     visible = 0
     nombre = ''
+    
     def __init__(self,nombre,ops,x,y):
         self.fuente = font.Font(Sys.fdLibs+'\\fonts_tahoma.ttf',12)
         self.cascada = None
@@ -91,18 +92,21 @@ class _Cascada (BaseWidget):
         _fuente = font.SysFont('Tahoma',11)
         self.w = 0
         for n in range(len(opciones)):
-            w = _fuente.size(opciones[n]['nom'])[0]
-            if w > self.w: self.w = w
+            w = 19+_fuente.size(opciones[n]['nom'])[0]+15
+            if 'key' in opciones[n]:
+                w += _fuente.size(opciones[n]['key'])[0]+15
             if 'csc' in opciones[n]:
                 opciones[n]['scr'] = 'flecha'
+                w += 80
             elif 'win' in opciones[n]:
                 opciones[n]['scr'] = '...'
             else:
                 opciones[n]['scr'] = None
+            if w > self.w: self.w = w
         h = 19
         ajuste = 0
         self.h = h*len(opciones)+2
-        self.w += 20
+        
         for n in range(len(opciones)):
             _nom = opciones[n]['nom']
             if _nom != 'barra':
@@ -194,6 +198,11 @@ class _Cascada (BaseWidget):
             else:
                 recursion = False
         ancestro.hideMenu()
+    
+    def KeyCombination(self,key):
+        for componente in self.componentes:
+            if componente.KeyCombination == key:
+                componente.execute_key_binding()
         
     def update(self):
         self.componentes.update()
@@ -214,18 +223,27 @@ class OpcionCascada(BaseWidget):
         self.x,self.y = x,y
         self.parent = parent
         self.nombre = self.parent.nombre+'.OpcionCascada.'+data['nom']
-        self.img_des = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h)
-        self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),w,h)
+        icon = False
+        rapido = False
+        if 'icon' in data: icon = data['icon']
+        if 'key' in data:  rapido = data['key']
+        self.KeyCombination = rapido
+        self.img_des = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h,icon,rapido)
+        self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),w,h,icon,rapido)
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.dirty = 1
         
     @staticmethod
-    def crear(data,fuente,fgcolor,bgcolor,w,h):
+    def crear(data,fuente,fgcolor,bgcolor,w,h,icono,rapido):
         imagen = Surface((w+25,h))
         imagen.fill(bgcolor)
-        
+        if icono:
+            imagen.blit(icono,(0,0))
+        if rapido:
+            abrv = fuente.render(rapido,True,fgcolor,bgcolor)
+            
         nombre = data['nom']
         if data['scr'] == '...':
             nombre += data['scr']
@@ -236,7 +254,9 @@ class OpcionCascada(BaseWidget):
             imagen.blit(flecha,(w+10,4))
         
         render = fuente.render(nombre,True,fgcolor,bgcolor)
-        imagen.blit(render,(4,2))
+        imagen.blit(render,(4+19,2))
+        if rapido:
+            imagen.blit(abrv,(85,2))
         return imagen
     
     def onMouseDown(self,button):
@@ -255,15 +275,14 @@ class OpcionCascada(BaseWidget):
         super().onMouseOut()
         self.serDeseleccionado()
     
-    def serSeleccionado(self):
-        self.image = self.img_sel
-    
-    def serDeseleccionado(self):
-        self.image = self.img_des
+    def serSeleccionado(self): self.image = self.img_sel
+    def serDeseleccionado(self): self.image = self.img_des
     
     def onMouseOver(self):
         if isinstance(self.command,_Cascada):
             self.command.showMenu()
+            
+    def execute_key_binding(self): self.command()
 
 class ContextMenu(_Cascada):
     def __init__(self,parent,comandos = False):

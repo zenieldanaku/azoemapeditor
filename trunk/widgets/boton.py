@@ -17,20 +17,8 @@ class Boton(BaseWidget):
         self.comando = cmd
         self.tooltip = ToolTip(self,tip,self.x,self.y)
         
-        fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
-        colorFondo   = color(self.opciones['colorFondo'])
-        colorTexto   = color(self.opciones['colorText'])
-        colorSText   = color(self.opciones['colorSelect'])
-        colorDText   = color(self.opciones['colorDisabled'])
-        colorBLuz    = color(self.opciones['colorBordeLuz'])
-        colorBSombra = color(self.opciones['colorBordeSombra'])
+        self._crear_imagenes(scr)
         
-        if type(scr) != list: #suponemos string
-            scr = [scr,scr,scr,scr] #porque si no, serian cuatro imagenes.
-        self.img_uns = self._biselar(self._crear(scr[0], colorTexto, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
-        self.img_sel = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
-        self.img_pre = self._biselar(self._crear(scr[2], colorSText, colorFondo,self.w,self.h,fuente),colorBSombra,colorBLuz)
-        self.img_dis = self._biselar(self._crear(scr[3], colorDText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
@@ -62,29 +50,48 @@ class Boton(BaseWidget):
     @staticmethod
     def  _crear(scr, color_texto, color_fondo,w,h,fuente):
         _rect = Rect(-1,-1,w,h)
-        if type (scr) == str:
-            if os.path.isfile(scr):
-                img = r.cargar_imagen(scr)
-                img_rect = img.get_rect(center=_rect.center)
-                render = Surface((_rect.w,_rect.h))
-                render.fill(color_fondo)
-                render.blit(img,img_rect)
-            else:
-                try:
-                    render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
-                except:
-                    w,h = fuente.size(scr)
-                    _rect = Rect(-1,-1,w,h+1)
-                    render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
+        if type (scr) == Surface:
+            img_rect = scr.get_rect(center=_rect.center)
+            render = Surface((_rect.w,_rect.h))
+            render.fill(color_fondo)
+            render.blit(scr,img_rect)
+        elif type (scr) == str:
+            try:
+                render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
+            except:
+                w,h = fuente.size(scr)
+                _rect = Rect(-1,-1,w,h+1)
+                render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
                  
-        elif type (scr) == Surface:
-            if scr.get_width() < w or scr.get_height() < h:
-                render = Surface((scr.get_width()+3,scr.get_height()+3))
-                render.fill(color_fondo)
-                render.blit(scr,(1,1))
-            else:
-                raise ValueError('la imagen scr es mayor que el tamaño especificado')
+        #elif type (scr) == Surface:
+        #    if scr.get_width() < w or scr.get_height() < h:
+        #        render = Surface((scr.get_width()+3,scr.get_height()+3))
+        #        render.fill(color_fondo)
+        #        render.blit(scr,(1,1))
+        #    else:
+        #        raise ValueError('la imagen scr es mayor que el tamaño especificado')
+            
         return render
+    
+    def _crear_imagenes(self,scr):
+        fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
+        colorFondo   = color(self.opciones['colorFondo'])
+        colorTexto   = color(self.opciones['colorText'])
+        colorSText   = color(self.opciones['colorSelect'])
+        colorDText   = color(self.opciones['colorDisabled'])
+        colorBLuz    = color(self.opciones['colorBordeLuz'])
+        colorBSombra = color(self.opciones['colorBordeSombra'])
+        
+        if type(scr) != list: #suponemos string
+            scr = [scr,scr] #porque si no, serian dos imagenes.
+        self.img_sel = self._biselar(self._crear(scr[0], colorSText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        self.img_pre = self._biselar(self._crear(scr[0], colorSText, colorFondo,self.w,self.h,fuente),colorBSombra,colorBLuz)
+        if type(scr[0]) != Surface:
+            self.img_uns = self._biselar(self._crear(scr[0], colorTexto, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+            self.img_dis = self._biselar(self._crear(scr[1], colorDText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        else:
+            self.img_uns = self._crear(scr[0], colorTexto, colorFondo,self.w,self.h,fuente)
+            self.img_dis = self._crear(scr[1], colorDText, colorFondo,self.w,self.h,fuente)
     
     def serElegido(self):
         if self.enabled:
@@ -135,4 +142,57 @@ class Boton(BaseWidget):
                 self.tooltip.show()
             else:
                 self.tooltip.hide()
+
+class BotonToggle(Boton):
+    toggled = False
+    def toggle(self):
+        self.toggled = not self.toggled
+        if self.toggled:
+            self.img_sel = self.img_sel_T
+            self.img_uns = self.img_uns_T
+            self.img_dis = self.img_dis_T
+            self.img_pre = self.img_pre_T
+        else:
+            self.img_sel = self.img_sel_nT
+            self.img_uns = self.img_uns_nT
+            self.img_dis = self.img_dis_nT
+            self.img_pre = self.img_pre_nT
+    
+    def onMouseDown(self,button):
+        super().onMouseDown(button)
+        self.toggle()
+    
+    def _crear_imagenes(self,scr):
+        fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
+        colorFondo   = color(self.opciones['colorFondo'])
+        colorTexto   = color(self.opciones['colorText'])
+        colorSText   = color(self.opciones['colorSelect'])
+        colorToggled = 255,0,0
+        colorNonToggled = 255,255,255
+        colorDText   = color(self.opciones['colorDisabled'])
+        colorBLuz    = color(self.opciones['colorBordeLuz'])
+        colorBSombra = color(self.opciones['colorBordeSombra'])
+        
+        if type(scr) != list: #suponemos string
+            scr = [scr,scr,scr] #porque si no, serian dos imagenes.
+    
+        self.img_sel_T = self._biselar(self._crear(scr[0], colorSText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        self.img_sel_nT = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        
+        self.img_pre_T = self._biselar(self._crear(scr[0], colorSText, colorFondo,self.w,self.h,fuente),colorBSombra,colorBLuz)
+        self.img_pre_nT = self._biselar(self._crear(scr[1], colorSText, colorFondo,self.w,self.h,fuente),colorBSombra,colorBLuz)
+        
+        if type(scr[0]) != Surface:
+            self.img_uns_T = self._biselar(self._crear(scr[0], colorToggled, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+            self.img_dis_T = self._biselar(self._crear(scr[2], colorDText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
             
+            self.img_uns_nT = self._biselar(self._crear(scr[1], colorNonToggled, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+            self.img_dis_nT = self._biselar(self._crear(scr[2], colorDText, colorFondo,self.w,self.h,fuente),colorBLuz,colorBSombra)
+        else:
+            self.img_uns_T = self._crear(scr[0], colorToggled, colorFondo,self.w,self.h,fuente)
+            self.img_dis_T = self._crear(scr[2], colorDText, colorFondo,self.w,self.h,fuente)
+            
+            self.img_uns_nT = self._crear(scr[1], colorNonToggled, colorFondo,self.w,self.h,fuente)
+            self.img_dis_nT = self._crear(scr[2], colorDText, colorFondo,self.w,self.h,fuente)
+        
+        self.toggle()

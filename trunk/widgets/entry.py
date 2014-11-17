@@ -60,7 +60,12 @@ class Entry(BaseWidget):
         self.borrar_todo()
         self.texto = list(texto)
         self.imprimir()
-        
+    
+    def setMultipleTexts(self,lista):
+        self.borrar_todo()
+        self.texto = lista
+        self.imprimir(True)
+    
     def devolver_texto(self):
         return ''.join(self.texto)
     
@@ -82,11 +87,15 @@ class Entry(BaseWidget):
     def borrar_todo(self):
         self.image.fill(color(self.opciones['colorFondo']),self.erase_area)
     
-    def imprimir(self):
-        txt = ''.join(self.texto)
+    def imprimir(self,lista=False):
         cTexto =  color(self.opciones['colorTexto'])
         cFondo =  color(self.opciones['colorFondo'])
         cSelect = color(self.opciones['colorSelect'])
+        
+        if not lista:
+            txt = ''.join(self.texto)
+        else:
+            txt = ', '.join(self.texto)
         render = self.fuente.render(txt,True,cTexto,cFondo)
 
         if self.seleccion != None:
@@ -108,6 +117,7 @@ class Entry(BaseWidget):
             draw.line(self.image,color(self.opciones['colorTexto']),(x,3),(x,16),1)
         else:
             draw.line(self.image,color(self.opciones['colorFondo']),(x,3),(x,16),1)
+    
     def insertar_cursor(self):
         self.set_x()
         if self.idx > len(self.texto):
