@@ -59,7 +59,7 @@ class Canvas(BaseWidget):
             if not self.shift:
                 if not self.SeleccionMultiple:
                     for tile in self.tiles:
-                        tile.selected = False
+                        tile.serDeselegido()
             tiles = self.tiles.get_sprites_at((x,y))
             if tiles != []:
                 item = tiles[-1]
@@ -70,13 +70,16 @@ class Canvas(BaseWidget):
                         self.SeleccionMultiple = True                    
             else:
                 for tile in self.tiles:
-                    tile.selected = False
-
-                self.pressed = True
-                self.elX,self.elY = x,y
-                if self.eleccion.size != (0,0):
-                    self.eleccion.size=(0,0)
-    
+                    tile.serDeselegido()
+                if button == 1:
+                    self.pressed = True
+                    self.elX,self.elY = x,y
+                    if self.eleccion.size != (0,0):
+                        self.eleccion.size=(0,0)
+                elif button == 3:
+                    if hasattr(self,'context'):
+                        self.context.show()
+                    
     def onMouseUp(self,button):
         x,y = self.getRelMousePos()
         tiles = []
@@ -93,7 +96,7 @@ class Canvas(BaseWidget):
             selected = 0
             for tile in self.tiles:
                 if self.eleccion.contains(tile.rect):
-                    tile.selected = True
+                    tile.serElegido()
                     selected += 1
             if selected > 1:
                 self.SeleccionMultiple = True

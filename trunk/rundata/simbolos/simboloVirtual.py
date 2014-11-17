@@ -25,12 +25,11 @@ class SimboloVirtual(SimboloBase):
         
     def onMouseUp(self,button):
         self.pressed = False
-        Sys.copiar(self)
         x,y = mouse.get_pos()
         widget = EventHandler.getWidget('Grilla.Canvas')
         if widget.rect.collidepoint((x,y)):
-            Sys.pegar(widget.nombre)
-    
+            widget.colocar_tile(self.copy())
+            
     def copy(self):
         self.datos['rect'] = self.rect.copy()
         self.copiar = False

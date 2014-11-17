@@ -22,11 +22,20 @@ class SimboloCNVS (SimboloBase):
         self.image = self.img_pos
         
         comandos = [
-            {'nom':'subir','cmd':lambda:self.change_layer(+1)},
-            {'nom':'bajar','cmd':lambda:self.change_layer(-1)}
+            {'nom':'Subir','cmd':lambda:self.change_layer(+1)},
+            {'nom':'Bajar','cmd':lambda:self.change_layer(-1)},
+            {'nom':'barra'},
+            {'nom':'Cortar','cmd':lambda:Sys.cortar(),'icon':Sys.iconos['cortar']},
+            {'nom':'Copiar','cmd':lambda:Sys.copiar(),'icon':Sys.iconos['copiar']},
+            
         ]
         self.context = ContextMenu(self,comandos)
-
+    
+    def copiar(self):
+        datos = self.data.copy()
+        datos['rect'] = self.rect.copy()
+        return datos
+        
     @staticmethod
     def crear_img_sel(imagebase):
         over = imagebase.copy()
@@ -34,19 +43,21 @@ class SimboloCNVS (SimboloBase):
         return over
     
     def onMouseDown(self,button):
-        if button == 1 or button == 3:
+        if button == 1:
             self.onFocusIn()
             #self.img_sel = self.crear_img_sel(self._imagen.copy())
             if not self.selected:
-                self.image = self.img_sel
-                self.selected = True
+                self.serElegido()
             self.pressed = True
             x,y = mouse.get_pos()
             self.px = x-self.x
             self.py = y-self.y
-            if button == 3:
-                self.pressed = False
-                self.context.show()
+        
+        elif button == 3:
+            if not self.selected:
+                self.serElegido()
+            self.context.show()
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
 
     def onKeyDown(self,tecla,shift):
         if self.selected:
@@ -79,6 +90,14 @@ class SimboloCNVS (SimboloBase):
     def change_layer(self,mod):
         self.parent.cambiar_layer(self,mod)
         Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
+    
+    def serElegido(self):
+        self.selected = True
+        Sys.selected = self
+    
+    def serDeselegido(self):
+        self.selected = False
+        Sys.selected = None
     
     def update(self):
         self.dx,self.dy = 0,0
