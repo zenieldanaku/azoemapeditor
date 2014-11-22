@@ -80,15 +80,20 @@ class Sistema:
         Sistema.estado = 'Imagen '+ruta+' guardada exitosamente'
     
     @staticmethod
-    def addItem(nombre,ruta,grupo):
+    def addItem(nombre,ruta,grupo,code):
         root = Sistema.PROYECTO.script[grupo]
         if nombre not in root:
             root[nombre] = [[]]
             index = 0
-            Sistema.addRef(nombre,ruta)
+            Sistema.addRef(nombre,ruta,code)
         else:
-            root[nombre].append([])
-            index = len(root[nombre])-1
+            if Sistema.PROYECTO.script['refs'][nombre]['code'] == code:
+                root[nombre].append([])
+                index = len(root[nombre])-1
+            else:
+                nombre+='_'+str(len(Sistema.PROYECTO.script['refs']))
+                index = Sistema.addItem(nombre,ruta,grupo,code)
+                
         return index
     
     @staticmethod
@@ -96,10 +101,10 @@ class Sistema:
         Sistema.PROYECTO.script[grupo][nombre][index] = pos
     
     @staticmethod
-    def addRef(nombre,ruta):
+    def addRef(nombre,ruta,code):
         #chapuza: nombre deberia ser distinto de filename.
         if nombre not in Sistema.PROYECTO.script['refs']:
-            Sistema.PROYECTO.script['refs'][nombre] = ruta
+            Sistema.PROYECTO.script['refs'][nombre] = {'ruta':ruta,'code':code}
             
     @staticmethod
     def nuevoProyecto(data):

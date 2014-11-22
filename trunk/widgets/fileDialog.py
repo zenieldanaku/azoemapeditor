@@ -15,10 +15,13 @@ class FileDiag(subVentana):
     tipoSeleccinado = ''
     carpetaVieja = ''
     def __init__(self,comando,permitirmultiple=False,filetypes=[],carpeta_actual=os.getcwd(),**opciones):      
-        self.nombre = 'FileDiag'
-        super().__init__(2*C+8,3*C,16*C,10*C+18,self.nombre,**opciones)
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
+        if self.TipoComando == 'A':
+            self.nombre = 'Abrir'
+        elif self.TipoComando == 'G':
+            self.nombre = 'Guardar'
+        super().__init__(2*C+8,3*C,16*C,10*C+18,self.nombre,**opciones)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
         self.ArchivosSeleccionados = []

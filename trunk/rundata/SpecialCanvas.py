@@ -89,8 +89,9 @@ class SpecialCanvas (Canvas):
             rect.center = self.getRelMousePos()
         else:
             rect.center = self.rect.center
+        
         datos['pos'] = rect.topleft
-        datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'])
+        datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'],datos['cols_code'])
         self.addTile(datos)
     
     def addTile(self,datos):

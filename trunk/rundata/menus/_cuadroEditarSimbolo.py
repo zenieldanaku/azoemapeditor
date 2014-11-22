@@ -1,7 +1,7 @@
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Rect,Surface,draw, mouse, mask, SRCALPHA, PixelArray
 from widgets import subVentana, Marco, Boton, Label
-from globales import Sistema as Sys, C, EventHandler
+from globales import Sistema as Sys, C, EventHandler, serialize, encode, comprimir
 
 class EditarSimbolo(subVentana):
     pressed = False
@@ -15,6 +15,7 @@ class EditarSimbolo(subVentana):
     color_transparente = 0,0,0,0
     color_actual = None
     modo = 'Pintar'
+    crop_visible = True
     def __init__(self):
         titulo = None
         self.nombre = 'Editar Simbolo'
@@ -27,14 +28,12 @@ class EditarSimbolo(subVentana):
         self.background = Surface((10*C,8*C))
         
         self.capas = LayeredDirty()
-        self.capas.add(self.area,layer=self.LAYER_COLISION)
-        for tile in EventHandler.getWidget('Grilla.Canvas').tiles:
-            if tile.selected:
-                self.origin = tile
-                self.tile = self.crear_sprite(tile,self.area.rect.center)
-                self.capas.add(self.tile,layer=self.LAYER_SPRITE)
-                titulo = self.nombre+': '+tile._nombre+' #'+str(tile.index)
-                break
+        self.capas.add(self.area,layer=self.LAYER_COLISION)        
+        if Sys.selected != None:
+            self.origin = Sys.selected
+            self.tile = self.crear_sprite(tile,self.area.rect.center)
+            self.capas.add(self.tile,layer=self.LAYER_SPRITE)
+            titulo = self.nombre+': '+tile._nombre+' #'+str(tile.index)
         if self.tile == None:
             tile = EventHandler.getWidget('PanelSimbolos.AreaPrev').get_actual()
             if tile != None:
@@ -43,6 +42,7 @@ class EditarSimbolo(subVentana):
                 self.capas.add(self.tile,layer=self.LAYER_SPRITE)
                 titulo = self.nombre+': '+tile._nombre+' (nuevo)'
         
+        self.crop_area = self.crear_crop_area(self.tile.rect)
         self.cursor = Cursor(self.brocha)
         self.capas.add(self.cursor,layer = 2)
         
@@ -51,14 +51,18 @@ class EditarSimbolo(subVentana):
         self.btnTrans = Boton(self,x+w-C,y+3*C-7,'Transparencia',self.alternar_transparencia,'Tr',tip='Alterna entre la transparencia del sprite')
         self.btnCapas = Boton(self,x+w-C,y+4*C-14,'AlterarCapas',self.alternar_capas,'Cp',tip='Alerna el orden de las capas de sprite y de colisiones')
         self.btnBrocha = Boton(self,x+w-C,y+5*C-14,'AlternarBrocha',self.alternar_brocha,'Br','Alterna entre el color sólido y el transparente')
+        self.btnCrop = Boton(self,x+w-C,y+6*C-14,'VerCropArea',self.alternar_crop,'Cr','Muestra u oculta el area de corte')
+        
         self.btnAceptar = Boton(self,x+w-C*4-16,y+h-28,'Aceptar',self.aceptar,'Aceptar',tip='',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.btnCancelar = Boton(self,x+w-C*2-10,y+h-28,'Cancelar',lambda:EventHandler.delWidget(self),'Cancelar',tip='',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.lblBrocha = Label(self,'TamanioDeBrocha',x+3,y+h-28,'Brocha: '+str(self.brocha)+' '+self.modo)
+       
         self.agregar(self.btnMas)
         self.agregar(self.btnMenos)
         self.agregar(self.btnTrans)
         self.agregar(self.btnCapas)
         self.agregar(self.btnBrocha)
+        self.agregar(self.btnCrop)
         self.agregar(self.btnAceptar)
         self.agregar(self.btnCancelar)
         self.agregar(self.lblBrocha,layer=self.layer+1)
@@ -78,6 +82,10 @@ class EditarSimbolo(subVentana):
         spr.dirty = 2
         return spr
     
+    @staticmethod
+    def crear_crop_area(tile_rect):
+        return tile_rect.inflate(2,2)
+        
     @staticmethod
     def crear_sprite(sprite,center_pos):
         spr = DirtySprite()
@@ -105,11 +113,17 @@ class EditarSimbolo(subVentana):
         self.cursor.alterar_tamanio(self.brocha)
     
     def aceptar(self):
-        self.origin.img_cls = self.area.image.subsurface(self.tile.rect)
+        _crop = self.crop_area.inflate(-1,-1)
+        image = self.area.image.subsurface(_crop)
+        
+        self.origin.img_cls = image
+        self.origin.cls_code = comprimir(encode(serialize(image)))
+        
         EventHandler.delWidget(self)
     
     def alternar_transparencia(self): self.esTransparente = not self.esTransparente
     def alternar_capas(self): self.capas.switch_layer(self.LAYER_COLISION,self.LAYER_SPRITE)
+    def alternar_crop(self): self.crop_visible = not self.crop_visible
     
     def pintar(self):
         x,y = mouse.get_pos()
@@ -163,13 +177,16 @@ class EditarSimbolo(subVentana):
         
         if self.tile != None:
             if self.esTransparente:
-                self.tile.image = self.tile.img_neg            
+                self.tile.image = self.tile.img_neg
             else:
-                self.tile.image = self.tile.img_pos    
+                self.tile.image = self.tile.img_pos        
         
         self.capas.update()
         self.capas.draw(self.background)
+        if self.crop_visible:
+            draw.rect(self.background,(0,255,0),self.crop_area,1)
         self.image.blit(self.background,(C,C))
+        
         self.dirty = 1
 
 class Cursor(DirtySprite):

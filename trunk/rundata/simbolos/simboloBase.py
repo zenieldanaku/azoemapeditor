@@ -6,6 +6,7 @@ class SimboloBase (BaseWidget):
     img_neg = None #imagen semitransparente
     img_sel = None #imagen seleccionada
     img_cls = None #imagen de colisiones
+    cls_code = None #codigo de imagen de colisiones comprimida
     pressed = False
     dx,dy = 0,0
     def __init__(self,parent,data,**opciones):

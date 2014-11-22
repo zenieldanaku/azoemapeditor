@@ -12,7 +12,8 @@ class MetaSimbolo(SimboloBase):
             pos = mouse.get_pos()
             dx,dy = self._arrastrar()
             if dx != 0 or dy != 0:
-                self.data['colisiones'] =self.img_cls
+                self.data['colisiones'] = self.img_cls
+                self.data['cols_code'] = self.cls_code
                 self.copia = SimboloVirtual(self,self.image.copy(),pos,self.data)
                 EventHandler.setFocus(self.copia)
                 self.pressed = False
