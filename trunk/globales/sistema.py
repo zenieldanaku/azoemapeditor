@@ -6,6 +6,7 @@ from .resources import Resources
 from .eventhandler import EventHandler
 from .mapa import Mapa, Proyecto
 from .portapapeles import Portapapeles
+from .RLE import decode, descomprimir, deserialize
 from os import getcwd
 
 class Sistema:
@@ -97,8 +98,9 @@ class Sistema:
         return index
     
     @staticmethod
-    def updateItemPos(nombre,grupo,index,pos):
-        Sistema.PROYECTO.script[grupo][nombre][index] = pos
+    def updateItemPos(nombre,grupo,index,pos,layer=0):
+        x,y = pos
+        Sistema.PROYECTO.script[grupo][nombre][index] = x,y,layer
     
     @staticmethod
     def addRef(nombre,ruta,code):
@@ -111,37 +113,43 @@ class Sistema:
         Sistema.cerrarProyecto()
         Sistema.referencias.update(data)
         Sistema.HabilitarTodo = True
-        Sistema.PROYECTO = Proyecto()
+        Sistema.PROYECTO = Proyecto(data)
     
     def abrirProyecto(ruta):
-        Sistema.PROYECTO = Proyecto()
-        ar = Resources.abrir_json(ruta)
-        for key in ar:
-            Sistema.PROYECTO[key] = ar[key]
-            Sistema.ruta = ar[key]
+        data = Resources.abrir_json(ruta)
+        Sistema.PROYECTO = Proyecto(data)
+        
+        for key in data:
+            Sistema.PROYECTO[key] = data[key]
+            Sistema.ruta = data[key]
             if key == 'fondo':
-                if ar[key] != "":
+                if data[key] != "":
                     Sistema.cargar_imagen(LAYER_FONDO)
                     Sistema.capa_actual = LAYER_FONDO
-            elif key == 'colisiones':
-                if ar[key] != "":
-                    Sistema.cargar_imagen(LAYER_COLISIONES)
+            #elif key == 'colisiones':
+            #    if ar[key] != "":
+            #        Sistema.cargar_imagen(LAYER_COLISIONES)
             elif key == 'props' or key == 'mobs':
                 widget = EventHandler.getWidget('Grilla.Canvas')
-                for item in ar[key]:
-                    nombre,_ruta = item,ar['refs'][item]
+                for item in data[key]:
+                    nombre = item
+                    _ruta = data['refs'][item]['ruta']
+                    _cols = data['refs'][item]['code']
+                    
                     if key == 'props':   sprite = Resources.cargar_imagen(_ruta)
-                    elif key == 'mobs':
-                        sprite = Resources.split_spritesheet(_ruta)[0]
-                        
+                    elif key == 'mobs':  sprite = Resources.split_spritesheet(_ruta)[0]
+                    w,h = sprite.get_size()
+                    colision = deserialize(decode(descomprimir(_cols)),w,h)
                     idx = -1
-                    for pos in ar[key][item]:
+                    for pos in data[key][item]:
                         if len(pos) != 0:
                             idx+=1
-                            datos = {'nombre':nombre,'image':sprite,'tipo':'Prop','grupo':key,'ruta':_ruta,"pos":pos,"index":idx}
+                            datos = {"nombre":nombre,"image":sprite,"tipo":'Prop',
+                                     "grupo":key,"ruta":_ruta,"pos":pos,
+                                     "index":idx,"colisiones":colision}
                             widget.addTile(datos)
             elif key == 'referencias':
-                Sistema.referencias = ar[key]
+                Sistema.referencias = data[key]
         Sistema.Guardado = ruta
         Sistema.HabilitarTodo = True
     

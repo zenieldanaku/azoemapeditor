@@ -14,7 +14,7 @@ class Menu_Archivo(Menu):
                 {n:'Mapa',w:lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.exportarMapa},carpeta_actual=Sys.fdExport)}]}
         opciones = [
             {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),"icon":Sys.iconos['nuevo'],k:'Ctrl+N'},
-            {n:'Abrir',w:lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirProyecto},['json'],carpeta_actual=Sys.fdProyectos),"icon":Sys.iconos['abrir'],k:'Ctrl+A'},
+            {n:'Abrir',w:lambda:FileDiag({'scr':'Aceptar','tipo':'A','cmd':Sys.abrirProyecto},filetypes=['.json'],carpeta_actual=Sys.fdProyectos),"icon":Sys.iconos['abrir'],k:'Ctrl+A'},
             {n:'Guardar',c:self.Guardar,"icon":Sys.iconos['guardar'],k:'Ctrl+S'},
             {n:'Guardar como',w:lambda:FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.guardarProyecto},carpeta_actual=Sys.fdProyectos)},
             {n:'Exportar',s:cascadas['exportar']},

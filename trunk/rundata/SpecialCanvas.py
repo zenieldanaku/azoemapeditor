@@ -70,16 +70,17 @@ class SpecialCanvas (Canvas):
         return spr
     
     def pegar(self,item):
-        if type(item) == dict:# copy
+        if type(item) == dict:              # copy
             self.colocar_tile(item)
-        else:
-            pos = mouse.get_pos()
+        else:                               # cut
+            pos = mouse.get_pos()           
             x,y = self.getRelMousePos()
-            if self.rect.collidepoint(pos):# cut
+            if self.rect.collidepoint(pos): # Ctrl+V o menu contextual
                 item.rect.center = x,y
-            else:
+            else:                           # Boton "pegar" en panel
                 item.rect.center = self.rect.center
-                item.x,item.y = item.rect.topleft
+            
+            item.x,item.y = item.rect.topleft
             self.tiles.add(item)
     
     def colocar_tile(self,datos):
@@ -89,8 +90,8 @@ class SpecialCanvas (Canvas):
             rect.center = self.getRelMousePos()
         else:
             rect.center = self.rect.center
-        
-        datos['pos'] = rect.topleft
+        z = datos['pos'][2]
+        datos['pos'] = rect.x,rect.y,z
         datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'],datos['cols_code'])
         self.addTile(datos)
     
@@ -160,5 +161,5 @@ class SpecialCanvas (Canvas):
         if self.eleccion.size != (0,0):
             draw.rect(self.FONDO,(0,255,255),self.eleccion,1)
         for tile in self.tiles:
-            Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft)
+            Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft,tile.layer)
         self.dirty = 1

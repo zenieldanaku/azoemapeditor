@@ -22,7 +22,7 @@ class PanelSimbolos(Marco):
         n,s,t,c,d,i = 'nom','scr','tipo','cmd','des',Sys.iconos #aliases
         elementos = [
             {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:i['nuevo'],d:"Crear un mapa nuevo"},
-            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos),s:i['abrir'],d:"Abrir un mapa existente"},
+            {n:'Abrir',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos,filetypes=['.json']),s:i['abrir'],d:"Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:[i['guardar'],i['guardar_dis']],d:"Guardar el mapa actual"},
             {n:'barra'},
             {n:'Cortar',c:Sys.cortar,s:[i['cortar'],i['cortar_dis']],d:"Cortar"},
@@ -52,15 +52,15 @@ class PanelSimbolos(Marco):
     @staticmethod
     def Guardar():
         if not Sys.Guardado:
-            FileDiag({'scr':'Aceptar','tipo':'G','cmd':Sys.guardarProyecto},Sys.fdProyectos)
+            FileDiag({'scr':'Aceptar','tipo':'G','cmd':Sys.guardarProyecto},carpeta_actual=Sys.fdProyectos,filetypes=['.json'])
         else:
             Sys.guardarProyecto(Sys.Guardado)
     
     def addMob(self,ruta):
-        sprite = r.split_spritesheet(ruta[0])
+        sprite = r.split_spritesheet(ruta)
         nombre = path.split(ruta[0])[1][0:-4]
         _rect = sprite[0].get_rect(center=self.PrevArea.area.center)
-        datos = {'nombre':nombre,'imagenes':sprite,'grupo':'mobs','tipo':'Mob','ruta':ruta,'pos':_rect.topleft}
+        datos = {'nombre':nombre,'imagenes':sprite,'grupo':'mobs','tipo':'Mob','ruta':ruta,'pos':[_rect.x,_rect.y,0]}
         simbolo = SimboloMultiple(self.PrevArea,datos)
         self.addToPrevArea(nombre,simbolo)
         
@@ -69,7 +69,7 @@ class PanelSimbolos(Marco):
             sprite = r.cargar_imagen(ruta)
             nombre = path.split(ruta)[1][0:-4]
             _rect = sprite.get_rect(center=self.PrevArea.area.center)
-            datos = {'nombre':nombre,'image':sprite,'grupo':'props','tipo':'Prop','ruta':ruta,'pos':_rect.topleft}
+            datos = {'nombre':nombre,'image':sprite,'grupo':'props','tipo':'Prop','ruta':ruta,'pos':[_rect.x,_rect.y,0]}
             simbolo = SimboloSimple(self.PrevArea,datos)
             self.addToPrevArea(nombre,simbolo)
     

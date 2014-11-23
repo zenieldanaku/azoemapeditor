@@ -15,7 +15,7 @@ def encode(input_string):
     prev = ''
     code = ''
     string = input_string.replace('0','A').replace('1','B')
-    for character in string:        
+    for character in string:
         if character != prev:
             if prev != '':
                 entry = prev+str(count)
@@ -27,7 +27,7 @@ def encode(input_string):
     code += prev+str(count)
     
     return code
- 
+
 def decode(code):
     q = ""
     num = ''

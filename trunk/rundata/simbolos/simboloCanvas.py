@@ -1,4 +1,4 @@
-from pygame import mouse, K_RIGHT,K_LEFT,K_UP,K_DOWN,K_DELETE
+from pygame import mouse, K_RIGHT,K_LEFT,K_UP,K_DOWN,K_DELETE,Surface
 from .simboloBase import SimboloBase
 from globales import Sistema as Sys, LAYER_FONDO, LAYER_COLISIONES
 from widgets import ContextMenu
@@ -17,7 +17,7 @@ class SimboloCNVS (SimboloBase):
 
         self.img_pos = self._imagen.copy()
         self.img_neg = self._crear_transparencia(self._imagen.copy())
-        self.img_cls = self.data['colisiones']
+        self.img_cls = self.crear_img_cls(self.data['colisiones'])
         self.img_sel = self.crear_img_sel(self._imagen.copy())
         self.image = self.img_pos
         
@@ -25,9 +25,8 @@ class SimboloCNVS (SimboloBase):
             {'nom':'Subir','cmd':lambda:self.change_layer(+1)},
             {'nom':'Bajar','cmd':lambda:self.change_layer(-1)},
             {'nom':'barra'},
-            {'nom':'Cortar','cmd':lambda:Sys.cortar(),'icon':Sys.iconos['cortar']},
-            {'nom':'Copiar','cmd':lambda:Sys.copiar(),'icon':Sys.iconos['copiar']},
-            
+            {'nom':'Cortar','cmd':Sys.cortar,'icon':Sys.iconos['cortar']},
+            {'nom':'Copiar','cmd':Sys.copiar,'icon':Sys.iconos['copiar']},
         ]
         self.context = ContextMenu(self,comandos)
     
@@ -42,10 +41,18 @@ class SimboloCNVS (SimboloBase):
         over.fill((0,0,100), special_flags=1)
         return over
     
+    def crear_img_cls(self,imagebase):
+        if imagebase != None:
+            return imagebase
+        else:
+            img = Surface(self.img_pos.get_size())
+            img.set_alpha(0)
+            return img
+    
     def onMouseDown(self,button):
         if button == 1:
             self.onFocusIn()
-            #self.img_sel = self.crear_img_sel(self._imagen.copy())
+            self.img_sel = self.crear_img_sel(self._imagen.copy())
             if not self.selected:
                 self.serElegido()
             self.pressed = True
