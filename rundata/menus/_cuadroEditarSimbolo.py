@@ -16,6 +16,7 @@ class EditarSimbolo(subVentana):
     color_actual = None
     modo = 'Pintar'
     crop_visible = True
+    crop_area = None
     def __init__(self):
         titulo = None
         self.nombre = 'Editar Simbolo'
@@ -30,19 +31,21 @@ class EditarSimbolo(subVentana):
         self.capas = LayeredDirty()
         self.capas.add(self.area,layer=self.LAYER_COLISION)        
         if Sys.selected != None:
-            self.origin = Sys.selected
+            tile = Sys.selected
+            _titulo = ' #'+str(tile.index)
+        else:
+            tile = EventHandler.getWidget('PanelSimbolos.AreaPrev').get_actual()
+            _titulo = ' (nuevo)'
+        
+        if tile != None:
+            self.origin = tile
             self.tile = self.crear_sprite(tile,self.area.rect.center)
             self.capas.add(self.tile,layer=self.LAYER_SPRITE)
-            titulo = self.nombre+': '+tile._nombre+' #'+str(tile.index)
-        if self.tile == None:
-            tile = EventHandler.getWidget('PanelSimbolos.AreaPrev').get_actual()
-            if tile != None:
-                self.origin = tile
-                self.tile = self.crear_sprite(tile,self.area.rect.center)
-                self.capas.add(self.tile,layer=self.LAYER_SPRITE)
-                titulo = self.nombre+': '+tile._nombre+' (nuevo)'
-        
-        self.crop_area = self.crear_crop_area(self.tile.rect)
+            self.crop_area = self.crear_crop_area(self.tile.rect)
+            titulo = self.nombre+': '+tile._nombre+_titulo
+        else:
+            self.crop_visible = False
+            
         self.cursor = Cursor(self.brocha)
         self.capas.add(self.cursor,layer = 2)
         
@@ -68,6 +71,7 @@ class EditarSimbolo(subVentana):
         self.agregar(self.lblBrocha,layer=self.layer+1)
         if self.tile == None:
             self.btnAceptar.serDeshabilitado()
+            self.btnCrop.serDeshabilitado()
             titulo = self.nombre
         elif self.origin.img_cls != None:
             self.area.image.blit(self.origin.img_cls,(self.tile.rect))
@@ -217,5 +221,4 @@ class Cursor(DirtySprite):
             self.image = self._crear_imagen(self.alterar)
             self.alterar = False
         self.dirty = 1
-        
-    
+

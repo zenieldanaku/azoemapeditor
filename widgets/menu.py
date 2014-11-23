@@ -111,6 +111,7 @@ class _Cascada (BaseWidget):
             _nom = opciones[n]['nom']
             if _nom != 'barra':
                 opcion = OpcionCascada(self,opciones[n],1,n*h+ajuste+1,self.w-22,h)
+                _h = opcion.rect.bottom
                 w = opcion.image.get_size()[0]
                 if 'csc' in opciones[n]:
                     x = self.x+self.w-3
@@ -123,14 +124,14 @@ class _Cascada (BaseWidget):
             else:
                 opcion = BaseWidget()
                 opcion.image = self._linea_horizontal(self.w-1)
-                opcion.rect = opcion.image.get_rect(topleft=(3,n*h+5))
-                ajuste += -10
-            
+                opcion.rect = opcion.image.get_rect(topleft=(3,_h+4))
+                ajuste -= 10  
             self.componentes.add(opcion)
         self.image = Surface((self.w+5,self.h+ajuste))
         self.image.fill(color('sysMenBack'),(1,1,self.w+3,self.h+ajuste-2))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         EventHandler.addWidget(self,self.layer)
+        
     
     @staticmethod
     def _linea_horizontal(w):
@@ -228,9 +229,10 @@ class OpcionCascada(BaseWidget):
         if 'icon' in data: icon = data['icon']
         if 'key' in data:  rapido = data['key']
         self.KeyCombination = rapido
-        self.img_des = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h,icon,rapido)
+        self.img_uns = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h,icon,rapido)
         self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),w,h,icon,rapido)
-        self.image = self.img_des
+        self.img_des = self.crear(data,fuente,color('sysDisText'),color('sysMenBack'),w,h,icon,rapido)
+        self.image = self.img_uns
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.dirty = 1
@@ -260,11 +262,12 @@ class OpcionCascada(BaseWidget):
         return imagen
     
     def onMouseDown(self,button):
-        if isinstance(self.command,_Cascada):
-            self.command.showMenu()
-        else:
-            self.command()
-            self.parent.onFocusOut()
+        if self.enabled:
+            if isinstance(self.command,_Cascada):
+                self.command.showMenu()
+            else:
+                self.command()
+                self.parent.onFocusOut()
             
     def onMouseIn(self):
         if self.enabled:
@@ -273,11 +276,23 @@ class OpcionCascada(BaseWidget):
     
     def onMouseOut(self):
         super().onMouseOut()
-        self.serDeseleccionado()
+        if self.enabled:
+            self.serDeseleccionado()
     
-    def serSeleccionado(self): self.image = self.img_sel
-    def serDeseleccionado(self): self.image = self.img_des
+    def serSeleccionado(self): 
+        if self.enabled: self.image = self.img_sel
+            
+    def serDeseleccionado(self):
+        if self.enabled: self.image = self.img_uns
     
+    def serDeshabilitado(self):
+        self.image = self.img_des
+        self.enabled = False
+        
+    def serHabilitado(self):
+        self.image = self.img_uns
+        self.enabled = True
+        
     def onMouseOver(self):
         if isinstance(self.command,_Cascada):
             self.command.showMenu()
@@ -287,9 +302,7 @@ class OpcionCascada(BaseWidget):
 class ContextMenu(_Cascada):
     def __init__(self,parent,comandos = False):
         if not comandos:
-            comandos = [{'nom':'opcion1','cmd':lambda:None},
-                        {'nom':'opcion2','cmd':lambda:None},
-                        {'nom':'opcion3','cmd':lambda:None}]
+            comandos = [{'nom':'Dummy','cmd':lambda:None}]
         super().__init__(parent,'ContextMenu',comandos,0,0)
         
     def show (self):

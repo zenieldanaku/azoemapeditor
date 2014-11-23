@@ -1,8 +1,6 @@
 from widgets import Menu
 from globales import Sistema as Sys
 from ._cuadroEditarSimbolo import EditarSimbolo
-from globales import Sistema as Sys
-from pygame import mouse
 
 class Menu_Editar(Menu):
     def  __init__(self,x,y,barra):
@@ -17,10 +15,12 @@ class Menu_Editar(Menu):
             {"nom":'Pegar',"cmd":Sys.pegar,"icon":Sys.iconos['pegar'],'key':'Ctrl+V'},
             {"nom":'barra'},
             {"nom":'Entradas',"cmd":self.Entrada},
-            {"nom":'Simbolo','win':lambda:EditarSimbolo()}
+            {"nom":'Simbolo','win':lambda:EditarSimbolo()},
             #{'nom':'Preferencias','win':lambda:cuadroPreferencias()}
             ]
         super().__init__('Editar',opciones,x,y)
-    
+        
+        self.cascada.componentes.get_sprite(1).serDeshabilitado()
+
     def Entrada(self):
         print('config entrada')

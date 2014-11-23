@@ -39,6 +39,7 @@ class SpecialCanvas (Canvas):
                 if tile.onKeyDown(event.key,self.shift): #delete
                     index = tile.index
                     self.tiles.remove(tile)
+                    Sys.selected = None
                     del Sys.PROYECTO.script[tile.grupo][tile._nombre][index]
                     for tile in self.tiles:
                         if tile.index > index:

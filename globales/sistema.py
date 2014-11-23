@@ -1,4 +1,4 @@
-from .constantes import LAYER_FONDO, LAYER_COLISIONES
+from .constantes import LAYER_FONDO, LAYER_COLISIONES, C
 from pygame import image, quit as py_quit, Rect, mouse
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
@@ -54,24 +54,24 @@ class Sistema:
                 item.serDeshabilitado()
 
     @staticmethod
-    def cargar_imagen(layer):
-        spr = DirtySprite()      
-        spr.image = Resources.cargar_imagen(Sistema.ruta)
-        spr.rect = spr.image.get_rect()
-        spr._layer = layer
-        spr.dirty = 2
-        
-        Sistema.IMG_FONDO = spr
-
-    @staticmethod
     def setRutaFondo(ruta):
         try:
-            Sistema.ruta = ruta[0]
-            Sistema.cargar_imagen(LAYER_FONDO)
-            Sistema.PROYECTO.script["fondo"] = ruta[0]
+            spr = DirtySprite()  
+            spr.image = Resources.cargar_imagen(ruta)
+            w,h = spr.image.get_size()
+            if w <= C*15 or h < C*15:
+                raise IOError()
+            
+            spr.rect = spr.image.get_rect()
+            spr._layer = LAYER_FONDO
+            spr.dirty = 2
+            
+            Sistema.IMG_FONDO = spr
+            Sistema.PROYECTO.script["fondo"] = ruta
             Sistema.capa_actual = LAYER_FONDO
+            Sistema.estado = ''
         except:
-            Sistema.estado = 'No se ha selecionado ninguna imagen'
+            Sistema.estado = 'No se ha selecionado una imagen válida'
     
     @staticmethod
     def GuardarMapaDeColisiones(ruta):
@@ -196,14 +196,16 @@ class Sistema:
     @staticmethod
     def cortar():
         elemento = Sistema.selected
-        parent = EventHandler.getWidget(elemento.parent)
-        Sistema.Portapapeles.cortar(elemento)
-        parent.tiles.remove(elemento)
-    
+        if elemento != None:
+            parent = EventHandler.getWidget(elemento.parent)
+            Sistema.Portapapeles.cortar(elemento)
+            parent.tiles.remove(elemento)
+        
     @staticmethod
     def copiar():
         elemento = Sistema.selected
-        Sistema.Portapapeles.copiar(elemento.copiar())
+        if elemento != None:
+            Sistema.Portapapeles.copiar(elemento.copiar())
         
     @staticmethod
     def pegar():
