@@ -66,7 +66,7 @@ class FileDiag(subVentana):
             else:
                 
                 ruta = os.path.join(self.carpetaActual,self.UltimaSeleccion)
-                self.comando([ruta])
+                self.comando(ruta)
                 
         elif self.TipoComando == 'G':
             if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):

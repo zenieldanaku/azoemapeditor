@@ -4,10 +4,11 @@ from pygame import PixelArray, mouse
 
 class SimboloVirtual(SimboloBase):    
     def __init__(self,parent,imagen,pos,data,**opciones):
-        _rect = imagen.get_rect(center=pos)
+        x,y,z = pos
+        _rect = imagen.get_rect(center=(x,y))
         self.datos = data
         data = {'nombre':'Virtual',
-                'image':imagen,'pos':_rect.topleft}
+                'image':imagen,'pos':[_rect.x,_rect.y,z]}
         super().__init__(parent,data,**opciones)
         self.image = self._crear_transparencia(self._imagen)
         if not self.nombre in EventHandler.widgets:

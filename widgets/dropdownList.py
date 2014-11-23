@@ -28,7 +28,7 @@ class DropDownList(BaseWidget):
         self.dirty = 1
         self.ItemActual = ''
     
-    def crearLista(self,opciones):        
+    def crearLista(self,opciones):
         alto,h = 0,0
         for n in range(len(opciones)):
             if n == 0:

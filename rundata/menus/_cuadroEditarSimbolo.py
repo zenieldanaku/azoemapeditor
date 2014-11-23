@@ -84,7 +84,7 @@ class EditarSimbolo(subVentana):
     
     @staticmethod
     def crear_crop_area(tile_rect):
-        return tile_rect.inflate(2,2)
+        return tile_rect.inflate(1,1)
         
     @staticmethod
     def crear_sprite(sprite,center_pos):

@@ -36,9 +36,12 @@ class Mapa:
 class Proyecto:
     script = {}
     
-    def __init__(self):
+    def __init__(self,data):
         self.script= {
-            "referencias":{},
+            "referencias":{'fd_fondo':data['fondo'],
+                           'fd_colisiones':data['colisiones'],
+                           'fd_props':data['props'],
+                           'fd_mobs':data['mobs']},
             "fondo":"",
             "colisiones":"",
             "props": {},
@@ -46,7 +49,7 @@ class Proyecto:
             "entradas":{},
             "salidas":{},
             "refs":{},
-            "ambiente":""
+            "ambiente":data['ambiente']
         }
     def __setitem__(self,key,value):
         if key in self.script:

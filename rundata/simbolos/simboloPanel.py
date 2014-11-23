@@ -9,7 +9,9 @@ class MetaSimbolo(SimboloBase):
     
     def onMouseOver(self):
         if self.pressed:
-            pos = mouse.get_pos()
+            x,y = mouse.get_pos()
+            z = self.layer
+            pos = x,y,z
             dx,dy = self._arrastrar()
             if dx != 0 or dy != 0:
                 self.data['colisiones'] = self.img_cls

@@ -19,27 +19,35 @@ class CuadroMapa(subVentana):
     entrys = []
     def __init__(self,nombre):
         self.nombre = 'Nuevo Mapa'
-        super().__init__(4*C+16,6*C,11*C,4*C+12,nombre)
+        super().__init__(4*C+16,6*C,11*C,5*C+2,nombre)
         x,y,w,h = self.x,self.y,self.w,self.h
         ops = {'fontType':'Tahoma','fontSize':12}
         dx,dy,dw = 210,23,214
         
         self.btnAceptar = Boton(self,x+w-142,y+h-26,'Aceptar',self.Aceptar,'Aceptar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.btnCancelar = Boton(self,x+w-72,y+h-26,'Cancelar',self.cerrar,'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        items = {}
+        lista = [['Fondo','Carpeta de imágenes fondo:','maps/fondos/'],
+                ['Colisiones','Carpeta de mapas de colisiones:','maps/colisiones/'],
+                ['Props','Ruta de archivo de datos para Props:','props/'],
+                ['Mobs','Ruta de archivo de datos para Mobs:','mobs/'],
+                ['Ambiente','Ambiente (Exterior/Interior):','exterior']]
+        for i in range(len(lista)):
+            nombre,txt,ref = lista[i]
+            j = i+1
+            if nombre.lower() in Sys.referencias:
+                ref = Sys.referencias[nombre.lower()]
+            items[nombre] = {
+                'label':[nombre,x+2,y+dy*j,txt],
+                'entry':[nombre,x+dx,y-3+dy*j,w-dw,ref]
+                }
         
-        self.labels.append(Label(self,'Fondo',x+2,y+dy*1,'Carpeta de imágenes fondo:',**ops))
-        self.labels.append(Label(self,'Colisiones',x+2,y+dy*2,'Carpeta de mapas de colisiones:',**ops))
-        self.labels.append(Label(self,'Props',x+2,y+dy*3,'Ruta de archivo de datos para Props:',**ops))
-        self.labels.append(Label(self,'Mobs',x+2,y+dy*4,'Ruta de archivo de datos para Mobs:',**ops))       
-        
-        self.entrys.append(Entry(self,'Fondo',x+dx,y-3+dy*1,w-dw,'maps/fondos/'))
-        self.entrys.append(Entry(self,'Colisiones',x+dx,y-3+dy*2,w-dw,'maps/colisiones/'))
-        self.entrys.append(Entry(self,'Props',x+dx,y-3+dy*3,w-dw,'props/'))
-        self.entrys.append(Entry(self,'Mobs',x+dx,y-3+dy*4,w-dw,'mobs/'))
-        
-        for label in self.labels:
+        for nombre in items:
+            label = Label(self,*items[nombre]['label'],**ops)
+            entry = Entry(self,*items[nombre]['entry'])
+            self.labels.append(label)
+            self.entrys.append(entry)
             self.agregar(label)
-        for entry in self.entrys:
             self.agregar(entry)
         self.agregar(self.btnAceptar)
         self.agregar(self.btnCancelar)
