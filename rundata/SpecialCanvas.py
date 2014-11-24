@@ -97,6 +97,7 @@ class SpecialCanvas (Canvas):
         self.addTile(datos)
     
     def addTile(self,datos):
+        #print(datos)
         tile = SimboloCNVS(self,datos)
         self.tiles.add(tile)
         
@@ -162,5 +163,5 @@ class SpecialCanvas (Canvas):
         if self.eleccion.size != (0,0):
             draw.rect(self.FONDO,(0,255,255),self.eleccion,1)
         for tile in self.tiles:
-            Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft,tile.layer)
+            Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft,tile.layer,tile.rot)
         self.dirty = 1

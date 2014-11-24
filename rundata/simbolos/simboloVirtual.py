@@ -2,13 +2,17 @@ from globales import EventHandler, Sistema as Sys
 from .simboloBase import SimboloBase
 from pygame import PixelArray, mouse
 
-class SimboloVirtual(SimboloBase):    
+class SimboloVirtual(SimboloBase):
+    
     def __init__(self,parent,imagen,pos,data,**opciones):
         x,y,z = pos
+        rot = 0
+        if 'rot' in data:
+            rot = data['rot']
         _rect = imagen.get_rect(center=(x,y))
         self.datos = data
         data = {'nombre':'Virtual',
-                'image':imagen,'pos':[_rect.x,_rect.y,z]}
+                'image':imagen,'pos':[_rect.x,_rect.y,z,rot]}
         super().__init__(parent,data,**opciones)
         self.image = self._crear_transparencia(self._imagen)
         if not self.nombre in EventHandler.widgets:

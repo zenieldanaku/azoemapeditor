@@ -13,7 +13,10 @@ class SimboloBase (BaseWidget):
         super().__init__(**opciones)
         self.data = data
         self.parent = parent
-        self.x,self.y,self.layer = self.data['pos']
+        if len(data['pos']) == 3:
+            self.x,self.y,self.layer = self.data['pos']
+        else:
+            self.x,self.y,self.layer,self.curr_rot = self.data['pos']
         self._nombre = self.data['nombre']
         self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
         self._imagen = self.data['image']

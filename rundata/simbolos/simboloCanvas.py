@@ -14,6 +14,7 @@ class SimboloCNVS (SimboloBase):
         self.tipo = self.data['tipo']
         self.index = self.data['index']
         self.ruta = self.data['ruta']
+        self.rot = self.data.get('rot',0)
 
         self.img_pos = self._imagen.copy()
         self.img_neg = self._crear_transparencia(self._imagen.copy())
