@@ -6,12 +6,22 @@ class Menu_Mapa (Menu):
         self.nombre = 'Menu.Mapa'
         self.barra = barra
         cascadas = {'imagen':[
-                {'nom':'Fondo','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaFondo},Sys.fdAssets)},
+                {'nom':'Fondo','icon':Sys.iconos['fondo'],
+                 'win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaFondo},carpeta_actual=Sys.fdAssets)},
                 #{'nom':'Colisiones','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaColis},Sys.fdAssets)}
                 ]}
         opciones = [{'nom':'Imagen','csc':cascadas['imagen']},
                     {'nom':'Ajustes','win':lambda:CuadroMapa('Ajustar Mapa')}]
         super().__init__('Mapa',opciones,x,y)
+    
+    def update(self):
+        nombres = ['Ajustes','Fondo']
+        for n in nombres:
+            objeto = self.referencias[n]
+            if Sys.PROYECTO == None:
+                objeto.serDeshabilitado()
+            elif not objeto.enabled:
+                objeto.serHabilitado()
 
 class CuadroMapa(subVentana):
     value = False

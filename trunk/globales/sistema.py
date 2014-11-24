@@ -164,7 +164,7 @@ class Sistema:
     
     @staticmethod
     def cerrarProyecto():
-        Sistema.Proyecto = None
+        Sistema.PROYECTO = None
         Sistema.IMG_FONDO = None
         Sistema.HabilitarTodo = False
         EventHandler.contents.update()
