@@ -150,13 +150,14 @@ class Sistema:
                     
                     idx = -1
                     for pos in data[key][item]:
-                        if type(sprite) == list: image = sprite[pos[3]]
+                        rot = pos[3]
+                        if type(sprite) == list: image = sprite[rot]
                         else:                    image = sprite
                         if len(pos) != 0:
                             idx+=1
                             datos = {"nombre":nombre,"image":image,"tipo":tipo,
                                      "grupo":key,"ruta":_ruta,"pos":pos,
-                                     "index":idx,"colisiones":colision}
+                                     "index":idx,"colisiones":colision,'rot':rot}
                             widget.addTile(datos)
             elif key == 'referencias':
                 Sistema.referencias = data[key]
