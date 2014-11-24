@@ -37,3 +37,8 @@ class barraMenus (Marco):
     def ocultarMenus(self):
         for menu in self.menus:
             self.menus[menu].hideMenu()
+    
+    def update(self):
+        for menu in self.menus:
+            self.menus[menu].update()
+    

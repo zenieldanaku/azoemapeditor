@@ -28,3 +28,12 @@ class Menu_Archivo(Menu):
             FileDiag({'scr':'Guardar','tipo':'G','cmd':Sys.guardarProyecto},Sys.fdProyectos)
         else:
             Sys.guardarProyecto(Sys.Guardado)
+
+    def update(self):
+        nombres = ['Guardar','Guardar como','Cerrar','Exportar']
+        for n in nombres:
+            objeto = self.referencias[n]
+            if Sys.PROYECTO == None:
+                objeto.serDeshabilitado()
+            elif not objeto.enabled:
+                objeto.serHabilitado()

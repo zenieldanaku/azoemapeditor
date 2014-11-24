@@ -9,12 +9,13 @@ class Menu (BaseWidget):
     boton = None
     visible = 0
     nombre = ''
-    
+    referencias = None
     def __init__(self,nombre,ops,x,y):
         self.fuente = font.Font(Sys.fdLibs+'\\fonts_tahoma.ttf',12)
         self.cascada = None
         self.boton = None
         super().__init__()
+        self.referencias = {}
         self.boton = _Boton(self,nombre,x,y)
         h = self.boton.rect.h
         self.cascada = _Cascada(self,nombre,ops,x,h+1)
@@ -80,7 +81,6 @@ class _Cascada (BaseWidget):
     opciones = None
     parent = None
     mostrar = False
-    
     def __init__(self,parent,nombre,opciones,x,y):
         super().__init__()
         self.visible = False
@@ -121,6 +121,7 @@ class _Cascada (BaseWidget):
                     opcion.command = opciones[n]['win']
                 else:
                     opcion.command = opciones[n]['cmd']
+                self.addToReferences(_nom,opcion)
             else:
                 opcion = BaseWidget()
                 opcion.image = self._linea_horizontal(self.w-1)
@@ -131,7 +132,17 @@ class _Cascada (BaseWidget):
         self.image.fill(color('sysMenBack'),(1,1,self.w+3,self.h+ajuste-2))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         EventHandler.addWidget(self,self.layer)
-        
+    
+    def addToReferences(self,key,item):
+        recursion = True
+        ancestro = self.parent
+        while recursion:
+            if hasattr(ancestro,'parent'):
+                ancestro = ancestro.parent
+            else:
+                recursion = False
+        if hasattr(ancestro,'referencias'):
+            ancestro.referencias[key] = item
     
     @staticmethod
     def _linea_horizontal(w):

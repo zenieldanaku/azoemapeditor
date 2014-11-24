@@ -15,12 +15,12 @@ class Menu_Editar(Menu):
             {"nom":'Pegar',"cmd":Sys.pegar,"icon":Sys.iconos['pegar'],'key':'Ctrl+V'},
             {"nom":'barra'},
             {"nom":'Entradas',"cmd":self.Entrada},
-            {"nom":'Simbolo','win':lambda:EditarSimbolo()},
-            #{'nom':'Preferencias','win':lambda:cuadroPreferencias()}
+            {"nom":'Simbolo','win':EditarSimbolo},
+            #{'nom':'Preferencias','win':cuadroPreferencias}
             ]
         super().__init__('Editar',opciones,x,y)
         
-        self.cascada.componentes.get_sprite(1).serDeshabilitado()
+        self.referencias['Rehacer'].serDeshabilitado()
 
     def Entrada(self):
         print('config entrada')
