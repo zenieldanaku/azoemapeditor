@@ -58,7 +58,7 @@ class PanelSimbolos(Marco):
     
     def addMob(self,ruta):
         sprite = r.split_spritesheet(ruta)
-        nombre = path.split(ruta[0])[1][0:-4]
+        nombre = path.split(ruta)[1][0:-4]
         _rect = sprite[0].get_rect(center=self.PrevArea.area.center)
         datos = {'nombre':nombre,'imagenes':sprite,'grupo':'mobs','tipo':'Mob','ruta':ruta,'pos':[_rect.x,_rect.y,0]}
         simbolo = SimboloMultiple(self.PrevArea,datos)
@@ -105,9 +105,7 @@ class area_prev(Marco):
         
         self.area = Rect(self.x+2,self.y+2,self.w-4,self.h-18)
         self.simbolos = LayeredDirty()
-        
-        
-        
+    
     @staticmethod
     def _dibujar_grilla(imagen,color):
         w,h = imagen.get_size()

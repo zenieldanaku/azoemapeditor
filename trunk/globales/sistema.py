@@ -98,9 +98,9 @@ class Sistema:
         return index
     
     @staticmethod
-    def updateItemPos(nombre,grupo,index,pos,layer=0):
+    def updateItemPos(nombre,grupo,index,pos,layer=0,rot=0):
         x,y = pos
-        Sistema.PROYECTO.script[grupo][nombre][index] = x,y,layer
+        Sistema.PROYECTO.script[grupo][nombre][index] = x,y,layer,rot
     
     @staticmethod
     def addRef(nombre,ruta,code):
@@ -136,15 +136,25 @@ class Sistema:
                     _ruta = data['refs'][item]['ruta']
                     _cols = data['refs'][item]['code']
                     
-                    if key == 'props':   sprite = Resources.cargar_imagen(_ruta)
-                    elif key == 'mobs':  sprite = Resources.split_spritesheet(_ruta)[0]
-                    w,h = sprite.get_size()
-                    colision = deserialize(decode(descomprimir(_cols)),w,h)
+                    if key == 'props':
+                        sprite = Resources.cargar_imagen(_ruta)
+                        tipo = 'Prop'
+                    elif key == 'mobs':
+                        sprite = Resources.split_spritesheet(_ruta)
+                        tipo = 'Mob'
+                    
+                    colision = None
+                    if _cols != None:
+                        w,h = sprite[0].get_size()
+                        colision = deserialize(decode(descomprimir(_cols)),w,h)
+                    
                     idx = -1
                     for pos in data[key][item]:
+                        if type(sprite) == list: image = sprite[pos[3]]
+                        else:                    image = sprite
                         if len(pos) != 0:
                             idx+=1
-                            datos = {"nombre":nombre,"image":sprite,"tipo":'Prop',
+                            datos = {"nombre":nombre,"image":image,"tipo":tipo,
                                      "grupo":key,"ruta":_ruta,"pos":pos,
                                      "index":idx,"colisiones":colision}
                             widget.addTile(datos)
