@@ -65,7 +65,7 @@ class EventHandler:
                     print('Nº Total de widgets: '+str(i))
                 else:
                     EventHandler.key = key.name(event.key)
-                    EventHandler.currentFocus.onKeyDown(event)
+                EventHandler.currentFocus.onKeyDown(event)
                 
             elif event.type == KEYUP:
                 if event.key == K_RCTRL or event.key == K_LCTRL:

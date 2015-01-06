@@ -66,7 +66,7 @@ class _Boton(BaseWidget):
         return render
         
     def onMouseDown (self,dummy):
-        self.parent.cascada.onFocusIn()
+        EventHandler.setFocus(self.parent.cascada)
         self.parent.barra.soloUnMenu(self.parent)
  
     def onMouseIn(self):
