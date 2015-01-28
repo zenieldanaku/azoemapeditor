@@ -95,6 +95,7 @@ class SpecialCanvas (Canvas):
         datos['pos'] = rect.x,rect.y,z
         datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'],datos['cols_code'])
         self.addTile(datos)
+        self.update()
     
     def addTile(self,datos):
         #print(datos)

@@ -21,7 +21,7 @@ class FileDiag(subVentana):
             self.nombre = 'Abrir'
         elif self.TipoComando == 'G':
             self.nombre = 'Guardar'
-        super().__init__(2*C+8,3*C,16*C,10*C+18,self.nombre,**opciones)
+        super().__init__(16*C,10*C+18,self.nombre,**opciones)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
         self.ArchivosSeleccionados = []

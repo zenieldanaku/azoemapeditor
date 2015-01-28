@@ -29,7 +29,7 @@ class CuadroMapa(subVentana):
     entrys = []
     def __init__(self,nombre):
         self.nombre = 'Nuevo Mapa'
-        super().__init__(4*C+16,6*C,11*C,5*C+2,nombre)
+        super().__init__(11*C,5*C+2,nombre)
         x,y,w,h = self.x,self.y,self.w,self.h
         ops = {'fontType':'Tahoma','fontSize':12}
         dx,dy,dw = 210,23,214

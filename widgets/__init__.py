@@ -13,3 +13,4 @@ from .tree import Tree
 from .baseSubVentana import subVentana
 from .fileDialog import FileDiag
 from .canvas import Canvas
+from .diagBox import *

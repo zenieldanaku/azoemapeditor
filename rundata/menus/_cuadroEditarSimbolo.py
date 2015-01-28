@@ -1,10 +1,12 @@
 from pygame.sprite import DirtySprite, LayeredDirty
-from pygame import Rect,Surface,draw, mouse, mask, SRCALPHA, PixelArray
+from pygame import Rect,Surface,draw, mouse, mask, SRCALPHA, PixelArray, K_RCTRL,K_LCTRL, K_RSHIFT, K_LSHIFT
 from widgets import subVentana, Marco, Boton, Label
 from globales import Sistema as Sys, C, EventHandler, serialize, encode, comprimir
 
 class EditarSimbolo(subVentana):
     pressed = False
+    shift = False
+    control = False
     brocha = 5
     esTransparente = False
     tile = None
@@ -20,7 +22,7 @@ class EditarSimbolo(subVentana):
     def __init__(self):
         titulo = None
         self.nombre = 'Editar Simbolo'
-        super().__init__(4*C,3*C,12*C,10*C,self.nombre,False)
+        super().__init__(12*C,10*C,self.nombre,False)
         x,y,w,h = self.x,self.y,self.w,self.h
         self.color_actual = self.color_colision
     
@@ -76,6 +78,8 @@ class EditarSimbolo(subVentana):
         elif self.origin.img_cls != None:
             self.area.image.blit(self.origin.img_cls,(self.tile.rect))
         self.titular(titulo)
+        
+        EventHandler.setFocus(self)
     
     @staticmethod
     def crear_area(x,y):
@@ -173,6 +177,18 @@ class EditarSimbolo(subVentana):
             self.cursor.mover(dx,dy)
         else:
             self.cursor.visible = 0
+    
+    def onKeyDown(self,event):
+        if event.key == K_RSHIFT or event.key == K_LSHIFT:
+            self.shift = True
+        elif event.key == K_RCTRL or event.key == K_LCTRL:
+            self.control = True
+    
+    def onKeyUp(self,event):
+        if event.key == K_RSHIFT or event.key == K_LSHIFT:
+            self.shift = False
+        elif event.key == K_RCTRL or event.key == K_LCTRL:
+            self.control = False
     
     def update(self):
         self.background.fill((0,0,0))

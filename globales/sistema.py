@@ -28,6 +28,8 @@ class Sistema:
     fdAssets = getcwd()+'\\assets'
     fdExport = getcwd()+'\\export'
     fdLibs = getcwd()+'\\libs'
+    DiagBox = None
+    DiagMODE = False
     
     @staticmethod
     def init():
@@ -243,4 +245,14 @@ class Sistema:
                         print('anda!')
                 else:
                     widget.KeyCombination(combination)
-                   
+        
+        if Sistema.DiagBox != None:
+            if Sistema.DiagMODE == False:
+                for widget in EventHandler.contents:
+                    if hasattr(widget,'parent'):
+                        if widget != Sistema.DiagBox and widget.parent != Sistema.DiagBox:
+                            widget.enabled = False
+                Sistema.DiagMODE = True
+            else:
+                if Sistema.DiagBox.update():
+                    Sistema.DiagBox = None

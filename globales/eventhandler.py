@@ -62,7 +62,7 @@ class EventHandler:
                         i+=1
                         print(widget.nombre)
                     print('--Fin de lista')
-                    print('Nº Total de widgets: '+str(i))
+                    print('Nº Total de widgets:',str(len(EventHandler.widgets)))
                 else:
                     EventHandler.key = key.name(event.key)
                 EventHandler.currentFocus.onKeyDown(event)
