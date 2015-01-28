@@ -4,7 +4,7 @@ from widgets import subVentana, Label, Entry, Boton
 class cuadroPreferencias (subVentana):    
     def __init__(self):
         self.nombre = 'Preferencias'
-        super().__init__(2*C+8,3*C,16*C,10*C+18)
+        super().__init__(16*C,10*C+18)
         dx,dy,dw,dh = self.x,self.y,self.w,self.h
         self.lblModFolder = Label(self,'ModFolder',dx+2,dy+19,'ModFolder')
         self.entryModFolder = Entry(self,'ModFolder',dx+80,dy+19,100)

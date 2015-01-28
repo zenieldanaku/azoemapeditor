@@ -195,12 +195,13 @@ class Entry(BaseWidget):
         self.sel_end = self.idx
         
     def onMouseOver(self):
-        text = self.cursor
-        curs,mask = cursors.compile(text,'o','o')
-        mouse.set_cursor([8,16],[4,1],curs,mask)
-        if self.seleccionando:
-            self.sel_end = self.get_x()[1]
-            self.seleccionar()
+        if self.hasFocus:
+            text = self.cursor
+            curs,mask = cursors.compile(text,'o','o')
+            mouse.set_cursor([8,16],[4,1],curs,mask)
+            if self.seleccionando:
+                self.sel_end = self.get_x()[1]
+                self.seleccionar()
     
     def onMouseOut(self):
         super().onMouseOut()

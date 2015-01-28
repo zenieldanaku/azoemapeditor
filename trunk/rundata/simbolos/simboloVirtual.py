@@ -1,9 +1,10 @@
 from globales import EventHandler, Sistema as Sys
 from .simboloBase import SimboloBase
 from pygame import PixelArray, mouse
+from widgets import Alerta
 
 class SimboloVirtual(SimboloBase):
-    
+    copiar = False
     def __init__(self,parent,imagen,pos,data,**opciones):
         x,y,z = pos
         rot = 0
@@ -30,18 +31,22 @@ class SimboloVirtual(SimboloBase):
         
     def onMouseUp(self,button):
         self.pressed = False
+        if self.datos['colisiones'] == None:
+            Sys.DiagBox = Alerta('El símbolo '+self.datos['nombre']+' carece de un mapa de colisiones. ¿Desea continuar de todos modos?')
+        else:
+            self.copy()
+            
+    def copy(self):
         x,y = mouse.get_pos()
         widget = EventHandler.getWidget('Grilla.Canvas')
         if widget.rect.collidepoint((x,y)):
-            widget.colocar_tile(self.copy())
-            
-    def copy(self):
-        self.datos['rect'] = self.rect.copy()
-        self.copiar = False
-        return self.datos
+            self.datos['rect'] = self.rect.copy()
+            widget.colocar_tile(self.datos)
+            EventHandler.delWidget(self)
     
     def update(self):
         if self.pressed:
             self.dirty = 1
-        else:
-            EventHandler.delWidget(self)
+        elif self.copiar:
+            self.copy()
+            
