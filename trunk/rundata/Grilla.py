@@ -164,7 +164,7 @@ class ReglaH(BaseRegla):
         self.FONDO = self.crear(w)
         self.lin = 0,-2,self.parent.Tw,1
         self.w,self.h = w,self.FONDO.get_height()
-        self.clip = Rect(0,0,15*C+1,self.h)
+        self.clip = Rect(0,0,15*C,self.h)
         self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.image.get_rect(topleft =(self.x,self.y))
         self.tooltip = ToolTip(self,self.tip+'horizontal',self.x,self.y)
@@ -207,7 +207,7 @@ class ReglaV(BaseRegla):
         self.FONDO = self.crear(h)
         self.lin = -2,0,1,self.parent.Th
         self.w,self.h = self.FONDO.get_width(),h
-        self.clip = Rect(0,0,self.w,15*C+1)
+        self.clip = Rect(0,0,self.w,15*C)
         self.image = self.FONDO.subsurface(self.clip)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.tooltip = ToolTip(self,self.tip+'vertical',self.x,self.y)

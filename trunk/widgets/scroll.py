@@ -10,6 +10,7 @@ class _baseScroll(BaseWidget):
     BtnPos = None # derecha, o abajo
     BtnNeg = None # izquierda, o arriba
     componentes = None # LayeredDirty
+    velocidad = 2
     def __init__(self,parent,x,y,w,h):
         super().__init__()
         self.parent = parent
@@ -63,16 +64,16 @@ class _baseScroll(BaseWidget):
             item.onMouseIn()
         
     def onMouseOver(self):
-        if self.cursor.pressed:
-            self.cursor.onMouseOver()
-        else:
-            item = self.get_component()
-            if item != self:
-                item.onMouseOver()
+        #if self.cursor.pressed:
+        #    self.cursor.onMouseOver()
+        #else:
+        item = self.get_component()
+        if item != self:
+            item.onMouseOver()
         
-    def onMouseOut(self):
-        if not self.cursor.pressed:
-            super().onMouseOut()
+    #def onMouseOut(self):
+    #    if not self.cursor.pressed:
+    #        super().onMouseOut()
     
     def setCursorSpeed(self,velocidad):
         self.cursor.velocidad = velocidad
@@ -81,8 +82,8 @@ class _baseScroll(BaseWidget):
         #self.tamanio_cursor()
         self.image.fill(color('sysScrBack'))
         self.componentes.update()
-        self.cursor.enabled = self.enabled
-        self.cursor.visible = self.enabled
+        #self.cursor.enabled = self.enabled
+        #self.cursor.visible = self.enabled
         self.componentes.draw(self.image)
         self.dirty = 1
 
@@ -92,8 +93,8 @@ class ScrollV(_baseScroll):
         self.nombre = self.parent.nombre+'.ScrollV'
         self.BtnPos = _btnVer(self,self.h-12,'abajo')
         self.BtnNeg = _btnVer(self,0,'arriba')
-        self.cursor = CursorV(self,parent,0,12,1/2*C)
-        self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
+        #self.cursor = CursorV(self,parent,0,12,1/2*C)
+        self.componentes.add(self.BtnNeg,self.BtnPos)#,self.cursor)
 
     def tamanio_cursor(self):
         h = self.parent.doc_h
@@ -107,15 +108,16 @@ class ScrollH(_baseScroll):
         self.nombre = self.parent.nombre+'.ScrollH'
         self.BtnPos = _btnHor(self,self.w-12,'derecha')
         self.BtnNeg = _btnHor(self,0,'izquierda')
-        self.cursor = CursorH(self,parent,12,0,1/2*C)
-        self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
+        #self.cursor = CursorH(self,parent,12,0,1/2*C)
+        self.componentes.add(self.BtnNeg,self.BtnPos)#,self.cursor)
         
     def tamanio_cursor(self):
         doc_w = self.parent.doc_w
         win_w = self.w
-        size = round(win_w/(doc_w/win_w))
+        size = win_w/(doc_w/win_w)
         if size == win_w:
             size = 0
+        
         self.cursor.actualizar_tamanio(size,self.cursor.h)
         
     
@@ -127,7 +129,7 @@ class _baseCursor(BaseWidget):
     pressed = False
     minX,minY = 0,0
     maxX,maxY = 0,0
-    velocidad = 2
+    
     def __init__(self,parent,x,y,w,h):
         super().__init__()
         self.parent = parent
@@ -152,16 +154,20 @@ class _baseCursor(BaseWidget):
         self.w,self.h = new_w,new_h
         self.crear(new_w,new_h)
         self.rect.size = new_w,new_h
+        self.maxX = self.parent.w-self.w-self.parent.BtnPos.w
+        self.maxY = self.parent.h-self.h-self.parent.BtnPos.h
     
     def onMouseDown(self,button):
         if button == 1:
             self.pressed = True
+        print(self.nombre)
     
     def onMouseUp(self,button):
         if button == 1:
             self.pressed = False
             
     def update(self):
+        self.x,self.y = self.rect.topleft
         self.visible = self.enabled
         self.dirty = 1
         
@@ -187,14 +193,14 @@ class CursorH(_baseCursor):
     def onMouseOver(self):
         if self.pressed:
             x,y = self.parent.getRelMousePos()
-            dx = x-self.rect.x-8
+            dx = x-self.x-8
             self.mover(dx)
     
     def mover(self,dx):
-        x = self.rect.x+dx
+        x = self.x+dx
         if self.minX <= x <= self.maxX:
             self.rect.x = x
-            self.scrollable.scroll(dx=dx*1.6)
+            self.scrollable.scroll(dx=dx)
         
 class CursorV(_baseCursor):
     def __init__(self,parent,scrollable,x,y,h,w=1/2*C):
@@ -292,11 +298,11 @@ class _btnVer(_baseBtn):
     
     def serPresionado(self):
         super().serPresionado()
-        dy = self.parent.cursor.velocidad
+        dy = self.parent.velocidad
         if self.orientacion == 'arriba':
-            self.parent.cursor.mover(-dy)
+            self.parent.parent.scroll(-dy)
         elif self.orientacion == 'abajo':
-            self.parent.cursor.mover(+dy)
+            self.parent.parent.scroll(+dy)
 
 class _btnHor(_baseBtn):
     def __init__(self,parent,x,orientacion):
@@ -318,9 +324,9 @@ class _btnHor(_baseBtn):
     
     def serPresionado(self):
         super().serPresionado()
-        dx = self.parent.cursor.velocidad
+        dx = self.parent.velocidad
         if self.orientacion == 'izquierda':
-            self.parent.cursor.mover(-dx)
+            self.parent.parent.scroll(-dx)
         elif self.orientacion == 'derecha':
-            self.parent.cursor.mover(+dx)
+            self.parent.parent.scroll(+dx)
 

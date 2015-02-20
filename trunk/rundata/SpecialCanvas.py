@@ -141,7 +141,7 @@ class SpecialCanvas (Canvas):
             self.capas.empty()
             self.tiles.empty()
             self.clip.topleft = 0,0
-            self.actualizar_tamanio_fondo(15*C+1,15*C+1)
+            self.actualizar_tamanio_fondo(15*C,15*C)
             
         if Sys.IMG_FONDO == None:
             self.capas.empty()
