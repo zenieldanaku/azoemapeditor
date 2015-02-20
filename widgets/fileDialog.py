@@ -1,4 +1,4 @@
-from . import BaseWidget,Marco, Entry, Boton, DropDownList, subVentana
+from . import BaseWidget,Marco, Entry, Boton, BotonAceptarCancelar, DropDownList, subVentana
 from . import Label, ScrollV, ScrollH, Tree, BaseOpcion, ToolTip
 from pygame import Rect, font, key, KMOD_LCTRL, KMOD_RCTRL
 from pygame.sprite import LayeredDirty
@@ -37,7 +37,7 @@ class FileDiag(subVentana):
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,11*C+16,'')
         self.BtnAccion = Boton(self,x+14*C-8,y+8*C+24,'Accion',self.ejecutar_comando,comando['scr'],**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
         self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,11*C+16,filetypes)
-        self.BtnCancelar = Boton(self,x+14*C-8,y+9*C+20,'Cancelar',lambda:EventHandler.delWidget(self),'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        self.BtnCancelar = BotonAceptarCancelar(self,x+14*C-8,y+9*C+20,False,lambda:EventHandler.delWidget(self))
         self.lblNombre = Label(self,'Nombre',x+4,y+9*C-7, texto = 'Nombre:',**{'fontType':'Tahoma','fontSize':13})
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+19,texto = "Tipo:",**{'fontType':'Tahoma','fontSize':13})
         

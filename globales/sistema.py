@@ -31,11 +31,11 @@ class Sistema:
     DiagBox = None
     DiagMODE = False
     
-    @staticmethod
-    def init():
-        Sistema.iconos = Sistema.cargar_iconos()
-        Sistema.capa_actual = LAYER_FONDO
-        Sistema.Portapapeles = Portapapeles()
+    @classmethod
+    def init(cls):
+        cls.iconos = cls.cargar_iconos()
+        cls.capa_actual = LAYER_FONDO
+        cls.Portapapeles = Portapapeles()
     
     @staticmethod
     def cargar_iconos():
@@ -55,8 +55,8 @@ class Sistema:
             if hasattr(item,'serDeshabilitado'):
                 item.serDeshabilitado()
 
-    @staticmethod
-    def setRutaFondo(ruta):
+    @classmethod
+    def setRutaFondo(cls,ruta):
         try:
             spr = DirtySprite()  
             spr.image = Resources.cargar_imagen(ruta)
@@ -68,66 +68,67 @@ class Sistema:
             spr._layer = LAYER_FONDO
             spr.dirty = 2
             
-            Sistema.IMG_FONDO = spr
-            Sistema.PROYECTO.script["fondo"] = ruta
-            Sistema.capa_actual = LAYER_FONDO
-            Sistema.estado = ''
+            cls.IMG_FONDO = spr
+            cls.PROYECTO.script["fondo"] = ruta
+            cls.capa_actual = LAYER_FONDO
+            cls.estado = ''
         except:
-            Sistema.estado = 'No se ha selecionado una imagen válida'
+            cls.estado = 'No se ha selecionado una imagen válida'
     
-    @staticmethod
-    def GuardarMapaDeColisiones(ruta):
+    @classmethod
+    def GuardarMapaDeColisiones(cls,ruta):
         widget = EventHandler.getWidget('Grilla.Canvas')
         imagen = widget.render()
         Resources.guardar_imagen(imagen,ruta)
-        Sistema.estado = 'Imagen '+ruta+' guardada exitosamente'
+        cls.estado = 'Imagen '+ruta+' guardada exitosamente'
     
-    @staticmethod
-    def addItem(nombre,ruta,grupo,code):
-        root = Sistema.PROYECTO.script[grupo]
+    @classmethod
+    def addItem(cls,nombre,ruta,grupo,code):
+        root = cls.PROYECTO.script[grupo]
         if nombre not in root:
             root[nombre] = [[]]
             index = 0
-            Sistema.addRef(nombre,ruta,code)
+            cls.addRef(nombre,ruta,code)
         else:
-            if Sistema.PROYECTO.script['refs'][nombre]['code'] == code:
+            if cls.PROYECTO.script['refs'][nombre]['code'] == code:
                 root[nombre].append([])
                 index = len(root[nombre])-1
             else:
-                nombre+='_'+str(len(Sistema.PROYECTO.script['refs']))
-                index = Sistema.addItem(nombre,ruta,grupo,code)
+                nombre+='_'+str(len(cls.PROYECTO.script['refs']))
+                index = cls.addItem(nombre,ruta,grupo,code)
                 
         return index
     
-    @staticmethod
-    def updateItemPos(nombre,grupo,index,pos,layer=0,rot=0):
+    @classmethod
+    def updateItemPos(cls,nombre,grupo,index,pos,layer=0,rot=0):
         x,y = pos
-        Sistema.PROYECTO.script[grupo][nombre][index] = x,y,layer,rot
+        cls.PROYECTO.script[grupo][nombre][index] = x,y,layer,rot
     
-    @staticmethod
-    def addRef(nombre,ruta,code):
+    @classmethod
+    def addRef(cls,nombre,ruta,code):
         #chapuza: nombre deberia ser distinto de filename.
-        if nombre not in Sistema.PROYECTO.script['refs']:
-            Sistema.PROYECTO.script['refs'][nombre] = {'ruta':ruta,'code':code}
+        if nombre not in cls.PROYECTO.script['refs']:
+            cls.PROYECTO.script['refs'][nombre] = {'ruta':ruta,'code':code}
             
-    @staticmethod
-    def nuevoProyecto(data):
-        Sistema.cerrarProyecto()
-        Sistema.referencias.update(data)
-        Sistema.HabilitarTodo = True
-        Sistema.PROYECTO = Proyecto(data)
+    @classmethod
+    def nuevoProyecto(cls,data):
+        cls.cerrarProyecto()
+        cls.referencias.update(data)
+        cls.HabilitarTodo = True
+        cls.PROYECTO = Proyecto(data)
     
-    def abrirProyecto(ruta):
+    @classmethod
+    def abrirProyecto(cls,ruta):
         data = Resources.abrir_json(ruta)
-        Sistema.PROYECTO = Proyecto(data)
+        cls.PROYECTO = Proyecto(data)
         
         for key in data:
-            Sistema.PROYECTO[key] = data[key]
-            Sistema.ruta = data[key]
+            cls.PROYECTO[key] = data[key]
+            cls.ruta = data[key]
             if key == 'fondo':
                 if data[key] != "":
-                    Sistema.cargar_imagen(LAYER_FONDO)
-                    Sistema.capa_actual = LAYER_FONDO
+                    cls.cargar_imagen(LAYER_FONDO)
+                    cls.capa_actual = LAYER_FONDO
             #elif key == 'colisiones':
             #    if ar[key] != "":
             #        Sistema.cargar_imagen(LAYER_COLISIONES)
@@ -162,83 +163,84 @@ class Sistema:
                                      "index":idx,"colisiones":colision,'rot':rot}
                             widget.addTile(datos)
             elif key == 'referencias':
-                Sistema.referencias = data[key]
-        Sistema.Guardado = ruta
-        Sistema.HabilitarTodo = True
+                cls.referencias = data[key]
+        cls.Guardado = ruta
+        cls.HabilitarTodo = True
     
-    def guardarProyecto(ruta):
+    @classmethod
+    def guardarProyecto(cls,ruta):
         try:
-            data = Sistema.PROYECTO.guardar()
+            data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta,data,False)
-            Sistema.estado = "Proyecto '"+ruta+"' guardado."
-            Sistema.Guardado = ruta
+            cls.estado = "Proyecto '"+ruta+"' guardado."
+            cls.Guardado = ruta
         except: 
-            Sistema.estado ='Error: Es necesario cargar un mapa.'
+            cls.estado ='Error: Es necesario cargar un mapa.'
     
-    @staticmethod
-    def cerrarProyecto():
-        Sistema.PROYECTO = None
-        Sistema.IMG_FONDO = None
-        Sistema.HabilitarTodo = False
+    @classmethod
+    def cerrarProyecto(cls):
+        cls.PROYECTO = None
+        cls.IMG_FONDO = None
+        cls.HabilitarTodo = False
         EventHandler.contents.update()
     
-    @staticmethod
-    def abrirMapa(ruta):
+    @classmethod
+    def abrirMapa(cls,ruta):
         try:
             data = Resources.abrir_json(ruta)
-            Sistema.MAPA = Mapa()
-            Sistema.MAPA.cargar(data)
+            cls.MAPA = Mapa()
+            cls.MAPA.cargar(data)
         except:
-            Sistema.estado = 'Error: El archivo no existe.'
+            cls.estado = 'Error: El archivo no existe.'
     
-    @staticmethod
-    def exportarMapa(ruta):
+    @classmethod
+    def exportarMapa(cls,ruta):
         try:
-            data = Sistema.PROYECTO.guardar()
+            data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta,data)
-            Sistema.estado = "Mapa '"+ruta+"' guardado."
-            Sistema.Guardado = ruta
+            cls.estado = "Mapa '"+ruta+"' guardado."
+            cls.Guardado = ruta
         except: 
-            Sistema.estado ='Error: Es necesario cargar un mapa.'
+            cls.estado ='Error: Es necesario cargar un mapa.'
     
     @staticmethod
     def salir():
         py_quit()
         sys_exit()
     
-    @staticmethod
-    def cortar():
-        elemento = Sistema.selected
+    @classmethod
+    def cortar(cls):
+        elemento = cls.selected
         if elemento != None:
             parent = EventHandler.getWidget(elemento.parent)
-            Sistema.Portapapeles.cortar(elemento)
+            cls.Portapapeles.cortar(elemento)
             parent.tiles.remove(elemento)
         
-    @staticmethod
-    def copiar():
-        elemento = Sistema.selected
+    @classmethod
+    def copiar(cls):
+        elemento = cls.selected
         if elemento != None:
-            Sistema.Portapapeles.copiar(elemento.copiar())
+            cls.Portapapeles.copiar(elemento.copiar())
         
-    @staticmethod
-    def pegar():
+    @classmethod
+    def pegar(cls):
         widget = EventHandler.getWidget('Grilla.Canvas')
-        Sistema.Portapapeles.pegar(widget)
+        cls.Portapapeles.pegar(widget)
     
-    @staticmethod
-    def update():
+    @classmethod
+    def update(cls):
         key = EventHandler.key
-        Sistema.KeyCombinations.clear()
+        cls.KeyCombinations.clear()
         
         if key != None:
             if EventHandler.control:
-                Sistema.KeyCombinations.append('Ctrl')
+                cls.KeyCombinations.append('Ctrl')
             if EventHandler.alt:
-                Sistema.KeyCombinations.append('Alt')
-            Sistema.KeyCombinations.append(key.upper())
+                cls.KeyCombinations.append('Alt')
+            cls.KeyCombinations.append(key.upper())
         
-        if Sistema.KeyCombinations != []:
-            combination = '+'.join(Sistema.KeyCombinations)
+        if cls.KeyCombinations != []:
+            combination = '+'.join(cls.KeyCombinations)
             for widget in EventHandler.contents:
                 if type(widget.KeyCombination) == str:
                     if combination == widget.KeyCombination:
@@ -246,13 +248,19 @@ class Sistema:
                 else:
                     widget.KeyCombination(combination)
         
-        if Sistema.DiagBox != None:
-            if Sistema.DiagMODE == False:
+        if cls.DiagBox != None:
+            if cls.DiagMODE == False:
                 for widget in EventHandler.contents:
                     if hasattr(widget,'parent'):
-                        if widget != Sistema.DiagBox and widget.parent != Sistema.DiagBox:
+                        if widget != cls.DiagBox and widget.parent != cls.DiagBox:
                             widget.enabled = False
-                Sistema.DiagMODE = True
+                cls.DiagMODE = True
             else:
-                if Sistema.DiagBox.update():
-                    Sistema.DiagBox = None
+                if cls.DiagBox.update():
+                    cls.DiagBox = None
+                    for widget in EventHandler.contents:
+                        if hasattr(widget,'parent'):
+                            if widget != cls.DiagBox and widget.parent != cls.DiagBox:
+                                widget.enabled = True
+                    cls.DiagMODE = False
+                    

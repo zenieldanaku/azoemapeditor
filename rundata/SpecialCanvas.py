@@ -88,7 +88,7 @@ class SpecialCanvas (Canvas):
         pos = mouse.get_pos()
         rect = datos['rect']
         if self.rect.collidepoint(pos):
-            rect.center = self.getRelMousePos()
+            rect.center = self.getRelMousePos(*rect.center)
         else:
             rect.center = self.rect.center
         z = datos['pos'][2]

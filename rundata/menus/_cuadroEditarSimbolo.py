@@ -1,6 +1,6 @@
 from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Rect,Surface,draw, mouse, mask, SRCALPHA, PixelArray, K_RCTRL,K_LCTRL, K_RSHIFT, K_LSHIFT
-from widgets import subVentana, Marco, Boton, Label
+from widgets import subVentana, Marco, Boton, BotonAceptarCancelar, Label
 from globales import Sistema as Sys, C, EventHandler, serialize, encode, comprimir
 
 class EditarSimbolo(subVentana):
@@ -58,8 +58,8 @@ class EditarSimbolo(subVentana):
         self.btnBrocha = Boton(self,x+w-C,y+5*C-14,'AlternarBrocha',self.alternar_brocha,'Br','Alterna entre el color sólido y el transparente')
         self.btnCrop = Boton(self,x+w-C,y+6*C-14,'VerCropArea',self.alternar_crop,'Cr','Muestra u oculta el area de corte')
         
-        self.btnAceptar = Boton(self,x+w-C*4-16,y+h-28,'Aceptar',self.aceptar,'Aceptar',tip='',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
-        self.btnCancelar = Boton(self,x+w-C*2-10,y+h-28,'Cancelar',lambda:EventHandler.delWidget(self),'Cancelar',tip='',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        self.btnAceptar = BotonAceptarCancelar(self,x+w-C*4-16,y+h-28,True,self.aceptar)
+        self.btnCancelar = BotonAceptarCancelar(self,x+w-C*2-10,y+h-28,False,lambda:EventHandler.delWidget(self))
         self.lblBrocha = Label(self,'TamanioDeBrocha',x+3,y+h-28,'Brocha: '+str(self.brocha)+' '+self.modo)
        
         self.agregar(self.btnMas)

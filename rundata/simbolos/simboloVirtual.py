@@ -5,6 +5,7 @@ from widgets import Alerta
 
 class SimboloVirtual(SimboloBase):
     copiar = False
+    x,y = 0,0
     def __init__(self,parent,imagen,pos,data,**opciones):
         x,y,z = pos
         rot = 0
@@ -31,13 +32,18 @@ class SimboloVirtual(SimboloBase):
         
     def onMouseUp(self,button):
         self.pressed = False
+        self.x,self.y = mouse.get_pos()
         if self.datos['colisiones'] == None:
-            Sys.DiagBox = Alerta('El símbolo '+self.datos['nombre']+' carece de un mapa de colisiones. ¿Desea continuar de todos modos?')
+            texto = 'El símbolo '+self.datos['nombre']+' carece de un mapa de colisiones.\n¿Desea continuar de todos modos?'
+            copiar = self.copy
+            eliminar = lambda:EventHandler.delWidget(self)
+            
+            Sys.DiagBox = Alerta(texto, copiar,eliminar)
         else:
-            self.copy()
+            self.copiar = True
             
     def copy(self):
-        x,y = mouse.get_pos()
+        x,y = self.x,self.y
         widget = EventHandler.getWidget('Grilla.Canvas')
         if widget.rect.collidepoint((x,y)):
             self.datos['rect'] = self.rect.copy()
@@ -49,4 +55,4 @@ class SimboloVirtual(SimboloBase):
             self.dirty = 1
         elif self.copiar:
             self.copy()
-            
+    
