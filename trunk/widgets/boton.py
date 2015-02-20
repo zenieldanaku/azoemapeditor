@@ -7,7 +7,7 @@ import os.path
 class Boton(BaseWidget):
     comando = None
     presionado = False
-    def __init__(self,parent,x,y,nombre,cmd,scr,tip='', **opciones):
+    def __init__(self,parent,x,y,nombre,cmd,scr,tip=None,**opciones):
         opciones = self._opcionesPorDefault(opciones)
         super().__init__(**opciones)
         self.x,self.y = x,y
@@ -15,7 +15,10 @@ class Boton(BaseWidget):
         self.parent = parent
         self.nombre = self.parent.nombre+'.Boton.'+nombre
         self.comando = cmd
-        self.tooltip = ToolTip(self,tip,self.x,self.y)
+        if tip is not None:
+            self.tooltip = ToolTip(self,tip,self.x,self.y)
+        else:
+            self.tooltip = None
         
         self._crear_imagenes(scr)
         
@@ -137,7 +140,7 @@ class Boton(BaseWidget):
             self.comando()
     
     def update(self):
-        if self.enabled:
+        if self.enabled and self.tooltip is not None:
             if self.hasMouseOver:
                 self.tooltip.show()
             else:
@@ -196,3 +199,14 @@ class BotonToggle(Boton):
             self.img_dis_nT = self._crear(scr[2], colorDText, colorFondo,self.w,self.h,fuente)
         
         self.toggle()
+
+class BotonAceptarCancelar(Boton):
+    def __init__(self,parent,x,y,control,cmd,scr = '',**opciones):
+        opciones.update({'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        if control:
+            nombre = 'Aceptar'
+            scr = 'Aceptar'
+        else:
+            nombre = 'Cancelar'
+            scr = 'Cancelar'
+        super().__init__(parent,x,y,nombre,cmd,scr,**opciones)

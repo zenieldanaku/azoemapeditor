@@ -114,8 +114,12 @@ class Canvas(BaseWidget):
                 if self.SeleccionMultiple:
                     self.mover_tiles(tile.dx,tile.dy)
     
-    def getRelMousePos(self):
-        abs_x,abs_y = mouse.get_pos()
+    def getRelMousePos(self,absx=None,absy=None):
+        if absx is None and absy is None:
+            abs_x,abs_y = mouse.get_pos()
+        else:
+            abs_x = absx
+            abs_y = absy
         off_x,off_y = self.image.get_offset()
         dx = abs_x+off_x-self.x
         dy = abs_y+off_y-self.y

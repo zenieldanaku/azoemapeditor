@@ -1,5 +1,5 @@
 from globales import Sistema as Sys, C, EventHandler
-from widgets import Menu, FileDiag, subVentana, Label, Entry, Boton
+from widgets import Menu, FileDiag, subVentana, Label, Entry, BotonAceptarCancelar
 
 class Menu_Mapa (Menu):
     def  __init__(self,x,y,barra):
@@ -34,8 +34,8 @@ class CuadroMapa(subVentana):
         ops = {'fontType':'Tahoma','fontSize':12}
         dx,dy,dw = 210,23,214
         
-        self.btnAceptar = Boton(self,x+w-142,y+h-26,'Aceptar',self.Aceptar,'Aceptar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
-        self.btnCancelar = Boton(self,x+w-72,y+h-26,'Cancelar',self.cerrar,'Cancelar',**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        self.btnAceptar = BotonAceptarCancelar(self,x+w-142,y+h-26,True,self.Aceptar)
+        self.btnCancelar = BotonAceptarCancelar(self,x+w-72,y+h-26,False,self.cerrar)
         items = {}
         lista = [['Fondo','Carpeta de imágenes fondo:','maps/fondos/'],
                 ['Colisiones','Carpeta de mapas de colisiones:','maps/colisiones/'],

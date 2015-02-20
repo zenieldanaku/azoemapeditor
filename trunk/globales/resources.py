@@ -24,9 +24,9 @@ class Resources:
     @staticmethod
     def guardar_imagen(imagen,ruta): image.save(imagen,ruta)
     
-    @staticmethod
-    def split_spritesheet(ruta,w=32,h=32):
-        spritesheet = Resources.cargar_imagen(ruta)
+    @classmethod
+    def split_spritesheet(cls,ruta,w=32,h=32):
+        spritesheet = cls.cargar_imagen(ruta)
         ancho = spritesheet.get_width()
         alto = spritesheet.get_height()
         tamanio = w,h
@@ -37,9 +37,9 @@ class Resources:
                 sprites.append(spritesheet.subsurface(rect))
         return sprites
     
-    @staticmethod
-    def cargar_iconos(nombres,ruta,w,h):
-        iconos = Resources.split_spritesheet(ruta,w,h)
+    @classmethod
+    def cargar_iconos(cls,nombres,ruta,w,h):
+        iconos = cls.split_spritesheet(ruta,w,h)
         d,i={},-1
         for y in range(4):
             for x in range(6):
@@ -48,7 +48,3 @@ class Resources:
                     d[nombres[i]] = iconos[i]
         
         return d
-        
-
-    
-    
