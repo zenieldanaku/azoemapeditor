@@ -91,18 +91,26 @@ class _Cascada (BaseWidget):
         self.x,self.y = x,y
         _fuente = font.SysFont('Tahoma',11)
         self.w = 0
+        key_x = 0
+        
         for n in range(len(opciones)):
-            w = 19+_fuente.size(opciones[n]['nom'])[0]+15
+            w = 19+_fuente.size(opciones[n]['nom'])[0] #ancho(icono)+ancho(nombre)
+            if 'win' in opciones[n]:
+                opciones[n]['scr'] = '...'
+                w += _fuente.size('...')[0]
             if 'key' in opciones[n]:
-                w += _fuente.size(opciones[n]['key'])[0]+15
+                ancho = _fuente.size(opciones[n]['key'])[0]
+                w += ancho+30
+                if ancho > key_x:
+                    key_x = ancho+70
             if 'csc' in opciones[n]:
                 opciones[n]['scr'] = 'flecha'
-                w += 80
-            elif 'win' in opciones[n]:
-                opciones[n]['scr'] = '...'
-            else:
+                w += 30
+            if 'win' not in opciones[n] and 'csc' not in opciones[n]:
                 opciones[n]['scr'] = None
+            
             if w > self.w: self.w = w
+            
         h = 19
         ajuste = 0
         self.h = h*len(opciones)+2
@@ -110,9 +118,8 @@ class _Cascada (BaseWidget):
         for n in range(len(opciones)):
             _nom = opciones[n]['nom']
             if _nom != 'barra':
-                opcion = OpcionCascada(self,opciones[n],1,n*h+ajuste+1,self.w-22,h)
+                opcion = OpcionCascada(self,opciones[n],1,n*h+ajuste+1,self.w,key_x)
                 _h = opcion.rect.bottom
-                w = opcion.image.get_size()[0]
                 if 'csc' in opciones[n]:
                     x = self.x+self.w-3
                     y = (n+1)*h+ajuste-1
@@ -225,7 +232,7 @@ class OpcionCascada(BaseWidget):
     command = None
     setFocus_onIn = True
     
-    def __init__(self,parent,data,x,y,w,h,**opciones):
+    def __init__(self,parent,data,x,y,max_w,key_x,**opciones):
         super().__init__(**opciones)
         if 'Fuente' not in self.opciones:
             self.opciones['fontType'] = 'Tahoma'
@@ -240,23 +247,22 @@ class OpcionCascada(BaseWidget):
         if 'icon' in data: icon = data['icon']
         if 'key' in data:  rapido = data['key']
         self.KeyCombination = rapido
-        self.img_uns = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),w,h,icon,rapido)
-        self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),w,h,icon,rapido)
-        self.img_des = self.crear(data,fuente,color('sysDisText'),color('sysMenBack'),w,h,icon,rapido)
+        self.img_uns = self.crear(data,fuente,color('sysElmText'),color('sysMenBack'),max_w,key_x,icon,rapido)
+        self.img_sel = self.crear(data,fuente,color('sysElmText'),color('sysBoxSelBack'),max_w,key_x,icon,rapido)
+        self.img_des = self.crear(data,fuente,color('sysDisText'),color('sysMenBack'),max_w,key_x,icon,rapido)
         self.image = self.img_uns
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.dirty = 1
         
     @staticmethod
-    def crear(data,fuente,fgcolor,bgcolor,w,h,icono,rapido):
-        imagen = Surface((w+25,h))
-        imagen.fill(bgcolor)
-        if icono:
-            imagen.blit(icono,(0,0))
+    def crear(data,fuente,fgcolor,bgcolor,w,key_x,icono,rapido):
+        h = fuente.get_height()+3
+
         if rapido:
             abrv = fuente.render(rapido,True,fgcolor,bgcolor)
             
+        f = False
         nombre = data['nom']
         if data['scr'] == '...':
             nombre += data['scr']
@@ -264,12 +270,25 @@ class OpcionCascada(BaseWidget):
             flecha = Surface((9,9))
             flecha.fill(bgcolor)
             draw.polygon(flecha, fgcolor, [[1,1],[1,8],[6,4]])
-            imagen.blit(flecha,(w+10,4))
-        
+            f = True
+            
         render = fuente.render(nombre,True,fgcolor,bgcolor)
-        imagen.blit(render,(4+19,2))
+        
+        
+        imagen = Surface((w,h))
+        imagen.fill(bgcolor)
+        rect = imagen.get_rect()
+        
+        x = 19
+        if icono:
+            x = imagen.blit(icono,(0,0)).w 
+        if x:
+            imagen.blit(render,(x,2)).w+x
+        if f:
+            imagen.blit(flecha,(w-10,4))
+        
         if rapido:
-            imagen.blit(abrv,(85,2))
+            imagen.blit(abrv,(key_x,2))
         return imagen
     
     def onMouseDown(self,button):
