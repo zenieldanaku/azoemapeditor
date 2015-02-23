@@ -21,6 +21,8 @@ class FileDiag(subVentana):
             self.nombre = 'Abrir'
         elif self.TipoComando == 'G':
             self.nombre = 'Guardar'
+        elif self.TipoComando == 'Gc':
+            self.nombre = 'Guardar como...'
         super().__init__(16*C,10*C+18,self.nombre,**opciones)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
@@ -68,7 +70,7 @@ class FileDiag(subVentana):
                 ruta = os.path.join(self.carpetaActual,self.UltimaSeleccion)
                 self.comando(ruta)
                 
-        elif self.TipoComando == 'G':
+        elif self.TipoComando == 'G' or self.TipoComando == 'Gc':
             if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo+self.tipoSeleccinado)
             else:

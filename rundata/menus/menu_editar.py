@@ -16,7 +16,7 @@ class Menu_Editar(Menu):
             {"nom":'barra'},
             {"nom":'Entradas',"cmd":self.Entrada},
             {"nom":'Simbolo','win':EditarSimbolo},
-            #{'nom':'Preferencias','win':cuadroPreferencias}
+            {'nom':'Preferencias','win':lambda:print('preferencias'),'key':'Ctrl+P'}
             ]
         super().__init__('Editar',opciones,x,y)
         
