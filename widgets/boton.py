@@ -1,5 +1,5 @@
 from pygame import font,Rect,draw,Surface, Color 
-from globales import Resources as r, color
+from globales import Resources as r, color, EventHandler
 from libs.textrect import render_textrect
 from . import BaseWidget, ToolTip
 import os.path
@@ -194,14 +194,23 @@ class BotonToggle(Boton):
         self.toggle()
 
 class BotonAceptarCancelar(Boton):
-    def __init__(self,parent,x,y,control,cmd,scr = '',**opciones):
+    def __init__(self,parent,x,y,cmd=None,scr = '',**opciones):
         opciones.update({'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
-        if control:
-            nombre = 'Aceptar'
-            scr = 'Aceptar'
+        
+        if cmd is None:
+            if hasattr(parent,'cerrar'):
+                nombre = 'Cancelar'
+                scr = 'Cancelar'
+                cmd = lambda:EventHandler.delWidget(parent)
+            else:
+                raise TypeError
         else:
-            nombre = 'Cancelar'
-            scr = 'Cancelar'
+            if scr == '':
+                nombre = 'Aceptar'
+                scr = 'Aceptar'
+            elif type(scr) is str:
+                nombre = scr.title()
+            
         super().__init__(parent,x,y,nombre,cmd,scr,**opciones)
 
 class BotonCerrar(Boton):

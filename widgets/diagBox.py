@@ -10,7 +10,7 @@ class _DiagBox(subVentana):
         
 class Alerta (_DiagBox):
     layer = 40000
-    cerrar = False
+    _cerrar = False
     accion_true = None
     accion_false = None
     def __init__(self,texto,accion_si,accion_no,**opciones):
@@ -25,22 +25,22 @@ class Alerta (_DiagBox):
         render = render_textrect(texto,fuente,self.area,(0,0,0),color('sysElmFace'))
         self.image.blit(render,(3,24))
         
-        self.btnTrue = BotonAceptarCancelar(self,x+w-(62*2)-12,y+h+1,True,self.aceptar)
-        self.btnFalse = BotonAceptarCancelar(self,x+w-62-4,y+h+1,False,self.cancelar)
+        self.btnTrue = BotonAceptarCancelar(self,x+w-(62*2)-12,y+h+1,self.aceptar)
+        self.btnFalse = BotonAceptarCancelar(self,x+w-62-4,y+h+1,self.cancelar,'Cancelar')
         self.agregar(self.btnTrue)
         self.agregar(self.btnFalse)
     
     def aceptar(self):
         self.accion_true()
-        self.cerrar = True
+        self._cerrar = True
     
     def cancelar(self):
         self.accion_false()
-        self.cerrar = True
+        self._cerrar = True
         
     def update(self):
-        if self.cerrar:
-            EventHandler.delWidget(self)
+        if self._cerrar:
+            self.cerrar()
             return True
         else:
             return False

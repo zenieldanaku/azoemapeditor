@@ -3,7 +3,7 @@ from . import Label, ScrollV, ScrollH, Tree, BaseOpcion, ToolTip
 from pygame import Rect, font, key, KMOD_LCTRL, KMOD_RCTRL
 from pygame.sprite import LayeredDirty
 from libs.textrect import render_textrect
-from globales import EventHandler, color, C
+from globales import color, C
 import os, os.path
 
 class FileDiag(subVentana):
@@ -37,9 +37,9 @@ class FileDiag(subVentana):
         self.carpetas = arbolCarpetas(self,x+2,y+19,w//2-2,8*C,carpeta_actual)
         self.archivos = listaDeArchivos(self,x+w//2,y+19,w//2-2,8*C,self.SeleccionMultiple)
         self.entryNombre = Entry(self,'IngresarRuta',x+2*C+3,y+8*C+23,11*C+16,'')
-        self.BtnAccion = Boton(self,x+14*C-8,y+8*C+24,'Accion',self.ejecutar_comando,comando['scr'],**{'fontType':'Tahoma','fontSize':14,'w':68,'h':20})
+        self.BtnAccion = BotonAceptarCancelar(self,x+14*C-8,y+8*C+24,self.ejecutar_comando,comando['scr'])
         self.tipos = DropDownList(self,'TipoDeArchivo',x+2*C+3,y+9*C+19,11*C+16,filetypes)
-        self.BtnCancelar = BotonAceptarCancelar(self,x+14*C-8,y+9*C+20,False,lambda:EventHandler.delWidget(self))
+        self.BtnCancelar = BotonAceptarCancelar(self,x+14*C-8,y+9*C+20)
         self.lblNombre = Label(self,'Nombre',x+4,y+9*C-7, texto = 'Nombre:',**{'fontType':'Tahoma','fontSize':13})
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+19,texto = "Tipo:",**{'fontType':'Tahoma','fontSize':13})
         
@@ -77,7 +77,7 @@ class FileDiag(subVentana):
                 ruta = os.path.join(self.carpetaActual,self.nombredeArchivo)
             self.comando(ruta)
             
-        EventHandler.delWidget(self)
+        self.cerrar()
     
     def update(self):
         tipo = self.tipos.ItemActual.lstrip('*')

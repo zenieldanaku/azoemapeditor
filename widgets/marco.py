@@ -45,6 +45,9 @@ class Marco(BaseWidget):
         for objeto in self.contenido:
             self.quitar(objeto)
     
+    def cerrar(self):
+        EventHandler.delWidget(self)
+    
     def devolver(self,objeto):
         if objeto in self.contenido:
             raise IndexError('El objeto '+objeto.nombre+' no pertenece a este marco')

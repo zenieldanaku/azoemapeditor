@@ -5,36 +5,34 @@ from pygame.sprite import LayeredDirty, DirtySprite
 from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES
 from .simbolos import SimboloCNVS
 from widgets import Canvas, ContextMenu
+from .menus._cuadrosEntradas import UnaEntrada
 
 class SpecialCanvas (Canvas):
     capas = None
-    guias = None
     tiles = None
-    
+    px,py = 0,0
     def __init__(self,parent,x,y,w,h,clip,**opciones):
         super().__init__(parent,x,y,w,h,clip,**opciones)
         self.capas = LayeredDirty()
-        self.guias = LayeredDirty()
         self.tiles = LayeredDirty()
         comandos = [
+            {'nom':'Entrada','cmd':self.colocar_entrada},
             {'nom':'Pegar','cmd':lambda:Sys.pegar(),'icon':Sys.iconos['pegar']},
         ]
         self.context = ContextMenu(self,comandos)
-    
-    def onMouseOver (self):
-        over = self.detect()
         
-        for item in over:
-            if item in self.tiles:#is tile
-                if item.isMoving:
-                    if self.SeleccionMultiple:
-                        self.mover_tiles(item.dx,item.dy)
-            elif item in self.guias: #is guide
-                print(item)
+    def onMouseOver (self):
+        x,y = self.getRelMousePos()
+        for tile in self.tiles.get_sprites_at((x,y)):
+            if tile.isMoving:
+                if self.SeleccionMultiple:
+                    self.mover_tiles(tile.dx,tile.dy)
     
     def onMouseDown(self,button):
         if button == 1 or button == 3:
             super().onMouseDown(button)
+            if button == 3:
+               self.px,self.py = self.getRelMousePos()
 
         elif self.ScrollY.enabled:
             if button == 5:
@@ -63,6 +61,9 @@ class SpecialCanvas (Canvas):
         for tile in self.tiles:
             if tile.selected:
                 tile.onKeyUp(event.key)
+    
+    def colocar_entrada(self):
+        UnaEntrada(self.px,self.py)
     
     def actualizar_tamanio_fondo (self,w,h):
         self.FONDO = transform.scale(self.FONDO,(w,h))
@@ -147,11 +148,13 @@ class SpecialCanvas (Canvas):
     
     def habilitar(self,control):
         if not control:
-            self.guias.empty()
             self.capas.empty()
             self.tiles.empty()
             self.clip.topleft = 0,0
             self.actualizar_tamanio_fondo(15*C,15*C)
+            self.enabled = False
+        else:
+            self.enabled = True
         
     def update(self):
         super().update()
@@ -172,9 +175,7 @@ class SpecialCanvas (Canvas):
             self.capas.draw(self.FONDO)
         
         self.tiles.update()
-        self.guias.update()
         self.tiles.draw(self.FONDO)
-        self.guias.draw(self.FONDO)
         if self.eleccion.size != (0,0):
             draw.rect(self.FONDO,(0,255,255),self.eleccion,1)
         for tile in self.tiles:
