@@ -1,40 +1,51 @@
 from pygame import Rect, font, mouse
 from libs.textrect import render_textrect
-from . import Marco, Boton
+from . import Marco, BotonCerrar
 from globales import EventHandler, ANCHO, ALTO
 
 class subVentana(Marco):
     x,y,w,h = 0,0,0,0
     layer = 4
-    pressed = False
+    pressedTitle = False
     def __init__(self,w,h,nombre,titular=True,**opciones):
         _r = Rect(0,0,w,h)
         _r.center=Rect(0,0,ANCHO,ALTO).center
         x,y = _r.topleft
         super().__init__(x,y,w,h,**opciones)
+        self.px,self.py = self.rect.topleft
         if titular:
             self.titular(nombre)
-        self.btnCerrar = Boton(self,x+w-16,y+1,'Cerrar',
-                               lambda:EventHandler.delWidget(self),'X',
-                               **{'fontSize':12,'w':16,'h':18})
+        self.btnCerrar = BotonCerrar(self,x+w-18,y+3,13,15,'Cerrar',
+                                     lambda:EventHandler.delWidget(self))
         self.agregar(self.btnCerrar)
     
     def titular(self,texto):
         fuente = font.SysFont('verdana',12)
-        rect = Rect(2,2,self.w-4,fuente.get_height()+1)
+        rect = Rect(2,2,self.w-6,fuente.get_height()+1)
         render = render_textrect(texto,fuente,rect,(255,255,255),(0,0,0))
         self.image.blit(render,rect)
     
     def onMouseOver(self):
+        if self.pressedTitle:
+            abs_x,abs_y = mouse.get_pos()
+            new_x,new_y = abs_x-self.x,abs_y-self.y
+            
+            dx = new_x-self.px
+            dy = new_y-self.py
+            if dx or dy:
+                self.reubicar_en_ventana(dx,dy)
+    
+    def onMouseDown(self,button):
         x,y = mouse.get_pos()
         rect = Rect(self.x+2,self.y+2,self.w-4,17)
         if rect.collidepoint((x,y)):
-            if self.pressed:
-                print('ajá!')
-    
-    def onMouseDown(self,button): self.pressed = True
-    def onMouseUp(self,button):   self.pressed = False
+            self.pressedTitle = True
+            
+            self.px = x-self.x
+            self.py = y-self.y
+        
+    def onMouseUp(self,button):   self.pressedTitle = False
     
     def onMouseOut(self):
-        if not self.pressed:
+        if not self.pressedTitle:
             super().onMouseOut()

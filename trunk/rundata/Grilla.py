@@ -1,7 +1,7 @@
 from globales import Sistema as Sys, EventHandler, color, C, LAYER_COLISIONES,LAYER_FONDO
-from widgets import BaseWidget, ScrollH, ScrollV, Boton, BotonToggle, Marco, ToolTip
-from pygame.sprite import DirtySprite, LayeredDirty
-from pygame import Surface,Rect,draw,font,K_SPACE
+from widgets import BaseWidget, ScrollH, ScrollV, Boton, BotonToggle, Marco, ToolTip, BotonCerrar
+from pygame.sprite import LayeredDirty
+from pygame import Surface,Rect,draw,font,K_SPACE,transform,mouse
 from .SpecialCanvas import SpecialCanvas
 import os
 
@@ -26,7 +26,7 @@ class Grilla(Marco):
         
         self.BtnVerCapa = BotonToggle(self,19*C+6,23,'BtnVerCapa',self.cmdVerCapa,[i['ver_fondo'],i['ver_cls'],i['ver_dis']],"Alterna entre el mapa de colisiones y la imagen de fondo")
         self.BtnVerGr = BotonToggle(self,19*C+6,C+23,'BtnVerGr',self.cmdVerGr,[i['grilla'],i['grilla_tog'],i['grilla_dis']],"Muestra u oculta la grilla")
-        
+        self.BtnCerrarMapa = BotonCerrar(self,self.w+1,self.y,15,15,'BtnCerrarMapa',Sys.cerrarProyecto)
         self.canvas.ReglaX = ReglaH(self.canvas,self.x+15,self.y,15*C+1)
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,15*C+1)
         self.ReglaHandler = HandlerRegla(self.canvas,self.x,self.y)
@@ -34,12 +34,14 @@ class Grilla(Marco):
         self.agregar(self.canvas)
         self.agregar(self.canvas.ScrollX)
         self.agregar(self.canvas.ScrollY)
+        self.agregar(self.BtnCerrarMapa)
         self.agregar(self.BtnVerGr)
         self.agregar(self.BtnVerCapa)
         self.agregar(self.canvas.ReglaX)
         self.agregar(self.canvas.ReglaY)
         self.agregar(self.ReglaHandler)
         
+        self.habilitar(False)
     #Funciones de comando para los botones
     def cmdVerGr(self):
         if self.verGrilla:
@@ -57,18 +59,32 @@ class Grilla(Marco):
             Sys.capa_actual = LAYER_COLISIONES
         elif Sys.capa_actual == LAYER_COLISIONES:
             Sys.capa_actual = LAYER_FONDO
+    
+    def habilitar(self,control):
+        if control:
+            self.canvas.ScrollX.enabled = True
+            self.canvas.ScrollY.enabled = True
+            self.BtnVerCapa.serHabilitado()
+            self.BtnVerGr.serHabilitado()
+            self.canvas.ReglaX.enabled = True
+            self.canvas.ReglaY.enabled = True
+            self.ReglaHandler.enabled = True
+        else:
+            self.canvas.ScrollX.enabled = False
+            self.canvas.ScrollY.enabled = False
+            self.BtnVerCapa.serDeshabilitado()
+            self.BtnVerGr.serDeshabilitado()
+            self.canvas.ReglaX.enabled = False
+            self.canvas.ReglaY.enabled = False
+            self.ReglaHandler.enabled = False
         
     def update(self):
-        if Sys.HabilitarTodo:
-            if not self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = True
-            if not self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = True
-            if not self.BtnVerCapa.enabled: self.BtnVerCapa.serHabilitado()
-            if not self.BtnVerGr.enabled: self.BtnVerGr.serHabilitado()
+        if Sys.PROYECTO is None:
+            self.BtnCerrarMapa.serDeshabilitado()
         else:
-            if self.canvas.ScrollX.enabled: self.canvas.ScrollX.enabled = False
-            if self.canvas.ScrollY.enabled: self.canvas.ScrollY.enabled = False
-            if self.BtnVerCapa.enabled: self.BtnVerCapa.serDeshabilitado()
-            if self.BtnVerGr.enabled: self.BtnVerGr.serDeshabilitado()
+            if not self.BtnCerrarMapa.enabled:
+                self.BtnCerrarMapa.serHabilitado()
+                
         self.dirty = 1
         
 class _grilla(BaseWidget):
@@ -120,15 +136,7 @@ class BaseRegla(BaseWidget):
         self.x,self.y = x,y
         self.parent = parent
     
-    @staticmethod
-    def unaLinea(x,y,w,h):
-        img = Surface((w,h))
-        img.fill((120,255,255))
-        spr = DirtySprite()
-        spr.image = img
-        spr.rect = spr.image.get_rect(topleft=(x,y))
-        spr.dirty = 2
-        return spr
+
     
     def actualizar_tamanio(self,nuevotamanio):
         self.FONDO = self.crear(nuevotamanio)
@@ -138,13 +146,13 @@ class BaseRegla(BaseWidget):
     def onMouseDown(self,button):
         if button == 1:
             self.pressed = True
-            self.linea = self.unaLinea(*self.lin)
+            self.linea = LineaRegla(*self.lin)
             self.parent.guias.add(self.linea)
     
     def onMouseUp(self,button):
         if button == 1:
             self.pressed = False
-            self.parent.guias.add(self.linea)
+
 
     def onMouseOut(self):
         if not self.pressed:
@@ -281,14 +289,14 @@ class HandlerRegla(BaseWidget):
     def onMouseDown(self,button):
         if button == 1:
             self.pressed = True
-            self.lineaX = self.unaLinea(*self.linX)
-            self.lineaY = self.unaLinea(*self.linY)
+            self.lineaX = LineaRegla(*self.linX)
+            self.lineaY = LineaRegla(*self.linY)
             self.parent.guias.add(self.lineaX,self.lineaY)
     
     def onMouseUp(self,button):
         if button == 1:
             self.pressed = False
-            self.parent.guias.add(self.lineaX,self.lineaY)
+            #self.parent.guias.add(self.lineaX,self.lineaY)
     
     def onMouseIn(self):
         super().onMouseIn()
@@ -317,3 +325,22 @@ class HandlerRegla(BaseWidget):
         x,y = self.parent.getRelMousePos()
         self.lineaX.rect.x = x
         self.lineaY.rect.y = y
+
+class LineaRegla (BaseWidget):
+    def __init__(self,x,y,w,h):
+        super().__init__()
+        self.x,self.y,self.w,self.h = x,y,w,h
+        self.image = Surface((self.w,self.h))
+        self.image.fill((120,255,255))
+        self.rect = self.image.get_rect(topleft=(self.x,self.y))
+        
+    def __repr__(self):
+        join = ','.join([str(i) for i in [self.x,self.y,self.w,self.h]])
+        if self.w > self.h:
+            return 'linea H @'+join
+        else:
+            return 'linea Y @'+join
+
+    def update(self):
+        self.x,self.y,self.w,self.h = self.rect
+        self.dirty = 1

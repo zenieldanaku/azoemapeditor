@@ -68,5 +68,10 @@ class BaseWidget(DirtySprite):
     def update(self):
         self.dirty = 1
     
+    def reubicar_en_ventana(self,dx=0,dy=0):
+        self.rect.move_ip(dx,dy)
+        self.x += dx
+        self.y += dy
+            
     def __repr__(self):
         return self.nombre

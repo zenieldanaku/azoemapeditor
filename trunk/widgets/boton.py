@@ -52,7 +52,7 @@ class Boton(BaseWidget):
     
     @staticmethod
     def  _crear(scr, color_texto, color_fondo,w,h,fuente):
-        _rect = Rect(-1,-1,w,h)
+        _rect = Rect(0,0,w,h)
         if type (scr) == Surface:
             img_rect = scr.get_rect(center=_rect.center)
             render = Surface((_rect.w,_rect.h))
@@ -66,14 +66,7 @@ class Boton(BaseWidget):
                 _rect = Rect(-1,-1,w,h+1)
                 render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
                  
-        #elif type (scr) == Surface:
-        #    if scr.get_width() < w or scr.get_height() < h:
-        #        render = Surface((scr.get_width()+3,scr.get_height()+3))
-        #        render.fill(color_fondo)
-        #        render.blit(scr,(1,1))
-        #    else:
-        #        raise ValueError('la imagen scr es mayor que el tamaño especificado')
-            
+        
         return render
     
     def _crear_imagenes(self,scr):
@@ -114,7 +107,6 @@ class Boton(BaseWidget):
         if self.enabled:
             self.image = self.img_dis
             self.enabled = False
-            self.tooltip.hide()
     
     def serHabilitado(self):
         if not self.enabled:
@@ -145,6 +137,7 @@ class Boton(BaseWidget):
                 self.tooltip.show()
             else:
                 self.tooltip.hide()
+        self.dirty = 1
 
 class BotonToggle(Boton):
     toggled = False
@@ -210,3 +203,25 @@ class BotonAceptarCancelar(Boton):
             nombre = 'Cancelar'
             scr = 'Cancelar'
         super().__init__(parent,x,y,nombre,cmd,scr,**opciones)
+
+class BotonCerrar(Boton):
+    def __init__(self,parent,x,y,w,h,nombre,cmd,**opciones):
+        opciones.update({'w':w,'h':h})
+        
+        fg_uns = color('sysElmText')
+        fg_dis = color('sysDisText')
+        bg = color('sysElmFace')
+        
+        img1 = Surface((11,11))
+        img1.fill(bg)
+        
+        img2 = Surface((11,11))
+        img2.fill(bg)
+
+        draw.aaline(img2,fg_dis,[1,2],[9,8]) # \
+        draw.aaline(img2,fg_dis,[1,8],[9,2]) # /
+        
+        draw.aaline(img1,fg_uns,[1,2],[9,8]) # \
+        draw.aaline(img1,fg_uns,[1,8],[9,2]) # /
+        
+        super().__init__(parent,x,y,nombre,cmd,[img1,img2],**opciones)

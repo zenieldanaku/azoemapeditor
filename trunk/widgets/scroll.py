@@ -45,16 +45,16 @@ class _baseScroll(BaseWidget):
             item = self.get_component()
             if item != self:
                 item.onMouseDown(button)
-            else:
-                self.cursor.pressed = True
+            #else:
+            #    self.cursor.pressed = True
     
     def onMouseUp(self,button):
         if button == 1:
             item = self.get_component()
             if item != self:
                 item.onMouseUp(button)
-            else:
-                self.cursor.pressed = False
+            #else:
+            #    self.cursor.pressed = False
     
     def onMouseIn(self):
         super().onMouseIn()
@@ -300,9 +300,9 @@ class _btnVer(_baseBtn):
         super().serPresionado()
         dy = self.parent.velocidad
         if self.orientacion == 'arriba':
-            self.parent.parent.scroll(-dy)
+            self.parent.parent.scroll(0,-dy)
         elif self.orientacion == 'abajo':
-            self.parent.parent.scroll(+dy)
+            self.parent.parent.scroll(0,+dy)
 
 class _btnHor(_baseBtn):
     def __init__(self,parent,x,orientacion):
@@ -326,7 +326,7 @@ class _btnHor(_baseBtn):
         super().serPresionado()
         dx = self.parent.velocidad
         if self.orientacion == 'izquierda':
-            self.parent.parent.scroll(-dx)
+            self.parent.parent.scroll(-dx,0)
         elif self.orientacion == 'derecha':
-            self.parent.parent.scroll(+dx)
+            self.parent.parent.scroll(+dx,0)
 

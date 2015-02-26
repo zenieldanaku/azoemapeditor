@@ -7,7 +7,7 @@ from .eventhandler import EventHandler
 from .mapa import Mapa, Proyecto
 from .portapapeles import Portapapeles
 from .RLE import decode, descomprimir, deserialize
-from os import getcwd
+from os import getcwd, path
 
 class Sistema:
     MAPA = None
@@ -18,7 +18,6 @@ class Sistema:
     KeyCombinations = []
     IMG_FONDO = None
     capa_actual = None
-    HabilitarTodo = False
     Portapapeles = None
     selected = None
     preferencias = {}
@@ -43,18 +42,6 @@ class Sistema:
         ruta = getcwd()+'/iconos.png'
         return Resources.cargar_iconos(nombres,ruta,19,17)
     
-    @staticmethod
-    def habilitarItems(lista_de_items):
-        for item in lista_de_items:
-            if hasattr(item,'serHabilitado'):
-                item.serHabilitado()
-    
-    @staticmethod
-    def deshabilitarItems(lista_de_items):
-        for item in lista_de_items:
-            if hasattr(item,'serDeshabilitado'):
-                item.serDeshabilitado()
-
     @classmethod
     def setRutaFondo(cls,ruta):
         try:
@@ -114,7 +101,7 @@ class Sistema:
     def nuevoProyecto(cls,data):
         cls.cerrarProyecto()
         cls.referencias.update(data)
-        cls.HabilitarTodo = True
+        cls.habilitar_todo(True)
         cls.PROYECTO = Proyecto(data)
     
     @classmethod
@@ -127,11 +114,7 @@ class Sistema:
             cls.ruta = data[key]
             if key == 'fondo':
                 if data[key] != "":
-                    cls.cargar_imagen(LAYER_FONDO)
-                    cls.capa_actual = LAYER_FONDO
-            #elif key == 'colisiones':
-            #    if ar[key] != "":
-            #        Sistema.cargar_imagen(LAYER_COLISIONES)
+                    cls.setRutaFondo(data[key])
             elif key == 'props' or key == 'mobs':
                 widget = EventHandler.getWidget('Grilla.Canvas')
                 for item in data[key]:
@@ -148,7 +131,10 @@ class Sistema:
                     
                     colision = None
                     if _cols != None:
-                        w,h = sprite[0].get_size()
+                        if key == 'props':
+                            w,h = sprite.get_size()
+                        elif key == 'mobs':
+                            w,h = sprite[0].get_size()
                         colision = deserialize(decode(descomprimir(_cols)),w,h)
                     
                     idx = -1
@@ -165,7 +151,7 @@ class Sistema:
             elif key == 'referencias':
                 cls.referencias = data[key]
         cls.Guardado = ruta
-        cls.HabilitarTodo = True
+        cls.habilitar_todo(True)
     
     @classmethod
     def guardarProyecto(cls,ruta):
@@ -181,27 +167,47 @@ class Sistema:
     def cerrarProyecto(cls):
         cls.PROYECTO = None
         cls.IMG_FONDO = None
-        cls.HabilitarTodo = False
+        cls.habilitar_todo(False)
         EventHandler.contents.update()
     
-    @classmethod
-    def abrirMapa(cls,ruta):
-        try:
-            data = Resources.abrir_json(ruta)
-            cls.MAPA = Mapa()
-            cls.MAPA.cargar(data)
-        except:
-            cls.estado = 'Error: El archivo no existe.'
-    
+    @staticmethod
+    def habilitar_todo(control):
+        for nombre in EventHandler.widgets:
+            if nombre == 'PanelSimbolos.AreaPrev':
+                simbolos = EventHandler.widgets[nombre]
+            else:
+                widget = EventHandler.widgets[nombre]
+                if hasattr(widget,'habilitar'):
+                    widget.habilitar(control)
+        simbolos.habilitar(control)
+       
     @classmethod
     def exportarMapa(cls,ruta):
         try:
+            cls.MAPA = Mapa()
             data = cls.PROYECTO.guardar()
-            Resources.guardar_json(ruta,data)
-            cls.estado = "Mapa '"+ruta+"' guardado."
-            cls.Guardado = ruta
+            _bg = cls.MAPA.script['capa_background']
+            _a = cls.MAPA.script['ambiente']
+            _p = cls.MAPA.script['capa_ground']['props']
+            _r = cls.MAPA.script['capa_ground']['mobs']
+            _refs = data['referencias']
+            
+            _a = data['ambiente']
+            _bg['fondo']= _refs['fd_fondo']+path.split(data['fondo'])[1]
+            _bg['colisiones']= _refs['fd_colisiones']+path.split(data['colisiones'])[1]
+            for tipo in ['props','mobs']:
+                for item in data[tipo]:
+                    cls.MAPA.script['capa_ground'][tipo][item] = []
+                    for x,y,z,r in data[tipo][item]:
+                        cls.MAPA.script['capa_ground'][tipo][item].append([x,y])
+                    
+                    _ruta = path.split(data['refs'][item]['ruta'])[1]    
+                    cls.MAPA.script['refs'][item] = _refs['fd_'+tipo]+_ruta
+            
+            Resources.guardar_json(ruta,cls.MAPA.script)
+            cls.estado = "Mapa '"+ruta+"' exportado correctamente."
         except: 
-            cls.estado ='Error: Es necesario cargar un mapa.'
+            cls.estado ='Error: No se pudo exportar el mapa.'
     
     @staticmethod
     def salir():

@@ -152,9 +152,12 @@ class EditarSimbolo(subVentana):
         self.area.image = self.areaArray.make_surface()
         
     
-    def onMouseUp(self,button): self.pressed = False
+    def onMouseUp(self,button):
+        super().onMouseUp(button)
+        self.pressed = False
     
     def onMouseDown(self,button):
+        super().onMouseDown(button)
         x,y = mouse.get_pos()
         _rect = self.area.rect.copy()
         _rect.topleft = (self.x+C,self.y+C)
@@ -167,6 +170,7 @@ class EditarSimbolo(subVentana):
             self.ajustar_brocha(-1)
     
     def onMouseOver(self):
+        super().onMouseOver()
         x,y = mouse.get_pos()
         _rect = self.area.rect.copy()
         _rect.topleft = (self.x+C,self.y+C)
