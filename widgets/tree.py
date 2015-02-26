@@ -93,6 +93,11 @@ class Item (BaseWidget):
         EventHandler.delWidget(self.opcion)
         EventHandler.delWidget(self.cursor)
     
+    def reubicar_en_ventana(self,dx=0,dy=0):
+        super().reubicar_en_ventana(dx,dy)
+        self.opcion.reubicar_en_ventana(dx,dy)
+        self.cursor.reubicar_en_ventana(dx,dy)
+        
     def colapsarHijos(self):
         for hijo in self.hijos:
             hijo.AutoColapsar()

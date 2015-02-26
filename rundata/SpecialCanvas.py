@@ -20,7 +20,18 @@ class SpecialCanvas (Canvas):
             {'nom':'Pegar','cmd':lambda:Sys.pegar(),'icon':Sys.iconos['pegar']},
         ]
         self.context = ContextMenu(self,comandos)
+    
+    def onMouseOver (self):
+        over = self.detect()
         
+        for item in over:
+            if item in self.tiles:#is tile
+                if item.isMoving:
+                    if self.SeleccionMultiple:
+                        self.mover_tiles(item.dx,item.dy)
+            elif item in self.guias: #is guide
+                print(item)
+    
     def onMouseDown(self,button):
         if button == 1 or button == 3:
             super().onMouseDown(button)
@@ -52,7 +63,7 @@ class SpecialCanvas (Canvas):
         for tile in self.tiles:
             if tile.selected:
                 tile.onKeyUp(event.key)
-                
+    
     def actualizar_tamanio_fondo (self,w,h):
         self.FONDO = transform.scale(self.FONDO,(w,h))
         self.image = self.FONDO.subsurface(self.clip)
@@ -93,7 +104,7 @@ class SpecialCanvas (Canvas):
             rect.center = self.rect.center
         z = datos['pos'][2]
         datos['pos'] = rect.x,rect.y,z
-        datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'],datos['cols_code'])
+        datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'],datos['colisiones'])
         self.addTile(datos)
         self.update()
     
@@ -126,7 +137,7 @@ class SpecialCanvas (Canvas):
         
         cadena = []
         for tile in self.tiles:
-            if not tile.moviendose:#el que estamos moviendo manualmente
+            if not tile.isMoving:#el que estamos moviendo manualmente
                 if tile.selected:
                     cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.layer)+')')
                     tile.mover(dx,dy)#el resto de los que estan seleccionados
@@ -134,14 +145,16 @@ class SpecialCanvas (Canvas):
                 cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.layer)+')')
             Sys.estado = ', '.join(cadena)
     
-    def update(self):
-        super().update()
-        if not Sys.HabilitarTodo:
+    def habilitar(self,control):
+        if not control:
             self.guias.empty()
             self.capas.empty()
             self.tiles.empty()
             self.clip.topleft = 0,0
             self.actualizar_tamanio_fondo(15*C,15*C)
+        
+    def update(self):
+        super().update()
             
         if Sys.IMG_FONDO == None:
             self.capas.empty()
@@ -159,6 +172,7 @@ class SpecialCanvas (Canvas):
             self.capas.draw(self.FONDO)
         
         self.tiles.update()
+        self.guias.update()
         self.tiles.draw(self.FONDO)
         self.guias.draw(self.FONDO)
         if self.eleccion.size != (0,0):

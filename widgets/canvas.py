@@ -102,17 +102,18 @@ class Canvas(BaseWidget):
                 self.SeleccionMultiple = True
                     
             self.eleccion.size = 0,0
-    
-    def onMouseOver(self):
-        x,y = self.getRelMousePos()
-        tiles = []
-        if hasattr(self,'tiles'):
-            tiles = self.tiles.get_sprites_at((x,y))
         
-        for tile in tiles:
-            if tile.onMouseOver():
-                if self.SeleccionMultiple:
-                    self.mover_tiles(tile.dx,tile.dy)
+    def detect(self):
+        x,y = self.getRelMousePos()
+        detected = []
+        if hasattr(self,'tiles'):
+            detected.extend(self.tiles.get_sprites_at((x,y)))
+        if hasattr(self,'guias'):
+            for linea in self.guias:
+                if x == linea.rect.x or y == linea.rect.y:
+                    detected.append(linea)
+        
+        return detected
     
     def getRelMousePos(self,absx=None,absy=None):
         if absx is None and absy is None:

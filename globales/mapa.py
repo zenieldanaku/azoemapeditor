@@ -11,10 +11,7 @@ class Mapa:
             },
             "capa_ground":{
                 "props": {},
-                "mobs": {
-                    "enemies":{},
-                    "npcs":{}
-                }
+                "mobs": {}
             },
             "capa_top":{
                 "props":{}

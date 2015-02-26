@@ -13,7 +13,6 @@ class PanelSimbolos(Marco):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
 
-        
         self.nombre = 'PanelSimbolos'
         super().__init__(16*C,19,4*C+8,16*C-1,**opciones)
         self.simbolos = LayeredDirty()
@@ -48,7 +47,8 @@ class PanelSimbolos(Marco):
         self.PrevArea.btnDel = Boton(self.PrevArea,self.x+self.w-34,y,'delSim',self.PrevArea.eliminarSimboloActual,[i['borrar'],i['borrar_dis']],"Eliminar este símbolo")
         self.PrevArea.btnDel.serDeshabilitado()
         self.agregar(self.PrevArea.btnDel,4)
-    
+        self.habilitar(False)
+        
     @staticmethod
     def Guardar():
         if not Sys.Guardado:
@@ -77,11 +77,12 @@ class PanelSimbolos(Marco):
         self.Items.setItem(nombre)
         self.PrevArea.agregarSimbolo(simbolo)
     
-    def update(self):
-        if Sys.HabilitarTodo:
-            Sys.habilitarItems(self.botones[2:])
-        else:
-            Sys.deshabilitarItems(self.botones[2:])
+    def habilitar(self,control):
+        for item in self.botones[2:]:
+            if control:
+                item.serHabilitado()
+            else:
+                item.serDeshabilitado()
     
     def hideMenu(self):
         print('dummy')
@@ -136,15 +137,14 @@ class area_prev(Marco):
         for simbolo in self.simbolos:
             if simbolo._nombre == self.simbolo_actual:
                 return simbolo
-    
-    def clear(self):
-        self.simbolos.empty()
-        self.limpiar()
-        self.parent.Items.clear()
+     
+    def habilitar(self,control):
+        if not control:
+            self.simbolos.empty()
+            self.limpiar()
+            self.parent.Items.clear()
     
     def update(self):
-        if not Sys.HabilitarTodo:
-            self.clear()
         nombre = self.parent.Items.getItemActual()
         if nombre != self.simbolo_actual:
             for simbolo in self.simbolos:
@@ -155,7 +155,7 @@ class area_prev(Marco):
                     simbolo.visible = True
                     self.parent.Items.setText(self.simbolo_actual)
         
-        if len(self.simbolos)!= 0:
+        if len(self.simbolos) != 0:
             self.btnDel.serHabilitado()
         else:
             self.btnDel.serDeshabilitado()

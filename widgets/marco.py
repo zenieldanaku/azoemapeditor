@@ -24,7 +24,12 @@ class Marco(BaseWidget):
         if borde:self.image = self._biselar(self.image,
                 color(self.opciones.get('colorLuz','sysElmLight')),
                 color(self.opciones.get('colorSombra','sysElmShadow')))
-            
+    
+    def reubicar_en_ventana(self, dx, dy):
+        for widget in self.contenido:
+            widget.reubicar_en_ventana(dx, dy)
+        super().reubicar_en_ventana(dx, dy)
+        
     def agregar(self,objeto, layer=1):
         self.contenido.add(objeto)
         EventHandler.addWidget(objeto,self._layer+layer)

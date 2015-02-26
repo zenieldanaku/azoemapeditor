@@ -5,7 +5,7 @@ from widgets import ContextMenu
 
 class SimboloCNVS (SimboloBase):
     selected = False
-    moviendose = False
+    isMoving = False
     dx,dy = 0,0
     def __init__(self,parent,data,**opciones):
         super().__init__(parent,data,**opciones)
@@ -86,12 +86,9 @@ class SimboloCNVS (SimboloBase):
             self.dx = 0
         elif tecla == K_DOWN or tecla == K_UP:
             self.dy = 0
-    
-    def onMouseOver(self):
-        return self.moviendose
         
     def mover(self,dx,dy):
-        self.moviendose = True
+        self.isMoving = True
         super().mover(dx,dy)
         Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
     
@@ -109,7 +106,7 @@ class SimboloCNVS (SimboloBase):
     
     def update(self):
         self.dx,self.dy = 0,0
-        self.moviendose = False
+        self.isMoving = False
         if self.selected:
             self.image = self.img_sel
             if self.pressed:
