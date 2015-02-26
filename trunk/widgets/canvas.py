@@ -103,18 +103,6 @@ class Canvas(BaseWidget):
                     
             self.eleccion.size = 0,0
         
-    def detect(self):
-        x,y = self.getRelMousePos()
-        detected = []
-        if hasattr(self,'tiles'):
-            detected.extend(self.tiles.get_sprites_at((x,y)))
-        if hasattr(self,'guias'):
-            for linea in self.guias:
-                if x == linea.rect.x or y == linea.rect.y:
-                    detected.append(linea)
-        
-        return detected
-    
     def getRelMousePos(self,absx=None,absy=None):
         if absx is None and absy is None:
             abs_x,abs_y = mouse.get_pos()

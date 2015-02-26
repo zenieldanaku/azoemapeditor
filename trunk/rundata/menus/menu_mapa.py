@@ -18,7 +18,7 @@ class Menu_Mapa (Menu):
         nombres = ['Ajustes','Fondo']
         for n in nombres:
             objeto = self.referencias[n]
-            if Sys.PROYECTO == None:
+            if Sys.PROYECTO is None:
                 objeto.serDeshabilitado()
             elif not objeto.enabled:
                 objeto.serHabilitado()
@@ -34,8 +34,8 @@ class CuadroMapa(subVentana):
         ops = {'fontType':'Tahoma','fontSize':12}
         dx,dy,dw = 210,23,214
         
-        self.btnAceptar = BotonAceptarCancelar(self,x+w-142,y+h-26,True,self.Aceptar)
-        self.btnCancelar = BotonAceptarCancelar(self,x+w-72,y+h-26,False,self.cerrar)
+        self.btnAceptar = BotonAceptarCancelar(self,x+w-142,y+h-26,self.Aceptar)
+        self.btnCancelar = BotonAceptarCancelar(self,x+w-72,y+h-26)
         items = {}
         lista = [['Fondo','Carpeta de imágenes fondo:','maps/fondos/'],
                 ['Colisiones','Carpeta de mapas de colisiones:','maps/colisiones/'],
@@ -66,7 +66,12 @@ class CuadroMapa(subVentana):
         data = {}
         for entry in self.entrys:
             data[entry._nombre.lower()] = entry.devolver_texto()
-        Sys.nuevoProyecto(data)
+        
+        if Sys.PROYECTO is None:
+            Sys.nuevoProyecto(data)
+        else:
+            Sys.referencias.update(data)
+            
         self.cerrar()
     
     def cerrar(self):

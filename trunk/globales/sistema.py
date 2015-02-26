@@ -96,6 +96,11 @@ class Sistema:
         #chapuza: nombre deberia ser distinto de filename.
         if nombre not in cls.PROYECTO.script['refs']:
             cls.PROYECTO.script['refs'][nombre] = {'ruta':ruta,'code':code}
+    
+    @classmethod
+    def addEntrada(cls,nombre,px,py):
+        if nombre not in cls.PROYECTO.script['entradas']:
+            cls.PROYECTO.script['entradas'][nombre] = {'x':px,'y':py}
             
     @classmethod
     def nuevoProyecto(cls,data):
@@ -155,13 +160,13 @@ class Sistema:
     
     @classmethod
     def guardarProyecto(cls,ruta):
-        try:
+        #try:
             data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta,data,False)
             cls.estado = "Proyecto '"+ruta+"' guardado."
             cls.Guardado = ruta
-        except: 
-            cls.estado ='Error: Es necesario cargar un mapa.'
+        #except: 
+        #    cls.estado ='Error: Es necesario cargar un mapa.'
     
     @classmethod
     def cerrarProyecto(cls):
@@ -187,12 +192,12 @@ class Sistema:
             cls.MAPA = Mapa()
             data = cls.PROYECTO.guardar()
             _bg = cls.MAPA.script['capa_background']
-            _a = cls.MAPA.script['ambiente']
             _p = cls.MAPA.script['capa_ground']['props']
             _r = cls.MAPA.script['capa_ground']['mobs']
             _refs = data['referencias']
+            _e = data['entradas']
             
-            _a = data['ambiente']
+            cls.MAPA.script['ambiente'] = data['ambiente']
             _bg['fondo']= _refs['fd_fondo']+path.split(data['fondo'])[1]
             _bg['colisiones']= _refs['fd_colisiones']+path.split(data['colisiones'])[1]
             for tipo in ['props','mobs']:
@@ -204,6 +209,11 @@ class Sistema:
                     _ruta = path.split(data['refs'][item]['ruta'])[1]    
                     cls.MAPA.script['refs'][item] = _refs['fd_'+tipo]+_ruta
             
+            for nombre in _e:
+                x = _e[nombre]['x']
+                y = _e[nombre]['y']
+                cls.MAPA.script['entradas'][nombre] = [int(x),int(y)]
+                
             Resources.guardar_json(ruta,cls.MAPA.script)
             cls.estado = "Mapa '"+ruta+"' exportado correctamente."
         except: 

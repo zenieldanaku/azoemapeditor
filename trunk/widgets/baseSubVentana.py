@@ -1,7 +1,7 @@
 from pygame import Rect, font, mouse
 from libs.textrect import render_textrect
 from . import Marco, BotonCerrar
-from globales import EventHandler, ANCHO, ALTO
+from globales import ANCHO, ALTO
 
 class subVentana(Marco):
     x,y,w,h = 0,0,0,0
@@ -15,8 +15,7 @@ class subVentana(Marco):
         self.px,self.py = self.rect.topleft
         if titular:
             self.titular(nombre)
-        self.btnCerrar = BotonCerrar(self,x+w-18,y+3,13,15,'Cerrar',
-                                     lambda:EventHandler.delWidget(self))
+        self.btnCerrar = BotonCerrar(self,x+w-18,y+3,13,15,'Cerrar',self.cerrar)
         self.agregar(self.btnCerrar)
     
     def titular(self,texto):
