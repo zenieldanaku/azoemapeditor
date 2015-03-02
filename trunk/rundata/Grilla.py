@@ -132,7 +132,8 @@ class _grilla(BaseWidget):
         
 class BaseRegla(BaseWidget):
     pressed = False
-    tip = 'Haga clic y arrastre para generar una guía '
+    tip = 'Haga clic y arrastre para generar una guía'
+    
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
         self.x,self.y = x,y
@@ -147,7 +148,6 @@ class BaseRegla(BaseWidget):
         if button == 1:
             self.pressed = True
             self.linea = LineaGuia(self,*self.lin)
-            EventHandler.addWidget(self.linea,layer = self.parent.layer+1)
     
     def onMouseUp(self,button):
         if button == 1:
@@ -160,7 +160,10 @@ class BaseRegla(BaseWidget):
         self.tooltip.hide()
 
     def onMouseOver(self):
+        x,y = mouse.get_pos()
         if self.pressed:
+            if not self.rect.collidepoint((x,y)):
+                EventHandler.addWidget(self.linea,layer = self.parent.layer+1)
             self.moverLinea()
         if self.hasFocus:
             self.tooltip.show()
@@ -257,6 +260,7 @@ class ReglaV(BaseRegla):
 class HandlerRegla(BaseWidget):
     selected = False
     pressed = False
+    
     tip = 'Haga clic y arrastre para generar dos guías'
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
