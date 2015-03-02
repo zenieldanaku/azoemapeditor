@@ -132,7 +132,7 @@ class _grilla(BaseWidget):
         
 class BaseRegla(BaseWidget):
     pressed = False
-    tip = 'Haga clic y arrastre para generar una guía'
+    tip = 'Haga clic y arrastre para generar una guía'+' '#el espacio es intensional
     
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)        
