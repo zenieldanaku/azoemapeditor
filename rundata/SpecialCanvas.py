@@ -16,7 +16,7 @@ class SpecialCanvas (Canvas):
         self.capas = LayeredDirty()
         self.tiles = LayeredDirty()
         comandos = [
-            {'nom':'Entrada','cmd':self.colocar_entrada},
+            {'nom':'Entrada','cmd':lambda:UnaEntrada(self.px,self.py)},
             {'nom':'Pegar','cmd':lambda:Sys.pegar(),'icon':Sys.iconos['pegar']},
         ]
         self.context = ContextMenu(self,comandos)
@@ -147,6 +147,7 @@ class SpecialCanvas (Canvas):
             Sys.estado = ', '.join(cadena)
     
     def habilitar(self,control):
+        #print(control)
         if not control:
             self.capas.empty()
             self.tiles.empty()
