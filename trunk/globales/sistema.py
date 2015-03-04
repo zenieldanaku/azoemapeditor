@@ -4,17 +4,16 @@ from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
 from .resources import Resources
 from .eventhandler import EventHandler
-from .mapa import Mapa, Proyecto
+from .mapa import Proyecto
 from .portapapeles import Portapapeles
 from .RLE import decode, descomprimir, deserialize
 from os import getcwd, path
 
 class Sistema:
-    MAPA = None
     PROYECTO = None
     estado = ''
-    ruta = ''
-    referencias = {}
+    referencias = {'fondo':None,'colisiones':None,
+                   'props':None,'mobs':None,'ambiente':None}
     KeyCombinations = []
     IMG_FONDO = None
     capa_actual = None
@@ -70,39 +69,6 @@ class Sistema:
         cls.estado = 'Imagen '+ruta+' guardada exitosamente'
     
     @classmethod
-    def addItem(cls,nombre,ruta,grupo,code):
-        root = cls.PROYECTO.script[grupo]
-        if nombre not in root:
-            root[nombre] = [[]]
-            index = 0
-            cls.addRef(nombre,ruta,code)
-        else:
-            if cls.PROYECTO.script['refs'][nombre]['code'] == code:
-                root[nombre].append([])
-                index = len(root[nombre])-1
-            else:
-                nombre+='_'+str(len(cls.PROYECTO.script['refs']))
-                index = cls.addItem(nombre,ruta,grupo,code)
-                
-        return index
-    
-    @classmethod
-    def updateItemPos(cls,nombre,grupo,index,pos,layer=0,rot=0):
-        x,y = pos
-        cls.PROYECTO.script[grupo][nombre][index] = x,y,layer,rot
-    
-    @classmethod
-    def addRef(cls,nombre,ruta,code):
-        #chapuza: nombre deberia ser distinto de filename.
-        if nombre not in cls.PROYECTO.script['refs']:
-            cls.PROYECTO.script['refs'][nombre] = {'ruta':ruta,'code':code}
-    
-    @classmethod
-    def addEntrada(cls,nombre,px,py):
-        if nombre not in cls.PROYECTO.script['entradas']:
-            cls.PROYECTO.script['entradas'][nombre] = {'x':px,'y':py}
-            
-    @classmethod
     def nuevoProyecto(cls,data):
         cls.cerrarProyecto()
         cls.referencias.update(data)
@@ -113,10 +79,9 @@ class Sistema:
     def abrirProyecto(cls,ruta):
         data = Resources.abrir_json(ruta)
         cls.PROYECTO = Proyecto(data)
+        cls.PROYECTO.cargar(data)
         
         for key in data:
-            cls.PROYECTO[key] = data[key]
-            cls.ruta = data[key]
             if key == 'fondo':
                 if data[key] != "":
                     cls.setRutaFondo(data[key])
@@ -160,19 +125,21 @@ class Sistema:
     
     @classmethod
     def guardarProyecto(cls,ruta):
-        #try:
+        try:
             data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta,data,False)
-            cls.estado = "Proyecto '"+ruta+"' guardado."
+            cls.estado = "Proyecto '"+ruta+"' guardado exitosamente."
             cls.Guardado = ruta
-        #except: 
-        #    cls.estado ='Error: Es necesario cargar un mapa.'
+        except: 
+            cls.estado ='Error: Es necesario cargar un mapa.'
     
     @classmethod
     def cerrarProyecto(cls):
         cls.PROYECTO = None
         cls.IMG_FONDO = None
         cls.habilitar_todo(False)
+        for key in cls.referencias:
+            cls.referencias[key] = None
         EventHandler.contents.update()
     
     @staticmethod
@@ -186,39 +153,6 @@ class Sistema:
                     widget.habilitar(control)
         simbolos.habilitar(control)
        
-    @classmethod
-    def exportarMapa(cls,ruta):
-        try:
-            cls.MAPA = Mapa()
-            data = cls.PROYECTO.guardar()
-            _bg = cls.MAPA.script['capa_background']
-            _p = cls.MAPA.script['capa_ground']['props']
-            _r = cls.MAPA.script['capa_ground']['mobs']
-            _refs = data['referencias']
-            _e = data['entradas']
-            
-            cls.MAPA.script['ambiente'] = data['ambiente']
-            _bg['fondo']= _refs['fd_fondo']+path.split(data['fondo'])[1]
-            _bg['colisiones']= _refs['fd_colisiones']+path.split(data['colisiones'])[1]
-            for tipo in ['props','mobs']:
-                for item in data[tipo]:
-                    cls.MAPA.script['capa_ground'][tipo][item] = []
-                    for x,y,z,r in data[tipo][item]:
-                        cls.MAPA.script['capa_ground'][tipo][item].append([x,y])
-                    
-                    _ruta = path.split(data['refs'][item]['ruta'])[1]    
-                    cls.MAPA.script['refs'][item] = _refs['fd_'+tipo]+_ruta
-            
-            for nombre in _e:
-                x = _e[nombre]['x']
-                y = _e[nombre]['y']
-                cls.MAPA.script['entradas'][nombre] = [int(x),int(y)]
-                
-            Resources.guardar_json(ruta,cls.MAPA.script)
-            cls.estado = "Mapa '"+ruta+"' exportado correctamente."
-        except: 
-            cls.estado ='Error: No se pudo exportar el mapa.'
-    
     @staticmethod
     def salir():
         py_quit()

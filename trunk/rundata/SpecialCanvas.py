@@ -105,7 +105,7 @@ class SpecialCanvas (Canvas):
             rect.center = self.rect.center
         z = datos['pos'][2]
         datos['pos'] = rect.x,rect.y,z
-        datos['index'] = Sys.addItem(datos['nombre'],datos['ruta'],datos['grupo'],datos['colisiones'])
+        datos['index'] = Sys.PROYECTO.addItem(datos)
         self.addTile(datos)
         self.update()
     
@@ -180,5 +180,5 @@ class SpecialCanvas (Canvas):
         if self.eleccion.size != (0,0):
             draw.rect(self.FONDO,(0,255,255),self.eleccion,1)
         for tile in self.tiles:
-            Sys.updateItemPos(tile._nombre,tile.grupo,tile.index,tile.rect.topleft,tile.layer,tile.rot)
+            Sys.PROYECTO.updateItemPos(tile)
         self.dirty = 1
