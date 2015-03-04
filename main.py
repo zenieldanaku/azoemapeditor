@@ -16,7 +16,7 @@ for ruta in rutas:
 pygame.init()
 tamanio = ANCHO,ALTO
 os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
-pantalla.set_caption("MapGen")
+pantalla.set_caption("Azoe Engine's Map Editor")
 fondo = pantalla.set_mode(tamanio)
 Sistema.init()
 BarraMenus = barraMenus()

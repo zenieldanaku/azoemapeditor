@@ -1,10 +1,23 @@
-# este es el objeto de trabajo, no sé donde ponerlo.
-
-class Mapa:
-    script = {}
-    
-    def __init__(self):
+class Proyecto:
+    rutas = None #{}
+    script = None#{}
+    mapa = None  #{}
+    def __init__(self,data):
+        self.rutas = {'fondo':data['fondo'],
+                      'colisiones':data['colisiones'],
+                      'props':data['props'],
+                      'mobs':data['mobs']}
         self.script= {
+            "fondo":"",
+            "colisiones":"",
+            "props": {},
+            "mobs": {},
+            "entradas":{},
+            "salidas":{},
+            "refs":{},
+            "ambiente":data['ambiente']
+        }
+        self.mapa = {
             "capa_background":{
                 "fondo":"",
                 "colisiones":""
@@ -23,41 +36,84 @@ class Mapa:
             "refs":{},
             "ambiente":""
         }
-    
-    def guardar(self):
-        return self.script
-    
-    def cargar(self,data):
-        self.script.update(data)
 
-class Proyecto:
-    script = {}
-    
-    def __init__(self,data):
-        self.script= {
-            "referencias":{'fd_fondo':data['fondo'],
-                           'fd_colisiones':data['colisiones'],
-                           'fd_props':data['props'],
-                           'fd_mobs':data['mobs']},
-            "fondo":"",
-            "colisiones":"",
-            "props": {},
-            "mobs": {},
-            "entradas":{},
-            "salidas":{},
-            "refs":{},
-            "ambiente":data['ambiente']
-        }
-    def __setitem__(self,key,value):
-        if key in self.script:
-            self.script[key] = value
-            
-    def guardar(self):
-        return self.script
-    
     def cargar(self,data):
-        self.script.update(data)
-    
-    def exportar(self):
-        pass
+        for key in data:
+            if key in self.script:
+                self.script[key] = data[key]
+            elif key.startswith('fd_'):
+                self.rutas[key[3:]] = data[key]
+                
+    def guardar(self, ):
+        d = self.script.copy()
+        for key in self.rutas:
+            d['fd_'+key] = self.rutas[key]
         
+        return d
+    
+    def updateItemPos(self,tile):
+        nombre = tile._nombre
+        grupo = tile.grupo
+        index = tile.index
+        x,y = tile.rect.topleft
+        layer = tile.layer
+        rot = tile.rot
+        
+        self.script[grupo][nombre][index] = x,y,layer,rot
+
+    def addRef(self,nombre,ruta,code):
+        #chapuza: nombre deberia ser distinto de filename.
+        if nombre not in self.script['refs']:
+            self.script['refs'][nombre] = {'ruta':ruta,'code':code}
+    
+    def addEntrada(self,nombre,px,py):
+        if nombre not in self.script['entradas']:
+            self.script['entradas'][nombre] = {'x':px,'y':py}
+        
+    def addItem(self,datos):
+        nombre = datos['nombre']
+        ruta = datos['ruta']
+        grupo = datos['grupo']
+        code = datos['colisiones']
+        
+        root = self.script[grupo]
+        if nombre not in root:
+            root[nombre] = [[]]
+            index = 0
+            self.addRef(nombre,ruta,code)
+        else:
+            if self.script['refs'][nombre]['code'] == code:
+                root[nombre].append([])
+                index = len(root[nombre])-1
+            else:
+                nombre+='_'+str(len(self.script['refs']))
+                index = self.addItem(nombre,ruta,grupo,code)
+                
+        return index
+    
+    def exportarMapa(self,ruta):
+        from os import path
+        try:
+            self.mapa['ambiente'] = self.script['ambiente']
+            for layer in ['fondo','colisiones']:
+                _ruta = self.rutas[layer]+path.split(self.script[layer])[1]
+                self.mapa['capa_background'][layer]= _ruta
+            
+            for tipo in ['props','mobs']:
+                for item in self.script[tipo]:
+                    self.mapa['capa_ground'][tipo][item] = []
+                    for x,y,z,r in self.script[tipo][item]:
+                        self.mapa['capa_ground'][tipo][item].append([x,y])
+                    
+                    _ruta = path.split(self.script['refs'][item]['ruta'])[1]
+                    self.mapa['refs'][item] = self.rutas[tipo]+_ruta
+            
+            for nombre in self.script['entradas']:
+                x = self.script['entradas'][nombre]['x']
+                y = self.script['entradas'][nombre]['y']
+                self.mapa['entradas'][nombre] = [int(x),int(y)]
+                
+            Resources.guardar_json(ruta,cls.MAPA.script)
+            cls.estado = "Mapa '"+ruta+"' exportado correctamente."
+        except: 
+            cls.estado ='Error: No se pudo exportar el mapa.'

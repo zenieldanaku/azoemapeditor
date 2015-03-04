@@ -45,7 +45,7 @@ class CuadroMapa(subVentana):
         for i in range(len(lista)):
             nombre,txt,ref = lista[i]
             j = i+1
-            if nombre.lower() in Sys.referencias:
+            if Sys.referencias[nombre.lower()] is not None:
                 ref = Sys.referencias[nombre.lower()]
             items[nombre] = {
                 'label':[nombre,x+2,y+dy*j,txt],
