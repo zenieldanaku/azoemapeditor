@@ -48,6 +48,11 @@ class PanelSimbolos(Marco):
         self.PrevArea.btnDel.serDeshabilitado()
         self.agregar(self.PrevArea.btnDel,4)
         self.habilitar(False)
+    
+    def onKeyDown(self,tecla): 
+        simbolo = self.PrevArea.get_actual()
+        simbolo.renombrar(self.Items.getItemActual())
+        self.PrevArea.simbolo_actual = simbolo._nombre
         
     @staticmethod
     def Guardar():

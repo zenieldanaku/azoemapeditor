@@ -1,12 +1,12 @@
-from . import BaseWidget, Entry, BaseOpcion
+﻿from . import BaseWidget, Entry, BaseOpcion
 from pygame import Surface,draw, Rect,font, mouse
 from pygame.sprite import LayeredDirty,DirtySprite
 from libs.textrect import render_textrect
-from globales import color, C
+from globales import color, C, EventHandler
 
 class DropDownList(BaseWidget):
-    componentes = None # LayeredDirty
-    layerOpciones = 125
+    lista_de_opciones = None # LayeredDirty
+    
     def __init__(self,parent,nombre,x,y,w,lista=[],**opciones):
         super().__init__(**opciones)
         self.parent = parent
@@ -14,36 +14,34 @@ class DropDownList(BaseWidget):
         self.layer = self.parent.layer +1
         self.lista = lista
         self.x,self.y = x,y
-        self.componentes = LayeredDirty()
-        self.entry = Entry(self,nombre,0,0,w-18)
-        self.w,self.h = w,self.entry.h
+        self.w,self.h = w,21
+        self.entry = Entry(self,nombre,self.x,self.y,w-18,**opciones)
         self.flecha = _Flecha(self,18)
-        self.collapsedRect = Rect(self.x,self.y,self.w,self.h)
-        self.rect = self.collapsedRect
-        self.componentes.add(self.flecha,self.entry)
-        self.image = Surface((self.w,self.crearLista(self.lista)+2))
-        self.image.fill((255,0,0)) #fill with some transparent
-        self.image.set_colorkey((255,0,0)) # color
-        self.openRect = Rect((self.x,self.y),self.image.get_size())
-        self.dirty = 1
+        
+        self.rect = Rect(self.x,self.y,self.w,self.h)
+        self.lista_de_opciones = LayeredDirty(*self.crearLista(self.lista))
+        
         self.ItemActual = ''
-    
+        EventHandler.addWidget(self.entry,layer=self.layer)
+        EventHandler.addWidget(self.flecha,layer=self.layer)
+        
+        self.visible = 0
+            
     def crearLista(self,opciones):
-        alto,h = 0,0
-        for n in range(len(opciones)):
-            if n == 0:
-                self.setText(opciones[n])
+        lista = []
+        
+        h = 0
+        for n in range(len(opciones)):   
             nom = opciones[n]
             dy = self.h+(n*h)-19
-            opcion = _Opcion(self,nom,4,dy,self.w-23)
+            opcion = _Opcion(self,nom,self.x+4,self.y+dy,self.w-23)
             opcion.layer = self.layer +50
             h = opcion.image.get_height()-1
-            alto += h
-            self.componentes.add(opcion,layer=self.layerOpciones)
-        if alto == 0:
-            alto = self.entry.fuente.get_height()+2
-        
-        return alto
+
+            lista.append(opcion)
+        if len(opciones) != 0:
+            self.setText(opciones[0])
+        return lista        
     
     def setText(self,texto):
         self.entry.setText(texto)
@@ -52,96 +50,67 @@ class DropDownList(BaseWidget):
         self.ItemActual = texto
     
     def setItem(self,item):
-        self.componentes.remove_sprites_of_layer(self.layerOpciones)
+        self.lista_de_opciones.empty()
         if item not in self.lista:
             self.lista.append(item)
-        self.image = Surface((self.w,self.crearLista(self.lista)+4))
-        self.openRect = Rect((self.x,self.y),self.image.get_size())
+        self.lista_de_opciones.add(*self.crearLista(self.lista))
+        
         self.setText(item)
     
     def getItemActual(self): return self.ItemActual
     
     def getItem(self,item):
-        for opcion in self.componentes.get_sprites_from_layer(self.layerOpciones):
+        for opcion in self.lista_de_opciones:
             if hasattr(item,'_nombre'):
                 if opcion.texto == item._nombre:
                     return opcion
     
     def delItem(self,item):
         opcion = self.getItem(item)
-        self.componentes.remove_sprites_of_layer(self.layerOpciones)
+        self.lista_de_opciones.empty()
         self.lista.remove(opcion.texto)
-        self.crearLista(self.lista)
+        
+        self.lista_de_opciones.add(*self.crearLista(self.lista))
     
     def clear(self):
-        self.componentes.remove_sprites_of_layer(self.layerOpciones)
+        self.lista.clear()
         self.entry.borrar_todo()
         
-    def getRelMousePos(self):
-        abs_x,abs_y = mouse.get_pos()
-        dx = abs_x-self.x
-        dy = abs_y-self.y
+    def onDestruction(self):
+        EventHandler.delWidget(self.entry)
+        EventHandler.delWidget(self.flecha)
+        self.hideItems()
         
-        return dx,dy
-    
-    def get_component(self):
-        x,y = self.getRelMousePos()
-        if self.componentes.get_sprites_at((x,y)) != []:
-            return self.componentes.get_sprites_at((x,y))[-1]
-        return self
-    
-    def onMouseDown(self,button):
-        if button == 1:
-            item = self.get_component()
-            if item != self:
-                item.onMouseDown(button)
-            else:
-                self.hideItems()
-    
-    def onMouseUp(self,button):
-        if button == 1:
-            item = self.get_component()
-            if item != self:
-                item.onMouseUp(button)
-    
-    def onMouseIn(self):
-        item = self.get_component()
-        if item != self:
-            for opcion in self.componentes:
-                if isinstance(opcion,_Opcion):
-                    opcion.onMouseOut()
-            item.onMouseIn()
-    
     def showItems(self):
-        for item in self.componentes.get_sprites_from_layer(self.layerOpciones):
-            item.visible = True
-            item.enabled = True
-        self.rect = self.openRect
+        for item in self.lista_de_opciones:
+            EventHandler.addWidget(item,layer=self.layer+1)
     
     def hideItems(self):
-        for item in self.componentes.get_sprites_from_layer(self.layerOpciones):
-            item.visible = False
-            item.enabled = False
-        self.rect = self.collapsedRect
+        for item in self.lista_de_opciones:
+            EventHandler.delWidget(item)
     
     def onFocusOut(self):
         super().onFocusOut()
         self.hideItems()
         
-    def update(self):
-        self.image.fill((255,0,0)) #clear with transparent color
-        self.image.set_colorkey((255,0,0))
-        self.componentes.update()
-        self.componentes.draw(self.image)
-        self.dirty = 1
-
+    def onKeyDown(self,key):
+        entry = self.entry.devolver_texto()
+        if self.ItemActual in self.lista:
+            idx = self.lista.index(self.ItemActual)
+            if entry != self.ItemActual:
+                self.lista[idx] = entry
+                self.lista_de_opciones.get_sprite(idx).setText(entry)
+                self.ItemActual = self.lista[idx]
+        
+        self.parent.onKeyDown(key)
+        
 class _Flecha(BaseWidget):
     def __init__(self,parent,w,**opciones):
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = parent.nombre+'.flecha'
         self.w,self.h = w,self.parent.h
-        self.x,self.y = self.parent.w-self.w,0
+        self.x,self.y = self.parent.x+self.parent.w-self.w,self.parent.y
         cF,cB = color('sysScrArrow'),color('sysElmFace') # cFlecha,cBackground
         cL,cS = color('sysElmLight'),color('sysElmShadow') # cLuz,cSombra
         self.img_pre = self._biselar(self._crear(self.w,self.h,cF,cB),cS,cL)
@@ -163,6 +132,10 @@ class _Flecha(BaseWidget):
     
     def onMouseUp(self,dummy):
         self.image = self.img_uns
+        EventHandler.setFocus(self.parent)
+    
+    def onMouseOut(self):
+        self.image = self.img_uns
 
 class _Opcion(BaseOpcion):
     command = None
@@ -170,21 +143,24 @@ class _Opcion(BaseOpcion):
     def __init__(self,parent,nombre,x,y,w=0):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
-        self.visible = False
-        self.enabled = False
-
+    
+    def setText(self,texto):
+        super().setText(texto)
+        self.texto = texto
+    
     def devolverTexto(self):
         self.parent.setText(self.texto)
     
     def onMouseDown(self,button):
-        self.parent.onFocusOut()
         self.devolverTexto()
-        self.parent.hideItems()
-
+        self.parent.onFocusOut()
+        
     def onMouseIn(self):
+        super().onMouseIn()
         self.image = self.img_sel
     
     def onMouseOut(self):
+        super().onMouseOut()
         self.image = self.img_des
         
     def update(self):

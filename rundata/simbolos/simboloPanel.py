@@ -34,6 +34,11 @@ class MetaSimbolo(SimboloBase):
             img = Surface(self.image.get_size())
             img.set_alpha(0)
             self.image = img
+    
+    def renombrar(self,texto):
+        self._nombre = texto
+        self.nombre = self.parent.nombre+'.Simbolo.'+self._nombre
+        self.data['nombre'] = texto
 
 class SimboloSimple (MetaSimbolo):
     copiar = False
