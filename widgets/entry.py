@@ -234,7 +234,8 @@ class Entry(BaseWidget):
                 self.borrar_seleccion()
         
         elif event.key == K_RETURN or event.key == K_KP_ENTER:
-            self.parent.onKeyDown(K_RETURN)
+            self.parent.onKeyDown(event.key)
+            self.hasFocus = False
         
         elif event.key == K_END:
             for i in range(len(self.texto)):
