@@ -1,9 +1,36 @@
-from widgets import subVentana, ScrollV, Label, Entry, BotonAceptarCancelar
+from widgets import subVentana, Label, Entry, BotonAceptarCancelar, DataGrid, ScrollV
 from globales import C, Sistema
+from pygame import Rect
 
 class CuadroEntrada(subVentana):
-    def __init__(self):    
-        super().__init__(6*C,8*C,'Entradas')
+    def __init__(self,**opciones):
+        super().__init__(6*C+16,8*C-8,'Entradas',**opciones)
+        DX = 18
+        self.grid = DataGrid(self,'datos',self.x+3+DX,self.y+23+15,{},
+                             titulos=['Nombre','X','Y'],cel_w=53,n_fil=9,sep=2)
+        ops = {'fontType':'Tahoma','fontSize':12}
+        Nombre = Label(self,'nmbr',self.x+9+DX,self.y+23,'Nombre',**ops)
+        lblPosX = Label(self,'PosX',self.x+C*2+16+DX,self.y+23,'X',**ops)
+        lblPosY = Label(self,'PosY',self.x+C*4+6+DX,self.y+23,'Y',**ops)
+        self.agregar(Nombre)
+        self.agregar(lblPosX)
+        self.agregar(lblPosY)
+        
+        sort = sorted([nombre for nombre in Sistema.PROYECTO.script['entradas']])
+        relleno = []
+        for nombre in sort:
+            x = Sistema.PROYECTO.script['entradas'][nombre]['x']
+            y = Sistema.PROYECTO.script['entradas'][nombre]['y']
+            relleno.append([nombre,x,y])
+        
+        self.grid.rellenar(relleno)
+        
+        scroll = ScrollV(self.grid,self.x+self.w-16-4,self.y+20+19)
+        self.agregar(scroll)
+    
+    def onDestruction(self):
+        super().onDestruction()
+        self.grid.onDestruction()
 
 class UnaEntrada(subVentana):
     entrada_nombre = ''
@@ -39,7 +66,7 @@ class UnaEntrada(subVentana):
         self.btnAceptar.serDeshabilitado()
         
     def aceptar(self):
-        Sistema.addEntrada(self.entrada_nombre,self.entrada_px,self.entrada_py)
+        Sistema.PROYECTO.addEntrada(self.entrada_nombre,self.entrada_px,self.entrada_py)
         self.cerrar()
         
     def update(self):

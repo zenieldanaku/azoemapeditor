@@ -22,3 +22,10 @@ class Menu_Editar(Menu):
         super().__init__('Editar',opciones,x,y)
         
         self.referencias['Rehacer'].serDeshabilitado()
+    
+    def update(self):
+        objeto = self.referencias['Entradas']
+        if Sys.PROYECTO == None:
+            objeto.serDeshabilitado()
+        elif not objeto.enabled:
+            objeto.serHabilitado()

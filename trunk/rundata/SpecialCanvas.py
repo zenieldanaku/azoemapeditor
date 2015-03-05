@@ -2,7 +2,7 @@ from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, \
                    K_DELETE,K_RSHIFT,K_LSHIFT, \
                    transform, Surface,draw,mouse,Rect
 from pygame.sprite import LayeredDirty, DirtySprite
-from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES
+from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES, EventHandler
 from .simbolos import SimboloCNVS
 from widgets import Canvas, ContextMenu
 from .menus._cuadrosEntradas import UnaEntrada
@@ -35,10 +35,16 @@ class SpecialCanvas (Canvas):
                self.px,self.py = self.getRelMousePos()
 
         elif self.ScrollY.enabled:
-            if button == 5:
-                self.ScrollY.moverCursor(dy=+10)
-            if button == 4:
-                self.ScrollY.moverCursor(dy=-10)
+            if self.shift:                
+                if button == 5:
+                    self.scroll(dx=+10)
+                if button == 4:
+                    self.scroll(dx=-10)
+            else:
+                if button == 5:
+                    self.scroll(dy=+10)
+                if button == 4:
+                    self.scroll(dy=-10)
     
     def onKeyDown(self,event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
@@ -61,10 +67,7 @@ class SpecialCanvas (Canvas):
         for tile in self.tiles:
             if tile.selected:
                 tile.onKeyUp(event.key)
-    
-    def colocar_entrada(self):
-        UnaEntrada(self.px,self.py)
-    
+        
     def actualizar_tamanio_fondo (self,w,h):
         self.FONDO = transform.scale(self.FONDO,(w,h))
         self.image = self.FONDO.subsurface(self.clip)
@@ -110,7 +113,6 @@ class SpecialCanvas (Canvas):
         self.update()
     
     def addTile(self,datos):
-        #print(datos)
         tile = SimboloCNVS(self,datos)
         self.tiles.add(tile)
         
@@ -147,7 +149,6 @@ class SpecialCanvas (Canvas):
             Sys.estado = ', '.join(cadena)
     
     def habilitar(self,control):
-        #print(control)
         if not control:
             self.capas.empty()
             self.tiles.empty()
@@ -167,6 +168,7 @@ class SpecialCanvas (Canvas):
         else:
             spr = Sys.IMG_FONDO
             if self.FONDO.get_size() != spr.rect.size:
+                EventHandler.setFocus(self)
                 self.actualizar_tamanio_fondo(*spr.rect.size)
                 img = self._imagen_colisiones(*spr.rect.size)
                 

@@ -16,8 +16,7 @@ class barraMenus (Marco):
             menu = eval('Menu_'+menu_nom+'(prev,3,self)')
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
-        #EventHandler.addWidget(self)
-    
+   
     def onFocusIn(self):
         super().onFocusIn()
         self.ocultarMenus()
