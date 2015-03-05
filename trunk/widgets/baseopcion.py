@@ -38,3 +38,11 @@ class BaseOpcion(BaseWidget):
         
         
         return image
+    
+    def setText(self,text):
+        self.nombre = self.parent.nombre+'.Opcion.'+text
+        self.img_des = self.crear(text,color('sysElmText'),color('sysMenBack'),self.w)
+        self.img_sel = self.crear(text,color('sysElmText'),color('sysBoxSelBack'),self.w)
+        self.image = self.img_des
+        self.w,self.h = self.image.get_size()
+        self.rect = self.image.get_rect(topleft = (self.x,self.y))

@@ -62,7 +62,6 @@ class Proyecto:
         self.script[grupo][nombre][index] = x,y,layer,rot
 
     def addRef(self,nombre,ruta,code):
-        #chapuza: nombre deberia ser distinto de filename.
         if nombre not in self.script['refs']:
             self.script['refs'][nombre] = {'ruta':ruta,'code':code}
     
