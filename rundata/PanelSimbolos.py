@@ -8,7 +8,7 @@ from os import path
 
 class PanelSimbolos(Marco):
     simbolos = None
-    botones = []
+    botones = {}
     def __init__(self,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
@@ -30,7 +30,8 @@ class PanelSimbolos(Marco):
             {n:'barra'},
             {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},carpeta_actual=Sys.fdAssets),s:[i['fondo'],i['fondo_dis']],d:"Cargar imagen de fondo"},
             {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},carpeta_actual=Sys.fdAssets),s:[i['mob'],i['mob_dis']],d:"Cargar símbolo de mob"},
-            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProps},True,carpeta_actual=Sys.fdAssets),s:[i['prop'],i['prop_dis']],d:"Cargar símbolo de prop"}            
+            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProps},True,carpeta_actual=Sys.fdAssets),s:[i['prop'],i['prop_dis']],d:"Cargar símbolo de prop"},
+            {n:'delSim',c:self.PrevArea.eliminarSimboloActual,s:[i['borrar'],i['borrar_dis']],d:"Eliminar este símbolo"}
             ]
         x = self.x+4
         y = 19+4
@@ -38,15 +39,12 @@ class PanelSimbolos(Marco):
             if e['nom'] != 'barra':
                 boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],e['des'])
                 x = boton.rect.right-2
-                self.botones.append(boton)
+                self.botones[e['nom']] = boton
                 self.agregar(boton,2)
             else:
                 x = self.x+4
                 y += 32
         self.agregar(self.Items,4)
-        self.PrevArea.btnDel = Boton(self.PrevArea,self.x+self.w-34,y,'delSim',self.PrevArea.eliminarSimboloActual,[i['borrar'],i['borrar_dis']],"Eliminar este símbolo")
-        self.PrevArea.btnDel.serDeshabilitado()
-        self.agregar(self.PrevArea.btnDel,4)
         self.habilitar(False)
     
     def onKeyDown(self,tecla): 
@@ -83,11 +81,13 @@ class PanelSimbolos(Marco):
         self.PrevArea.agregarSimbolo(simbolo)
     
     def habilitar(self,control):
-        for item in self.botones[2:]:
-            if control:
-                item.serHabilitado()
-            else:
-                item.serDeshabilitado()
+        for nombre in self.botones:
+            if nombre not in ['Nuevo','Abrir','delSim']:
+                item = self.botones[nombre]
+                if control:
+                    item.serHabilitado()
+                else:
+                    item.serDeshabilitado()
     
     def hideMenu(self):
         print('dummy')
@@ -161,9 +161,9 @@ class area_prev(Marco):
                     self.parent.Items.setText(self.simbolo_actual)
         
         if len(self.simbolos) != 0:
-            self.btnDel.serHabilitado()
+            self.parent.botones['delSim'].serHabilitado()
         else:
-            self.btnDel.serDeshabilitado()
+            self.parent.botones['delSim'].serDeshabilitado()
         
         capa = Sys.capa_actual
         if capa == LAYER_FONDO:
