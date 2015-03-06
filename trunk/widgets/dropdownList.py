@@ -68,6 +68,7 @@ class DropDownList(BaseWidget):
     def delItem(self,item):
         opcion = self.getItem(item)
         self.lista_de_opciones.empty()
+        self.entry.borrar_todo()
         self.lista.remove(opcion.texto)
         
         self.lista_de_opciones.add(*self.crearLista(self.lista))

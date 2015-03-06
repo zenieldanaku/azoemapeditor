@@ -132,9 +132,12 @@ class Boton(BaseWidget):
             self.comando()
     
     def update(self):
-        if self.enabled and self.tooltip is not None:
-            if self.hasMouseOver:
-                self.tooltip.show()
+        if self.tooltip is not None:
+            if self.enabled:
+                if self.hasMouseOver:
+                    self.tooltip.show()
+                else:
+                    self.tooltip.hide()
             else:
                 self.tooltip.hide()
         self.dirty = 1
