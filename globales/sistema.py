@@ -67,6 +67,7 @@ class Sistema:
         imagen = widget.render()
         Resources.guardar_imagen(imagen,ruta)
         cls.estado = 'Imagen '+ruta+' guardada exitosamente'
+        cls.PROYECTO.script['colisiones'] = ruta
     
     @classmethod
     def nuevoProyecto(cls,data):
@@ -142,6 +143,15 @@ class Sistema:
             cls.referencias[key] = None
         EventHandler.contents.update()
     
+    @classmethod
+    def exportarMapa(cls,ruta):
+        try:
+            mapa = cls.PROYECTO.exportarMapa()
+            Resources.guardar_json(ruta,mapa)
+            cls.estado = "Mapa '"+ruta+"' exportado correctamente."
+        except: 
+            cls.estado ='Error: No se pudo exportar el mapa.'
+    
     @staticmethod
     def habilitar_todo(control):
         for nombre in EventHandler.widgets:
@@ -152,7 +162,7 @@ class Sistema:
                 if hasattr(widget,'habilitar'):
                     widget.habilitar(control)
         simbolos.habilitar(control)
-       
+        
     @staticmethod
     def salir():
         py_quit()

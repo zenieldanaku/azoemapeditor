@@ -19,11 +19,11 @@ os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
 pantalla.set_caption("Azoe Engine's Map Editor")
 fondo = pantalla.set_mode(tamanio)
 Sistema.init()
+Ventana(fondo.get_size())
 BarraMenus = barraMenus()
 BarraEstado = barraEstado()
 Grilla = Grilla()
 Simbolos = PanelSimbolos()
-Ventana(fondo.get_size())
 
 hayCambios = True
 FPS = time.Clock()

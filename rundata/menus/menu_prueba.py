@@ -2,11 +2,9 @@ from widgets import Menu,subVentana, CuadroTexto
 from globales import C
 
 class Menu_Prueba (Menu):
-    def  __init__(self,x,y,barra):
-        self.nombre = 'Menu.Prueba'
-        self.barra = barra
+    def  __init__(self,parent,x,y):
         opciones = [{'nom':'Prueba','win':CuadroPrueba}]
-        super().__init__('Prueba',opciones,x,y)
+        super().__init__(parent,'Prueba',opciones,x,y)
 
 class CuadroPrueba(subVentana):
     def __init__(self):

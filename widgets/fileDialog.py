@@ -14,15 +14,17 @@ class FileDiag(subVentana):
     nombredeArchivo = ''
     tipoSeleccinado = ''
     carpetaVieja = ''
+    layer = 10
     def __init__(self,comando,permitirmultiple=False,filetypes=[],carpeta_actual=os.getcwd(),**opciones):      
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
+        self.nombre = 'FileDialog.'
         if self.TipoComando == 'A':
-            self.nombre = 'Abrir'
+            self.nombre += 'Abrir'
         elif self.TipoComando == 'G':
-            self.nombre = 'Guardar'
+            self.nombre += 'Guardar'
         elif self.TipoComando == 'Gc':
-            self.nombre = 'Guardar como...'
+            self.nombre += 'Guardar como...'
         super().__init__(16*C,10*C+18,self.nombre,**opciones)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
@@ -109,9 +111,10 @@ class FileDiag(subVentana):
 
 class arbolCarpetas(Marco):
     CarpetaSeleccionada = ''
-    layer = 4
+    
     def __init__(self,parent,x,y,w,h,carpeta_actual,**opciones):
         self.nombre = parent.nombre+'.ArbolDeCarpetas'
+        self.layer = parent.layer+2
         super().__init__(x,y,w,h,False,**opciones)
         self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()),carpeta_actual)
         self.arbol.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y)
@@ -129,8 +132,8 @@ class arbolCarpetas(Marco):
             split = os.path.split(dirname)
             nombre = split[1]
             root = os.path.split(split[0])[1]
-            if '.svn' in dirnames:
-                dirnames.remove('.svn')
+            if '.git' in dirnames:
+                dirnames.remove('.git')
             if '__pycache__' in dirnames:
                 dirnames.remove('__pycache__')
             for subdirname in dirnames:
@@ -212,7 +215,7 @@ class listaDeArchivos(Marco):
             h = opcion.image.get_height()
             self.items.add(opcion)
             if self.rect.contains(opcion.rect):
-                self.agregar(opcion)
+                self.agregar(opcion,self.layer+1)
        
     def borrarLista(self):
         for item in self.items:

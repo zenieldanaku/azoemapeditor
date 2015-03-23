@@ -13,5 +13,6 @@ from .tree import Tree
 from .baseSubVentana import subVentana
 from .fileDialog import FileDiag
 from .canvas import Canvas
+from .checkbox import Checkbox
 from .diagBox import *
 from .datagrid import DataGrid

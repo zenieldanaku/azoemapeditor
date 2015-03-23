@@ -43,6 +43,10 @@ class DropDownList(BaseWidget):
             self.setText(opciones[0])
         return lista        
     
+    def reubicar_en_ventana(self,dx=0,dy=0):
+        self.entry.reubicar_en_ventana(dx,dy)
+        self.flecha.reubicar_en_ventana(dx,dy)
+    
     def setText(self,texto):
         self.entry.setText(texto)
         # acá podría stripearse el texto, si fuera onda Archivo de mapa (*.json)

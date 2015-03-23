@@ -10,11 +10,14 @@ class Menu (BaseWidget):
     visible = 0
     nombre = ''
     referencias = None
-    def __init__(self,nombre,ops,x,y):
+    def __init__(self,parent,nombre,ops,x,y,**opciones):
+        super().__init__(**opciones)
+        self.parent = parent
+        self.nombre = self.parent.nombre+'.Menu.'+nombre
+        self.layer = self.parent.layer +1
         self.fuente = font.Font(Sys.fdLibs+'\\fonts_tahoma.ttf',12)
         self.cascada = None
         self.boton = None
-        super().__init__()
         self.referencias = {}
         self.boton = _Boton(self,nombre,x,y)
         h = self.boton.rect.h
@@ -56,7 +59,7 @@ class _Boton(BaseWidget):
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
         self.dirty = 1
-        EventHandler.addWidget(self,4)
+        EventHandler.addWidget(self,self.parent.layer+1)
     
     @staticmethod
     def crear_boton(nombre,fuente,fgcolor,bgcolor):
@@ -67,7 +70,7 @@ class _Boton(BaseWidget):
         
     def onMouseDown (self,dummy):
         EventHandler.setFocus(self.parent.cascada)
-        self.parent.barra.soloUnMenu(self.parent)
+        self.parent.parent.soloUnMenu(self.parent)
  
     def onMouseIn(self):
         super().onMouseIn()
@@ -86,8 +89,8 @@ class _Cascada (BaseWidget):
         self.visible = False
         self.componentes = LayeredDirty()
         self.parent = parent
-        self.nombre = parent.nombre+'.Cascada.'+nombre
-        self.layer = self.parent.layer +20
+        self.nombre = parent.nombre+'.Cascada:'+nombre
+        self.layer = self.parent.layer+2
         self.x,self.y = x,y
         _fuente = font.SysFont('Tahoma',11)
         self.w = 0
@@ -144,7 +147,7 @@ class _Cascada (BaseWidget):
         recursion = True
         ancestro = self.parent
         while recursion:
-            if hasattr(ancestro,'parent'):
+            if hasattr(ancestro,'parent') and isinstance(ancestro.parent,Menu):
                 ancestro = ancestro.parent
             else:
                 recursion = False
@@ -212,7 +215,7 @@ class _Cascada (BaseWidget):
         recursion = True
         ancestro = self.parent
         while recursion:
-            if hasattr(ancestro,'parent'):
+            if hasattr(ancestro,'parent') and hasattr(ancestro.parent,'hideMenu'):
                 ancestro = ancestro.parent
             else:
                 recursion = False

@@ -73,6 +73,7 @@ class SpecialCanvas (Canvas):
         self.image = self.FONDO.subsurface(self.clip)
         self.ReglaX.actualizar_tamanio(w)
         self.ReglaY.actualizar_tamanio(h)
+        self.HandlerRegla.actualizar_tamanio(w,h)
         self.Grilla.actualizar_tamanio(w,h)
         self.doc_w,self.doc_h = w,h
         self.Th,self.Tw = w,h
@@ -115,19 +116,22 @@ class SpecialCanvas (Canvas):
     def addTile(self,datos):
         tile = SimboloCNVS(self,datos)
         self.tiles.add(tile)
-        
+    
     def scroll(self,dx=0,dy=0):
         self.clip.x += dx
         self.clip.y += dy
         try:
             self.image.set_clip(self.clip)
             self.image = self.FONDO.subsurface(self.clip)
+            self.HandlerRegla.scroll(dx,dy)
         except:
             self.clip.x -= dx
             self.clip.y -= dy
             self.image.set_clip(self.clip)
-        self.ReglaX.scroll(dx)
-        self.ReglaY.scroll(dy)
+        if dx:
+            self.ReglaX.scroll(dx)
+        if dy:
+            self.ReglaY.scroll(dy)
         self.Grilla.scroll(dx,dy)
     
     def render(self):
@@ -157,7 +161,7 @@ class SpecialCanvas (Canvas):
             self.enabled = False
         else:
             self.enabled = True
-        
+    
     def update(self):
         super().update()
             
@@ -172,9 +176,9 @@ class SpecialCanvas (Canvas):
                 self.actualizar_tamanio_fondo(*spr.rect.size)
                 img = self._imagen_colisiones(*spr.rect.size)
                 
-            if spr not in self.capas:
-                self.capas.add(spr,layer = LAYER_FONDO)
-                self.capas.add(img,layer = LAYER_COLISIONES)
+                if spr not in self.capas:
+                    self.capas.add(spr,layer = LAYER_FONDO)
+                    self.capas.add(img,layer = LAYER_COLISIONES)
             self.capas.draw(self.FONDO)
         
         self.tiles.update()

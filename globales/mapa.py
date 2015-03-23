@@ -90,29 +90,25 @@ class Proyecto:
                 
         return index
     
-    def exportarMapa(self,ruta):
+    def exportarMapa(self):
         from os import path
-        try:
-            self.mapa['ambiente'] = self.script['ambiente']
-            for layer in ['fondo','colisiones']:
-                _ruta = self.rutas[layer]+path.split(self.script[layer])[1]
-                self.mapa['capa_background'][layer]= _ruta
-            
-            for tipo in ['props','mobs']:
-                for item in self.script[tipo]:
-                    self.mapa['capa_ground'][tipo][item] = []
-                    for x,y,z,r in self.script[tipo][item]:
-                        self.mapa['capa_ground'][tipo][item].append([x,y])
-                    
-                    _ruta = path.split(self.script['refs'][item]['ruta'])[1]
-                    self.mapa['refs'][item] = self.rutas[tipo]+_ruta
-            
-            for nombre in self.script['entradas']:
-                x = self.script['entradas'][nombre]['x']
-                y = self.script['entradas'][nombre]['y']
-                self.mapa['entradas'][nombre] = [int(x),int(y)]
+        self.mapa['ambiente'] = self.script['ambiente']
+        for layer in ['fondo','colisiones']:
+            ruta = self.rutas[layer]+path.split(self.script[layer])[1]
+            self.mapa['capa_background'][layer]= ruta
+        
+        for tipo in ['props','mobs']:
+            for item in self.script[tipo]:
+                self.mapa['capa_ground'][tipo][item] = []
+                for x,y,z,r in self.script[tipo][item]:
+                    self.mapa['capa_ground'][tipo][item].append([x,y])
                 
-            Resources.guardar_json(ruta,cls.MAPA.script)
-            cls.estado = "Mapa '"+ruta+"' exportado correctamente."
-        except: 
-            cls.estado ='Error: No se pudo exportar el mapa.'
+                ruta = path.split(self.script['refs'][item]['ruta'])[1]
+                self.mapa['refs'][item] = self.rutas[tipo]+ruta
+        
+        for nombre in self.script['entradas']:
+            x = self.script['entradas'][nombre]['x']
+            y = self.script['entradas'][nombre]['y']
+            self.mapa['entradas'][nombre] = [int(x),int(y)]
+        
+        return self.mapa.copy()

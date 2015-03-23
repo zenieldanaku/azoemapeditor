@@ -19,6 +19,7 @@ class EditarSimbolo(subVentana):
     modo = 'Pintar'
     crop_visible = True
     crop_area = None
+    layer = 20
     def __init__(self):
         titulo = None
         self.nombre = 'Editar Simbolo'

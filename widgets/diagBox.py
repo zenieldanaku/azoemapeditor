@@ -1,15 +1,17 @@
-from widgets import subVentana, BotonAceptarCancelar
-from globales import C, color, Sistema, EventHandler
+from widgets import subVentana, BotonAceptarCancelar, Checkbox, Label
+from globales import C, color, EventHandler
 from libs.textrect import render_textrect
 from pygame import font, Rect
+
 __all__ = ['Alerta','Pregunta','Error','Info']
 
 class _DiagBox(subVentana):
     def __init__(self,nombre,**opciones):
-        super().__init__(C*8-2,C*4-16,nombre,**opciones)
+        super().__init__(C*8-2,C*4,nombre,**opciones)
+        self.nombre = 'DialogBox:'+nombre
         
 class Alerta (_DiagBox):
-    layer = 40000
+    layer = 20
     _cerrar = False
     accion_true = None
     accion_false = None
@@ -18,15 +20,22 @@ class Alerta (_DiagBox):
         self.accion_true = accion_si
         self.accion_false = accion_no
         
-        self.area = Rect(3,24,self.w-6,self.h-27)
-        x,y,w,h=self.x,self.y,self.area.w,self.area.h
-        
         fuente = font.SysFont('Verdana',13)
-        render = render_textrect(texto,fuente,self.area,(0,0,0),color('sysElmFace'))
-        self.image.blit(render,(3,24))
         
-        self.btnTrue = BotonAceptarCancelar(self,x+w-(62*2)-12,y+h+1,self.aceptar)
-        self.btnFalse = BotonAceptarCancelar(self,x+w-62-4,y+h+1,self.cancelar,'Cancelar')
+        self.area = Rect(3,20,self.w-6,(fuente.get_height()+1)*3)
+        x,y,w,h=self.x,self.y,self.area.w,self.area.h+20
+              
+        render = render_textrect(texto,fuente,self.area,(0,0,0),color('sysElmFace'))
+        self.image.blit(render,self.area)
+        
+        self.check = Checkbox(self,x+3,y+h+13)
+        lblCheck = Label(self,'lblChk',x+3+12+3,self.check.y-2,"No mostrar esto nuevamente",**{'fontSize':12})
+        
+        self.btnTrue = BotonAceptarCancelar(self,x+w-(62*2)-12,y+h+30,self.aceptar)
+        self.btnFalse = BotonAceptarCancelar(self,x+w-62-4,y+h+30,self.cancelar,'Cancelar')
+        
+        self.agregar(self.check)
+        self.agregar(lblCheck)
         self.agregar(self.btnTrue)
         self.agregar(self.btnFalse)
     
@@ -44,7 +53,6 @@ class Alerta (_DiagBox):
             return True
         else:
             return False
-        
 
 class Pregunta (_DiagBox):
     pass

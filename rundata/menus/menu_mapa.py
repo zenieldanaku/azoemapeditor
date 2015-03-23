@@ -2,9 +2,7 @@ from globales import Sistema as Sys, C, EventHandler
 from widgets import Menu, FileDiag, subVentana, Label, Entry, BotonAceptarCancelar
 
 class Menu_Mapa (Menu):
-    def  __init__(self,x,y,barra):
-        self.nombre = 'Menu.Mapa'
-        self.barra = barra
+    def  __init__(self,parent,x,y):
         cascadas = {'imagen':[
                 {'nom':'Fondo','icon':Sys.iconos['fondo'],
                  'win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaFondo},carpeta_actual=Sys.fdAssets)},
@@ -12,7 +10,7 @@ class Menu_Mapa (Menu):
                 ]}
         opciones = [{'nom':'Imagen','csc':cascadas['imagen']},
                     {'nom':'Ajustes','win':lambda:CuadroMapa('Ajustar Mapa')}]
-        super().__init__('Mapa',opciones,x,y)
+        super().__init__(parent,'Mapa',opciones,x,y)
     
     def update(self):
         nombres = ['Ajustes','Fondo']
@@ -27,6 +25,7 @@ class CuadroMapa(subVentana):
     value = False
     labels = []
     entrys = []
+    layer = 8
     def __init__(self,nombre):
         self.nombre = 'Nuevo Mapa'
         super().__init__(11*C,5*C+2,nombre)

@@ -3,9 +3,7 @@ from widgets import Menu, FileDiag
 from .menu_mapa import CuadroMapa
 
 class Menu_Archivo(Menu):
-    def  __init__(self,x,y,barra):
-        self.nombre = 'Menu.Archivo'
-        self.barra = barra
+    def  __init__(self,parent,x,y):
         n,w,c,s,k = 'nom','win','cmd','csc','key'
         
         cascadas = {
@@ -20,7 +18,7 @@ class Menu_Archivo(Menu):
             {n:'Exportar',s:cascadas['exportar']},
             {n:'Cerrar',c:Sys.cerrarProyecto,k:'Ctrl+Q'},
             {n:'Salir',c:Sys.salir,k:'Esc'}]
-        super().__init__('Archivo',opciones,x,y)
+        super().__init__(parent,'Archivo',opciones,x,y)
     
     @staticmethod
     def Guardar():

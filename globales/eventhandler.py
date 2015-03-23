@@ -1,5 +1,5 @@
 from pygame import MOUSEBUTTONDOWN, MOUSEBUTTONUP,MOUSEMOTION,KEYDOWN,KEYUP
-from pygame import K_ESCAPE,QUIT,K_F1,K_RCTRL,K_LCTRL,K_RALT,K_LALT,key
+from pygame import K_ESCAPE,QUIT,K_F1,K_F2,K_RCTRL,K_LCTRL,K_RALT,K_LALT,key
 from pygame.sprite import LayeredDirty
 
 class EventHandler:
@@ -64,6 +64,15 @@ class EventHandler:
                         print(widget.nombre)
                     print('--Fin de lista')
                     print('Nº Total de widgets: '+str(i))
+                elif event.key == K_F2:
+                    print('--Inicio de lista')
+                    layers = cls.contents.layers()
+                    for idx in layers:
+                        print('\n--Widgets en layer '+str(idx))
+                        sprites = cls.contents.get_sprites_from_layer(idx)
+                        for widget in sprites:
+                            print(widget.nombre)
+                    print('--Fin de lista')
                 else:
                     cls.key = key.name(event.key)
                 cls.currentFocus.onKeyDown(event)

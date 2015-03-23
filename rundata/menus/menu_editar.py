@@ -4,9 +4,7 @@ from ._cuadroEditarSimbolo import EditarSimbolo
 from ._cuadrosEntradas import CuadroEntrada
 
 class Menu_Editar(Menu):
-    def  __init__(self,x,y,barra):
-        self.nombre = 'Menu.Editar'
-        self.barra = barra
+    def  __init__(self,parent,x,y):
         opciones = [
             {"nom":'Deshacer','cmd':lambda:print('deshacer'),'key':'Ctrl+Z'},
             {"nom":'Rehacer','cmd':lambda:print('rehacer'),'key':'Ctrl+Alt+Z'},
@@ -19,7 +17,7 @@ class Menu_Editar(Menu):
             {"nom":'Simbolo','win':EditarSimbolo},
             {'nom':'Preferencias','win':lambda:print('preferencias'),'key':'Ctrl+P'}
             ]
-        super().__init__('Editar',opciones,x,y)
+        super().__init__(parent,'Editar',opciones,x,y)
         
         self.referencias['Rehacer'].serDeshabilitado()
     

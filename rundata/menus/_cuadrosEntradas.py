@@ -3,8 +3,10 @@ from globales import C, Sistema
 from pygame import Rect
 
 class CuadroEntrada(subVentana):
+    layer = 20
     def __init__(self,**opciones):
-        super().__init__(6*C+16,8*C-8,'Entradas',**opciones)
+        super().__init__(6*C+16,9*C-16,'Entradas',**opciones)
+        self.nombre = 'CuadroEntradas'
         DX = 18
         self.grid = DataGrid(self,'datos',self.x+3+DX,self.y+23+15,{},
                              titulos=['Nombre','X','Y'],cel_w=53,n_fil=9,sep=2)
@@ -12,9 +14,6 @@ class CuadroEntrada(subVentana):
         Nombre = Label(self,'nmbr',self.x+9+DX,self.y+23,'Nombre',**ops)
         lblPosX = Label(self,'PosX',self.x+C*2+16+DX,self.y+23,'X',**ops)
         lblPosY = Label(self,'PosY',self.x+C*4+6+DX,self.y+23,'Y',**ops)
-        self.agregar(Nombre)
-        self.agregar(lblPosX)
-        self.agregar(lblPosY)
         
         sort = sorted([nombre for nombre in Sistema.PROYECTO.script['entradas']])
         relleno = []
@@ -24,13 +23,27 @@ class CuadroEntrada(subVentana):
             relleno.append([nombre,x,y])
         
         self.grid.rellenar(relleno)
-        
         scroll = ScrollV(self.grid,self.x+self.w-16-4,self.y+20+19)
+        
+        self.btnAceptar = BotonAceptarCancelar(self,self.x+63,self.y+self.h-23,self.aceptar)
+        self.btnCanelar = BotonAceptarCancelar(self,self.x+self.w-73,self.y+self.h-23)
+        
+        self.agregar(Nombre)
+        self.agregar(lblPosX)
+        self.agregar(lblPosY)
         self.agregar(scroll)
+        self.agregar(self.btnAceptar)
+        self.agregar(self.btnCanelar)
     
     def onDestruction(self):
         super().onDestruction()
         self.grid.onDestruction()
+    
+    def reubicar_en_ventana(self, dx, dy):
+        self.grid.reubicar_en_ventana(dx,dy)
+        super().reubicar_en_ventana(dx, dy)
+    def aceptar(self):
+        pass
 
 class UnaEntrada(subVentana):
     entrada_nombre = ''

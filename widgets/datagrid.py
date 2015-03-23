@@ -18,7 +18,7 @@ class DataGrid(BaseWidget):
             e = self.celdas[x,y]
             EventHandler.addWidget(e,layer= self.layer+1)
         
-        self.h = cel_h*fils+sep*(fils-1)+1
+        self.h = cel_h*fils+sep*(fils-1)
         
     def _crear(self,fils,cols,celw,celh,sep):
         celdas = {}
@@ -47,6 +47,11 @@ class DataGrid(BaseWidget):
     def scroll(self,dx,dy):
         pass
     
+    def reubicar_en_ventana(self, dx, dy):
+        for x,y in self.celdas:
+            celda = self.celdas[x,y]
+            celda.reubicar_en_ventana(dx, dy)
+            
     def onDestruction(self):
         for x,y in self.celdas:
             e = self.celdas[x,y]

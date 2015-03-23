@@ -7,13 +7,13 @@ from pygame.sprite import LayeredDirty
 class Tree (Marco):
     ItemActual = ''
     items = None
-    layer = 4
     def __init__(self,parent,x,y,w,h,walk,actual,**opciones):
         if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysMenBack' 
+            opciones['colorFondo'] = 'sysMenBack'
+        self.nombre = parent.nombre+'.Tree'
         super().__init__(x,y,w,h,False,**opciones)
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Tree'
+        self.layer = self.parent.layer +1
         self.items = LayeredDirty()
         self.crearLista(walk)
         self.ItemActual = actual #ruta
@@ -75,7 +75,7 @@ class Item (BaseWidget):
         super().__init__(**opciones)
         self.x,self.y = x,y
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Item.'+keyargs['obj']
+        self.nombre = self.parent.nombre+'.Item:'+keyargs['obj']
         self.layer  = self.parent.layer +1
         self.nom_obj = keyargs['obj']
         self.hijos = LayeredDirty()
@@ -86,10 +86,11 @@ class Item (BaseWidget):
         w = self.cursor.rect.w+3+self.opcion.rect.w
         self.rect = Rect(x,y,w,h)
         self.w,self.h = self.rect.size
-        EventHandler.addWidget(self.opcion,self.layer+1)
-        EventHandler.addWidget(self.cursor,self.layer+1)      
+        EventHandler.addWidget(self.opcion,self.layer)
+        EventHandler.addWidget(self.cursor,self.layer)
                 
     def onDestruction(self):
+        EventHandler.delWidget(self.opcion.tooltip)
         EventHandler.delWidget(self.opcion)
         EventHandler.delWidget(self.cursor)
     
@@ -134,8 +135,9 @@ class _Opcion(BaseOpcion):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
         self.path = path
-        self.tooltip = ToolTip(self,path,x,y)
-    
+        self.tooltip = ToolTip(self.parent,path,x,y)
+        self.nombre = self.parent.nombre+'.Opcion'
+        
     def onMouseDown(self,button):
         if button == 1:
             self.selected = True
@@ -155,14 +157,12 @@ class _Opcion(BaseOpcion):
             self.tooltip.show()
         else:
             self.tooltip.hide()
-        
-    
 
 class _Cursor(BaseWidget):
     def __init__(self,parent,nombre,x,y,w,h,vacio,**opciones):
         super().__init__(**opciones)
         self.parent = parent
-        self.nombre = self.parent.nombre+'.Cursor.'+nombre
+        self.nombre = self.parent.nombre+'.Cursor'
         self.x,self.y = x,y
         self.w,self.h = w,h
         self.open = True
@@ -190,22 +190,21 @@ class _Cursor(BaseWidget):
             if not self.vacio:
                 self.open = not self.open
             
-            if self.open:
-                self.parent.mostrarHijos()
-                dy = +1
-            else:
-                self.parent.colapsarHijos()
-                dy = -1
+            dy = self.setStatus()
+                
             
             self.parent.parent.mover(self.parent,dy)
     
     def setStatus(self):
         if self.open:
             self.image = self.img_opn
+            self.parent.mostrarHijos()
+            dy = +1
         else:
             self.image = self.img_cld
-        
+            self.parent.colapsarHijos()
+            dy = -1
+        return dy
+    
     def update(self):
-        self.setStatus()
         self.dirty = 1
-
