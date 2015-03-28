@@ -54,7 +54,7 @@ class LineaGuiaX(BaseLinea):
     def actualizar_tamanio(self,nuevotamanio):
         self.w = nuevotamanio
         self.image = self._crear(self.w,self.h)
-        
+
 class LineaGuiaY(BaseLinea):
     def __init__(self,parent,idx,**opciones):
         self.w = 1

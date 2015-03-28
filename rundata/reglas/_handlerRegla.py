@@ -72,12 +72,11 @@ class HandlerRegla(BaseWidget):
             draw.line(self.image,(0,0,0),(10,0),(10,14))
     
     def scroll(self,dx,dy):
-        print(dx,dy)
         for linea in self.lineas:
-            if isinstance(linea, LineaGuiaX):
-                linea.rect.x -= dy
+            if isinstance(linea, LineaGuiaX):    
+                linea.rect.y -= dy
             elif isinstance(linea, LineaGuiaY):
-                linea.rect.y -= dx
+                linea.rect.x -= dx
     
     def actualizar_tamanio(self,w,h):
         for linea in self.lineas:

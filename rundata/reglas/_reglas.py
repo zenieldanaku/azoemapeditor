@@ -83,8 +83,10 @@ class ReglaH(BaseRegla):
 
     def moverLinea(self):
         x,y = self.parent.getRelMousePos()
-        y += self.y+self.h
-        self.linea.rect.y = y
+        dy = y + self.y + self.h
+        
+        self.linea.rect.y = dy
+        self.linea.y = y
     
     def scroll(self,dx):
         self.clip.x += dx
@@ -101,7 +103,7 @@ class ReglaH(BaseRegla):
             self.pressed = True
             self.linea = LineaGuiaX(self.parent,len(self.lineas))
             self.newLine = True
-            
+
 class ReglaV(BaseRegla):
     def __init__(self,parent,x,y,h,**opciones):
         super().__init__(parent,x,y,**opciones)
@@ -156,4 +158,3 @@ class ReglaV(BaseRegla):
             self.pressed = True
             self.linea = LineaGuiaY(self.parent,len(self.lineas))
             self.newLine = True
-    
