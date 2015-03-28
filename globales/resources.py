@@ -11,9 +11,9 @@ class Resources:
         return data
     
     @staticmethod
-    def guardar_json (archivo,datos,odenar=True):
+    def guardar_json (archivo,datos,ordenar=True):
         ex = open(archivo,'w')
-        if odenar:
+        if ordenar:
             json.dump(datos,ex, sort_keys=True,indent=4, separators=(',', ': '))
         else:
             json.dump(datos,ex)

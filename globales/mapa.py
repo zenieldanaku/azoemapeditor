@@ -73,7 +73,7 @@ class Proyecto:
         nombre = datos['nombre']
         ruta = datos['ruta']
         grupo = datos['grupo']
-        code = datos['colisiones']
+        code = datos['cols_code']
         
         root = self.script[grupo]
         if nombre not in root:
