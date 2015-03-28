@@ -23,7 +23,7 @@ class BaseRegla(BaseWidget):
             linea.actualizar_tamanio(nuevotamanio)
         
     def onMouseUp(self,button):
-        if button == 1:
+        if button == 1 and self.enabled:
             self.pressed = False
             self.lineas.append(self.linea)
             self.linea = None
@@ -99,7 +99,7 @@ class ReglaH(BaseRegla):
             self.clip.x -= dx
     
     def onMouseDown(self,button):
-        if button == 1:
+        if button == 1 and self.enabled:
             self.pressed = True
             self.linea = LineaGuiaX(self.parent,len(self.lineas))
             self.newLine = True
@@ -154,7 +154,7 @@ class ReglaV(BaseRegla):
             self.clip.y -= dy
     
     def onMouseDown(self,button):
-        if button == 1:
+        if button == 1 and self.enabled:
             self.pressed = True
             self.linea = LineaGuiaY(self.parent,len(self.lineas))
             self.newLine = True
