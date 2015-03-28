@@ -78,13 +78,6 @@ class HandlerRegla(BaseWidget):
             elif isinstance(linea, LineaGuiaY):
                 linea.rect.x -= dx
     
-    def actualizar_tamanio(self,w,h):
-        for linea in self.lineas:
-            if isinstance(linea, LineaGuiaX):
-                linea.actualizar_tamanio(w)
-            elif isinstance(linea, LineaGuiaY):
-                linea.actualizar_tamanio(h)
-    
     def moverLineas(self):
         x,y = self.parent.getRelMousePos()
         abs_x,abs_y = mouse.get_pos()

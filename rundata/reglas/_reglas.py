@@ -11,7 +11,7 @@ class BaseRegla(BaseWidget):
     
     def __init__(self,parent,x,y,**opciones):
         super().__init__(**opciones)
-        #self.lineas = []
+        self.lineas = []
         self.x,self.y = x,y
         self.parent = parent
     
@@ -19,8 +19,6 @@ class BaseRegla(BaseWidget):
         self.FONDO = self.crear(nuevotamanio)
         self.clip.topleft = 0,0
         self.image = self.FONDO.subsurface(self.clip)
-        for linea in self.lineas:
-            linea.actualizar_tamanio(nuevotamanio)
         
     def onMouseUp(self,button):
         if button == 1 and self.enabled:
@@ -88,15 +86,12 @@ class ReglaH(BaseRegla):
         self.linea.rect.y = abs_y
         self.linea.y = y
     
-    def scroll(self,dx):
+    def scroll(self,dx,dy):
         self.clip.x += dx
-        try:
-            self.image.set_clip(self.clip)
-            self.image = self.FONDO.subsurface(self.clip)
-            for i in range(len(self.lineas)):
-                self.lineas[i].rect.x -= dx
-        except:
-            self.clip.x -= dx
+        self.image.set_clip(self.clip)
+        self.image = self.FONDO.subsurface(self.clip)
+        for i in range(len(self.lineas)):
+            self.lineas[i].rect.y -= dy
     
     def onMouseDown(self,button):
         if button == 1 and self.enabled:
@@ -143,16 +138,13 @@ class ReglaV(BaseRegla):
         self.linea.rect.x = abs_x
         self.linea.x = x
     
-    def scroll(self,dy):
+    def scroll(self,dx,dy):
         self.clip.y += dy
-        try:
-            self.image.set_clip(self.clip)
-            self.image = self.FONDO.subsurface(self.clip)
-            for i in range(len(self.lineas)):
-                self.lineas[i].rect.y -= dy
-        except:
-            self.clip.y -= dy
-    
+        self.image.set_clip(self.clip)
+        self.image = self.FONDO.subsurface(self.clip)
+        for i in range(len(self.lineas)):
+            self.lineas[i].rect.x -= dx
+        
     def onMouseDown(self,button):
         if button == 1 and self.enabled:
             self.pressed = True

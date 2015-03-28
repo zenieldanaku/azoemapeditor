@@ -40,8 +40,7 @@ class BaseLinea (BaseWidget):
     
 class LineaGuiaX(BaseLinea):
     def __init__(self,parent,idx,**opciones):
-        self.w = parent.Tw
-        self.h = 1
+        self.w,self.h = 480,1
         super().__init__(parent,idx,**opciones)
         self.nombre += '.W:'+str(self.idx)
         
@@ -49,15 +48,10 @@ class LineaGuiaX(BaseLinea):
         x,y = mouse.get_pos()
         if y > self.base_y:
             self.rect.y = y
-    
-    def actualizar_tamanio(self,nuevotamanio):
-        self.w = nuevotamanio
-        self.image = self._crear(self.w,self.h)
 
 class LineaGuiaY(BaseLinea):
     def __init__(self,parent,idx,**opciones):
-        self.w = 1
-        self.h = parent.Th
+        self.w,self.h = 1,480
         super().__init__(parent,idx,**opciones)
         self.nombre += '.H:'+str(self.idx)
         
@@ -65,7 +59,3 @@ class LineaGuiaY(BaseLinea):
         x,y = mouse.get_pos()
         if x > self.base_x:
             self.rect.x = x
-    
-    def actualizar_tamanio(self,nuevotamanio):
-        self.h = nuevotamanio
-        self.image = self._crear(self.w,self.h)
