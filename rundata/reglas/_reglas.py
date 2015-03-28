@@ -82,10 +82,10 @@ class ReglaH(BaseRegla):
         return regla
 
     def moverLinea(self):
+        abs_x,abs_y = mouse.get_pos()
         x,y = self.parent.getRelMousePos()
-        dy = y + self.y + self.h
         
-        self.linea.rect.y = dy
+        self.linea.rect.y = abs_y
         self.linea.y = y
     
     def scroll(self,dx):
@@ -137,10 +137,10 @@ class ReglaV(BaseRegla):
         return regla
         
     def moverLinea(self):
+        abs_x,abs_y = mouse.get_pos()
         x,y = self.parent.getRelMousePos()
-        dx = x + self.x + self.w
-        
-        self.linea.rect.x = dx
+
+        self.linea.rect.x = abs_x
         self.linea.x = x
     
     def scroll(self,dy):

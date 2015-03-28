@@ -12,7 +12,6 @@ class BaseLinea (BaseWidget):
         self.idx = idx
         self.x,self.y = self.parent.x,self.parent.y
         self.base_x,self.base_y = self.x,self.y
-        #self.max_x,self.max_y = self.parent.Tw,self.parent.Th
         
         self.image = self._crear(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))

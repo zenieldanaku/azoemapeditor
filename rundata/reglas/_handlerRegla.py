@@ -27,14 +27,14 @@ class HandlerRegla(BaseWidget):
         return imagen
         
     def onMouseDown(self,button):
-        if button == 1:
+        if button == 1 and self.enabled:
             self.pressed = True
             self.lineaX = LineaGuiaX(self.parent,len(self.lineas))
             self.lineaY = LineaGuiaY(self.parent,len(self.lineas))
             self.newLine = True
     
     def onMouseUp(self,button):
-        if button == 1:
+        if button == 1 and self.enabled:
             self.pressed = False
             self.lineas.append(self.lineaX)
             self.lineas.append(self.lineaY)
@@ -87,9 +87,15 @@ class HandlerRegla(BaseWidget):
     
     def moverLineas(self):
         x,y = self.parent.getRelMousePos()
+        abs_x,abs_y = mouse.get_pos()
         
-        x += self.x+self.w
-        y += self.y+self.h
-        
-        self.lineaX.rect.y = y
-        self.lineaY.rect.x = x
+        self.lineaX.rect.y = abs_y
+        self.lineaY.rect.x = abs_x
+        self.lineaX.x = y
+        self.lineaY.y = x
+    
+    def update(self):
+        if not self.enabled:
+            for linea in self.lineas:
+                EventHandler.delWidget(linea)
+            self.lineas.clear()
