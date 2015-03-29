@@ -17,7 +17,7 @@ class Tree (Marco):
         self.items = LayeredDirty()
         self.crearLista(walk)
         self.ItemActual = actual #ruta
-                
+        self.doc_h = h
     def scroll(self,dy):
         pass
     

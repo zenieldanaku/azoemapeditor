@@ -117,6 +117,7 @@ class arbolCarpetas(Marco):
         self.layer = parent.layer+2
         super().__init__(x,y,w,h,False,**opciones)
         self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()),carpeta_actual)
+        #self.arbol.doc_h = h
         self.arbol.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y)
         self.agregar(self.arbol.ScrollY,self.layer+1)
         self.agregar(self.arbol,self.layer+1)
@@ -180,6 +181,7 @@ class listaDeArchivos(Marco):
         self.items = LayeredDirty()
         self.Seleccionados = []
         self.SeleccionMultiple = permitirmultiple
+        self.doc_h = h
         
     @staticmethod
     def _FiltrarExtS(archivos,extension):
