@@ -1,7 +1,6 @@
 from pygame import Rect,Surface,mouse,draw
-from pygame.sprite import LayeredDirty
 from . import BaseWidget, Boton
-from globales import color, C
+from globales import color, C, EventHandler
 
 class _baseScroll(BaseWidget):
     nombre = ''
@@ -9,94 +8,40 @@ class _baseScroll(BaseWidget):
     cursor = None
     BtnPos = None # derecha, o abajo
     BtnNeg = None # izquierda, o arriba
-    componentes = None # LayeredDirty
     def __init__(self,parent,x,y,w,h):
-        super().__init__()
-        self.parent = parent
-        self.layer = self.parent.layer +1
+        super().__init__(parent)
         self.x,self.y = x,y
         self.w,self.h = w,h
         self.image = self._crear(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        self.componentes = LayeredDirty()
-        self.dirty = 1
     
-    def _crear(self,w,h):
+    @staticmethod
+    def _crear(w,h):
         imagen = Surface((w,h))
         imagen.fill(color('sysScrBack'))
         return imagen
     
-    def getRelMousePos(self):
-        abs_x,abs_y = mouse.get_pos()
-        dx = abs_x-self.x
-        dy = abs_y-self.y
+    def onDestruction(self):
+        EventHandler.delWidget(self.cursor)
+        EventHandler.delWidget(self.BtnPos)
+        EventHandler.delWidget(self.BtnNeg)
         
-        return dx,dy
-    
-    def get_component(self):
-        x,y = self.getRelMousePos()
-        if self.componentes.get_sprites_at((x,y)) != []:
-            return self.componentes.get_sprites_at((x,y))[-1]
-        return self
-        
-    def onMouseDown(self,button):
-        if button == 1:
-            item = self.get_component()
-            if item != self:
-                item.onMouseDown(button)
-            #else:
-            #    self.cursor.pressed = True
-    
-    def onMouseUp(self,button):
-        if button == 1:
-            item = self.get_component()
-            if item != self:
-                item.onMouseUp(button)
-            #else:
-            #    self.cursor.pressed = False
-    
-    def onMouseIn(self):
-        super().onMouseIn()
-        item = self.get_component()
-        if item != self:
-            super().onMouseOut()
-            item.onMouseIn()
-        
-    def onMouseOver(self):
-        #if self.cursor.pressed:
-        #    self.cursor.onMouseOver()
-        #else:
-        item = self.get_component()
-        if item != self:
-            item.onMouseOver()
-        
-    #def onMouseOut(self):
-    #    if not self.cursor.pressed:
-    #        super().onMouseOut()
-    
-    #def setCursorSpeed(self,velocidad):
-    #    self.cursor.velocidad = velocidad
-    
-    def update(self):
-        self.image.fill(color('sysScrBack'))
-        self.componentes.update()
-        self.cursor.enabled = self.enabled
-        self.cursor.visible = self.enabled
-        self.componentes.draw(self.image)
-        self.dirty = 1
+    def reubicar_en_ventana(self,dx=0,dy=0):
+        super().reubicar_en_ventana(dx,dy)
+        self.cursor.reubicar_en_ventana(dx,dy)
+        self.BtnPos.reubicar_en_ventana(dx,dy)
+        self.BtnNeg.reubicar_en_ventana(dx,dy)
 
 class ScrollV(_baseScroll):
     def __init__(self,parent,x,y,w=1/2*C):
-        super().__init__(parent,x,y,w,parent.h)
+        super().__init__(parent,x,y+12,w,parent.h-12*2)
         self.nombre = self.parent.nombre+'.ScrollV'
-        self.area = Rect(0,0,self.w,self.h-16*2)
-        self.BtnPos = _btnVer(self,self.h-16,'abajo')
-        self.BtnNeg = _btnVer(self,0,'arriba')
-        self.cursor = CursorV(self,parent,0,16,1/2*C)
-        self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
-
+        self.area = Rect(0,0,self.w,self.h)
+        self.BtnPos = _btnVer(self,self.rect.bottom,'abajo')
+        self.BtnNeg = _btnVer(self,self.y-12,'arriba')
+        self.cursor = CursorV(self,parent,self.x,self.y,1/2*C)
+        
     def actualizar_tamanio(self,doc_h):
-        #doc_h = self.parent.doc_h
         win_h = self.h
         self_h = self.area.h
         
@@ -108,16 +53,14 @@ class ScrollV(_baseScroll):
 
 class ScrollH(_baseScroll):
     def __init__(self,parent,x,y,h=1/2*C):
-        super().__init__(parent,x,y,parent.w,h)
+        super().__init__(parent,x+12,y,parent.w-12*2,h)
         self.nombre = self.parent.nombre+'.ScrollH'
-        self.area = Rect(0,0,self.w-16*2,self.h)
-        self.BtnPos = _btnHor(self,self.w-16,'derecha')
-        self.BtnNeg = _btnHor(self,0,'izquierda')
-        self.cursor = CursorH(self,parent,16,0,1/2*C)
-        self.componentes.add(self.BtnNeg,self.BtnPos,self.cursor)
+        self.area = Rect(0,0,self.w,self.h)
+        self.BtnPos = _btnHor(self,self.rect.right,'derecha')
+        self.BtnNeg = _btnHor(self,self.x-12,'izquierda')
+        self.cursor = CursorH(self,parent,self.x,self.y,1/2*C)
         
     def actualizar_tamanio(self,doc_w):
-        #doc_w = self.parent.doc_w
         win_w = self.w
         self_w = self.area.w
         
@@ -129,22 +72,20 @@ class ScrollH(_baseScroll):
 
 class _baseCursor(BaseWidget):
     parent = None
-    #pressed = False
-    
+    pressed = False
+    dx,dy = 0,0
     def __init__(self,parent,x,y,w,h):
-        super().__init__()
-        self.parent = parent
+        super().__init__(parent)
         self.x,self.y = x,y
         self.w,self.h = w,h
         self.crear(w,h)
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
-        #self.pressed = False
+        self.pressed = False
         self.dirty = 1
     
     def crear(self,w,h):
         cF,cL,cS = color('sysElmFace'),color('sysElmLight'),color('sysElmShadow')
-        #self.image = self._biselar(self._agregar_barras(self._crear(w,h,cF),cL,cS),cL,cS)
-        self.image = self._biselar(self._crear(w,h,cF),cL,cS)
+        self.image = self._biselar(self._agregar_barras(self._crear(w,h,cF),cL,cS),cL,cS)
     
     def _arrastrar(self):
         abs_x,abs_y = mouse.get_pos()
@@ -153,7 +94,9 @@ class _baseCursor(BaseWidget):
         dx = new_x-self.px
         dy = new_y-self.py
         
-        return dx,dy
+        self.dx = dx
+        self.dy = dy
+        
     
     @staticmethod
     def _crear(w,h,color):
@@ -171,13 +114,14 @@ class _baseCursor(BaseWidget):
             x,y = mouse.get_pos()
             self.px = x-self.x
             self.py = y-self.y
-            #self.pressed = True
+            self.pressed = True
         
-    #def onMouseUp(self,button):
-    #    if button == 1:
-    #        self.pressed = False
+    def onMouseUp(self,button):
+        if button == 1:
+            self.pressed = False
     
     def update(self):
+        self.dx,self.dy = 0,0
         self.dirty = 1
 
 class CursorH(_baseCursor):
@@ -186,6 +130,7 @@ class CursorH(_baseCursor):
         self.nombre = parent.nombre+'.CursorH'
         self.scrollable = scrollable
         self.rel_rect = Rect((0,0),(self.w,2))
+        EventHandler.addWidget(self)
         
     @staticmethod
     def _agregar_barras(imagen,c1,c2):
@@ -201,19 +146,32 @@ class CursorH(_baseCursor):
         super().actualizar_tamanio(new_w,new_h)
         self.rel_rect.w = new_w
         
-    def mover(self,dx,scroll=0):
-        if self.parent.area.contains(self.rel_rect.move(dx,0)):
-            self.rect.x += dx
-            self.rel_rect.x += dx
-            self.x += dx
-            self.scrollable.scroll(dx = scroll)
-    
-    #def update(self):
-    #    super().update()
-    #    if self.pressed:
-    #        dx,dy = self._arrastrar()
-    #        if dx != 0:
-    #            self.mover(dx)
+    def mover(self,scroll=0):
+        dx = self.dx
+        
+        if dx > 0:
+            opuesto = -1
+        elif dx < 0:
+            opuesto = +1
+        
+        while True:
+            
+            if self.parent.area.contains(self.rel_rect.move(dx,0)):
+                self.rect.x += dx
+                self.rel_rect.x += dx
+                self.x += dx
+                self.scrollable.scroll(dx = scroll)
+                #print(dx)
+                break
+            else:
+                dx += opuesto
+        
+    def update(self):
+        super().update()
+        if self.pressed:
+            self._arrastrar()
+            if self.dx != 0:
+                self.mover()
 
 class CursorV(_baseCursor):
     def __init__(self,parent,scrollable,x,y,h,w=1/2*C):
@@ -221,6 +179,7 @@ class CursorV(_baseCursor):
         self.nombre = parent.nombre+'.CursorV'
         self.scrollable = scrollable
         self.rel_rect = Rect((0,0),(2,self.h))
+        EventHandler.addWidget(self)
     
     @staticmethod
     def _agregar_barras(imagen,c1,c2):
@@ -236,19 +195,31 @@ class CursorV(_baseCursor):
         super().actualizar_tamanio(new_w,new_h)
         self.rel_rect.h = new_h
         
-    def mover(self,dy,scroll):
-        if self.parent.area.contains(self.rel_rect.move(0,dy)):
-            self.rect.y += dy
-            self.rel_rect.y += dy
-            self.y += dy
-            self.scrollable.scroll(dy=scroll)
-
-    #def update(self):
-    #    super().update()
-    #    if self.pressed:
-    #        dx,dy = self._arrastrar()
-    #        if dy != 0:
-    #            self.mover(dy)
+    def mover(self,scroll=0):
+        dy = self.dy
+        
+        if dy > 0:
+            opuesto = -1
+        elif dy < 0:
+            opuesto = +1
+        
+        while True:
+            if self.parent.area.contains(self.rel_rect.move(0,dy)):
+                self.rect.y += dy
+                self.rel_rect.y += dy
+                self.y += dy
+                self.scrollable.scroll(dy = scroll)
+                #print(dy)
+                break
+            else:
+                dy += opuesto
+    
+    def update(self):
+        super().update()
+        if self.pressed:
+            self._arrastrar()
+            if self.dy != 0:
+                self.mover()
 
 class _baseBtn(BaseWidget):
     nombre = ''
@@ -256,8 +227,7 @@ class _baseBtn(BaseWidget):
     pressed = False
     
     def __init__(self,parent,x,y,orientacion):
-        super().__init__()
-        self.parent = parent
+        super().__init__(parent)
         self.pressed = False
         self.orientacion = orientacion
         self.x,self.y = x,y
@@ -286,15 +256,16 @@ class _baseBtn(BaseWidget):
         self.serDeselegido()
     
     def update(self):
-        #if self.pressed:
-        #    self.serPresionado()
+        if self.pressed:
+            self.serPresionado()
         self.enabled = self.parent.enabled
         self.dirty = 1
 
 class _btnVer(_baseBtn):
     def __init__(self,parent,y,orientacion):
-        self.w,self.h = parent.w,16
-        super().__init__(parent,0,y,orientacion)
+        self.w,self.h = parent.w,12
+        super().__init__(parent,parent.x,y,orientacion)
+        EventHandler.addWidget(self)
     
     @staticmethod
     def _crear(w,h,orientacion):
@@ -302,41 +273,28 @@ class _btnVer(_baseBtn):
         imagen.fill(color('sysElmFace'))
         
         if orientacion == 'arriba':
-            points = [[3,h-5],[w//2-1,5],[w-5,h-5]]
+            points = [[3,h-4],[w//2-1,2],[w-5,h-4]]
         elif orientacion == 'abajo':
-            points = [[3,5],[w//2-1,h-5],[w-5,5]]
+            points = [[3,4],[w//2-1,h-4],[w-5,4]]
 
         draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
     
-    def serPresionado(self):
-        super().serPresionado()
-        if self.orientacion == 'arriba':
-            self.parent.cursor.mover(-14,-32)
-        elif self.orientacion == 'abajo':
-            self.parent.cursor.mover(+14,+32)
-
 class _btnHor(_baseBtn):
     def __init__(self,parent,x,orientacion):
-        self.w,self.h = 16,parent.h
-        super().__init__(parent,x,0,orientacion)
-    
+        self.w,self.h = 12,parent.h
+        super().__init__(parent,x,parent.y,orientacion)
+        EventHandler.addWidget(self)
+        
     @staticmethod
     def _crear(w,h,orientacion):
         imagen = Surface((w,h))
         imagen.fill(color('sysElmFace'))
         
         if orientacion == 'derecha':
-            points = [[5,3],[w-5,h//2-1],[5,h-5]]
+            points = [[4,3],[w-4,h//2-1],[4,h-5]]
         elif orientacion == 'izquierda':
-            points = [[w-5,3],[5,h//2-1],[w-5,h-5]]
+            points = [[w-5,3],[3,h//2-1],[w-5,h-5]]
         
         draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
-    
-    def serPresionado(self):
-        super().serPresionado()
-        if self.orientacion == 'izquierda':
-            self.parent.cursor.mover(-14,-32)
-        elif self.orientacion == 'derecha':
-            self.parent.cursor.mover(+14,+32)

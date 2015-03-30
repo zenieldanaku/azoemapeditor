@@ -8,18 +8,16 @@ class Marco(BaseWidget):
     indexes = []
     doc_w = None
     doc_h = None
-    def __init__(self,x,y,w,h,borde=True,**opciones):
+    def __init__(self,x,y,w,h,borde=True,parent=None,**opciones):
         self.contenido = LayeredDirty()
-        super().__init__(**opciones)
-        self.layer += 1
+        super().__init__(parent,**opciones)
         self.w, self.h = w,h
         self.x, self.y = x,y
-        self._layer = self.layer
         self.image = Surface((self.w, self.h))
         self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         
-        EventHandler.addWidget(self,self._layer)
+        EventHandler.addWidget(self)
         
         if borde:self.image = self._biselar(self.image,
                 color(self.opciones.get('colorLuz','sysElmLight')),
@@ -30,9 +28,9 @@ class Marco(BaseWidget):
             widget.reubicar_en_ventana(dx, dy)
         super().reubicar_en_ventana(dx, dy)
         
-    def agregar(self,objeto, layer=1):
+    def agregar(self,objeto):
         self.contenido.add(objeto)
-        EventHandler.addWidget(objeto,self._layer+layer)
+        EventHandler.addWidget(objeto)
     
     def quitar(self,objeto):
         if objeto in self.contenido:

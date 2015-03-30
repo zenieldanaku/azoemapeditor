@@ -1,4 +1,4 @@
-from . import Marco, BaseWidget, BaseOpcion, ToolTip
+from . import Marco, BaseWidget, BaseOpcion, ToolTip, ScrollV
 from pygame import font, Rect, Surface, draw
 from globales import EventHandler, color, C
 from libs.textrect import render_textrect
@@ -17,7 +17,10 @@ class Tree (Marco):
         self.items = LayeredDirty()
         self.crearLista(walk)
         self.ItemActual = actual #ruta
+        self.ScrollY = ScrollV(self,self.x+self.w,self.y)
+        self.agregar(self.ScrollY)
         self.doc_h = h
+    
     def scroll(self,dy):
         pass
     
@@ -72,11 +75,9 @@ class Tree (Marco):
 class Item (BaseWidget):
     hijos = None
     def __init__(self,parent,x,y,keyargs,**opciones):
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
-        self.parent = parent
         self.nombre = self.parent.nombre+'.Item:'+keyargs['obj']
-        self.layer  = self.parent.layer +1
         self.nom_obj = keyargs['obj']
         self.hijos = LayeredDirty()
         self.visible = 0 # no es que sea invisible, es que no tiene imagen
@@ -86,8 +87,8 @@ class Item (BaseWidget):
         w = self.cursor.rect.w+3+self.opcion.rect.w
         self.rect = Rect(x,y,w,h)
         self.w,self.h = self.rect.size
-        EventHandler.addWidget(self.opcion,self.layer)
-        EventHandler.addWidget(self.cursor,self.layer)
+        EventHandler.addWidget(self.opcion)
+        EventHandler.addWidget(self.cursor)
                 
     def onDestruction(self):
         EventHandler.delWidget(self.opcion.tooltip)
@@ -133,6 +134,7 @@ class _Opcion(BaseOpcion):
     
     def __init__(self,parent,nombre,path,x,y,w=0):
         super().__init__(parent,nombre,x,y,w)
+        self.layer = self.parent.layer
         self.texto = nombre
         self.path = path
         self.tooltip = ToolTip(self.parent,path,x,y)
@@ -160,9 +162,9 @@ class _Opcion(BaseOpcion):
 
 class _Cursor(BaseWidget):
     def __init__(self,parent,nombre,x,y,w,h,vacio,**opciones):
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.Cursor'
+        self.layer = self.parent.layer #overwrite
         self.x,self.y = x,y
         self.w,self.h = w,h
         self.open = True

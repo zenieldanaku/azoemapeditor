@@ -8,10 +8,8 @@ class DropDownList(BaseWidget):
     lista_de_opciones = None # LayeredDirty
     
     def __init__(self,parent,nombre,x,y,w,lista=[],**opciones):
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.DropDownList.'+nombre
-        self.layer = self.parent.layer +1
         self.lista = lista
         self.x,self.y = x,y
         self.w,self.h = w,21
@@ -22,8 +20,8 @@ class DropDownList(BaseWidget):
         self.lista_de_opciones = LayeredDirty(*self.crearLista(self.lista))
         
         self.ItemActual = ''
-        EventHandler.addWidget(self.entry,layer=self.layer)
-        EventHandler.addWidget(self.flecha,layer=self.layer)
+        EventHandler.addWidget(self.entry)
+        EventHandler.addWidget(self.flecha)
         
         self.visible = 0
             
@@ -88,7 +86,7 @@ class DropDownList(BaseWidget):
         
     def showItems(self):
         for item in self.lista_de_opciones:
-            EventHandler.addWidget(item,layer=self.layer+1)
+            EventHandler.addWidget(item)
     
     def hideItems(self):
         for item in self.lista_de_opciones:
@@ -111,8 +109,7 @@ class DropDownList(BaseWidget):
         
 class _Flecha(BaseWidget):
     def __init__(self,parent,w,**opciones):
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = parent.nombre+'.flecha'
         self.w,self.h = w,self.parent.h
         self.x,self.y = self.parent.x+self.parent.w-self.w,self.parent.y

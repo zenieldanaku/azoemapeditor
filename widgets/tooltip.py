@@ -8,18 +8,18 @@ class ToolTip(BaseWidget):
     
     def __init__(self,parent,mensaje,x,y,**opciones):
         opciones = self._opciones_por_default(opciones)
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
         self.mensaje = mensaje
-        self.parent = parent
         self.nombre = self.parent.nombre+'.ToolTip'
+        self.layer = self.parent.layer+20
         self.image = self._crear(mensaje,opciones)
         self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.w,self.h = self.rect.size
         self._ajustar()
         if self.nombre not in EventHandler.widgets:
-            EventHandler.addWidget(self,self.parent.layer+20)
+            EventHandler.addWidget(self)
         
     @staticmethod    
     def _crear(texto,opciones):

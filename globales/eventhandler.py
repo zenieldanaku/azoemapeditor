@@ -11,8 +11,8 @@ class EventHandler:
     key = None
     
     @classmethod
-    def addWidget(cls,widget,layer=1):
-        cls.contents.add(widget,layer=layer)
+    def addWidget(cls,widget):
+        cls.contents.add(widget,layer = widget.layer)
         cls.widgets[widget.nombre] = widget
         return widget
     

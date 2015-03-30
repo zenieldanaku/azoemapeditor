@@ -6,9 +6,8 @@ from globales import color
 class BaseOpcion(BaseWidget):
         
     def __init__(self,parent,nombre,x,y,w=0,h=0,**opciones):
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
-        self.parent = parent
         self.nombre = self.parent.nombre+'.Opcion:'+nombre
         self.img_des = self.crear(nombre,color('sysElmText'),color('sysMenBack'),w)
         self.img_sel = self.crear(nombre,color('sysElmText'),color('sysBoxSelBack'),w)

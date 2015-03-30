@@ -10,5 +10,5 @@ class Ventana(BaseWidget):
         self.nombre = 'ventana'
         self.image = Surface(self.rect.size)
         self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
-        EventHandler.addWidget(self,0)
+        EventHandler.addWidget(self)
         EventHandler.currentFocus = self

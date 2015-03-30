@@ -17,10 +17,9 @@ class Label (BaseWidget):
         if 'fontSize' not in opciones:
             opciones['fontSize'] = 14
         
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.fuente = font.SysFont(opciones['fontType'],opciones['fontSize'])
         self.x,self.y = x,y
-        self.parent = parent
         self.nombre = self.parent.nombre+'.Label.'+nombre
         if texto == '':
             self.w,self.h = self.fuente.size(self.texto)

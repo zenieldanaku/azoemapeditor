@@ -9,7 +9,7 @@ from os import path
 class PanelSimbolos(Marco):
     simbolos = None
     botones = {}
-    layer = 3
+    layer = 1
     def __init__(self,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
@@ -41,11 +41,11 @@ class PanelSimbolos(Marco):
                 boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],e['des'])
                 x = boton.rect.right-2
                 self.botones[e['nom']] = boton
-                self.agregar(boton,self.layer+1)
+                self.agregar(boton)
             else:
                 x = self.x+4
                 y += 32
-        self.agregar(self.Items,self.layer+1)
+        self.agregar(self.Items)
         self.habilitar(False)
     
     def onKeyDown(self,tecla): 
@@ -100,10 +100,8 @@ class area_prev(Marco):
         if 'colorGrilla' not in opciones:
             opciones['colorGrilla'] = (150,200,200)
         
-        self.parent = parent
-        self.nombre = self.parent.nombre+'.AreaPrev'
-        self.layer = self.parent.layer+1
-        super().__init__(x,y,w,h,False,**opciones)
+        self.nombre = parent.nombre+'.AreaPrev'
+        super().__init__(x,y,w,h,False,parent,**opciones)
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
         grilla = self.opciones['colorGrilla']       

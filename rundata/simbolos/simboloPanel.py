@@ -10,7 +10,7 @@ class MetaSimbolo(SimboloBase):
     def onMouseOver(self):
         if self.pressed:
             x,y = mouse.get_pos()
-            z = self.layer
+            z = self.z
             pos = x,y,z
             dx,dy = self._arrastrar()
             if dx != 0 or dy != 0:

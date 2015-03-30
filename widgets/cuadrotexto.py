@@ -20,8 +20,7 @@ class CuadroTexto(BaseWidget):
             opciones['fontType'] = 'courier new'
         if 'fontSize' not in opciones:
             opciones['fontSize'] = 14
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.CuadroTexto'
         self.fuente = font.SysFont(opciones['fontType'],opciones['fontSize'])
         self.x,self.y,self.w,self.h = x,y,w,h

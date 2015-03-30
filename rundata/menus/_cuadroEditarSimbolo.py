@@ -71,12 +71,12 @@ class EditarSimbolo(subVentana):
         self.agregar(self.btnCrop)
         self.agregar(self.btnAceptar)
         self.agregar(self.btnCancelar)
-        self.agregar(self.lblBrocha,layer=self.layer+1)
-        if self.tile == None:
+        self.agregar(self.lblBrocha)
+        if self.tile is None:
             self.btnAceptar.serDeshabilitado()
             self.btnCrop.serDeshabilitado()
             titulo = self.nombre
-        elif self.origin.img_cls != None:
+        elif self.origin.img_cls is not None:
             self.area.image.blit(self.origin.img_cls,(self.tile.rect))
         self.titular(titulo)
         
@@ -242,4 +242,3 @@ class Cursor(DirtySprite):
             self.image = self._crear_imagen(self.alterar)
             self.alterar = False
         self.dirty = 1
-

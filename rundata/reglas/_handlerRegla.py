@@ -9,9 +9,8 @@ class HandlerRegla(BaseWidget):
     lineas = []
     tip = 'Haga clic y arrastre para generar dos guías'
     def __init__(self,parent,x,y,**opciones):
-        super().__init__(**opciones)        
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
-        self.parent = parent
         self.nombre = self.parent.nombre+'.HandlerRegla'
         self.image = self._crear()
         self.rect = self.image.get_rect(topleft=(self.x,self.y))

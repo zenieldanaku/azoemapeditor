@@ -18,7 +18,7 @@ class SimboloVirtual(SimboloBase):
         super().__init__(parent,data,**opciones)
         self.image = self._crear_transparencia(self._imagen)
         if not self.nombre in EventHandler.widgets:
-            EventHandler.addWidget(self,20)
+            EventHandler.addWidget(self)
         self.pressed = True
     
     def onMouseOut(self):

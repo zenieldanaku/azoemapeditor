@@ -65,7 +65,7 @@ class SimboloCNVS (SimboloBase):
             if not self.selected:
                 self.serElegido()
             self.context.show()
-        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.z)+')'
 
     def onKeyDown(self,tecla,shift):
         if self.selected:
@@ -90,11 +90,12 @@ class SimboloCNVS (SimboloBase):
     def mover(self,dx,dy):
         self.isMoving = True
         super().mover(dx,dy)
-        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.z)+')'
     
     def change_layer(self,mod):
         self.parent.cambiar_layer(self,mod)
-        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.layer)+')'
+        self.z += mod
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.z)+')'
     
     def serElegido(self):
         self.selected = True

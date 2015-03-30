@@ -5,7 +5,6 @@ from globales import ANCHO, ALTO
 
 class subVentana(Marco):
     x,y,w,h = 0,0,0,0
-    layer = 4
     pressedTitle = False
     def __init__(self,w,h,nombre,titular=True,**opciones):
         _r = Rect(0,0,w,h)

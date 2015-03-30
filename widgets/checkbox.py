@@ -4,10 +4,8 @@ from pygame import Rect, Surface, draw
 class Checkbox(BaseWidget):
     state = False
     def __init__(self,parent,x,y,**opciones):
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
-        
         self.nombre = self.parent.nombre+".checkbox"
         self.img_true = self._crear(True)
         self.img_false = self._crear(False)

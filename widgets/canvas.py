@@ -17,10 +17,8 @@ class Canvas(BaseWidget):
             opciones['colorFondo'] = (255,255,245)
         if 'colorCuadro' not in opciones:
             opciones['colorCuadro'] = (191,191,191)
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.Canvas'
-        self.layer = self.parent.layer+1
         self.x,self.y = x,y
         self.w,self.h = clip
         self.elX,self.elY = 0,0

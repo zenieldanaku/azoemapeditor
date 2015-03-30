@@ -4,9 +4,8 @@ from globales import EventHandler
 class DataGrid(BaseWidget):
     def __init__(self,parent,nombre,x,y,datos,
                  n_col=3,n_fil=5,cel_w=0,cel_h=21,sep=0,**opciones):
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.DataGrid.'+nombre
-        self.layer = self.parent.layer +1
         self.x,self.y = x,y
         
         if n_col != 0 and n_fil != 0:
@@ -16,7 +15,7 @@ class DataGrid(BaseWidget):
         self.celdas = self._crear(fils,cols,cel_w,cel_h,sep)
         for x,y in self.celdas:
             e = self.celdas[x,y]
-            EventHandler.addWidget(e,layer= self.layer+1)
+            EventHandler.addWidget(e)
         
         self.h = cel_h*fils+sep*(fils-1)
         
@@ -44,7 +43,7 @@ class DataGrid(BaseWidget):
         except:
             pass
                 
-    def scroll(self,dx,dy):
+    def scroll(self,dy):
         pass
     
     def reubicar_en_ventana(self, dx, dy):

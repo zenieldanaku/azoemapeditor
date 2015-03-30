@@ -45,14 +45,14 @@ class FileDiag(subVentana):
         self.lblNombre = Label(self,'Nombre',x+4,y+9*C-7, texto = 'Nombre:',**{'fontType':'Tahoma','fontSize':13})
         self.lblTipo = Label(self,'Tipo',x+4,y+9*C+19,texto = "Tipo:",**{'fontType':'Tahoma','fontSize':13})
         
-        self.agregar(self.carpetas,self.layer+1)
-        self.agregar(self.archivos,self.layer+1)
-        self.agregar(self.entryNombre,self.layer+1)
-        self.agregar(self.BtnAccion,self.layer+1)
-        self.agregar(self.tipos,self.layer+1)
-        self.agregar(self.BtnCancelar,self.layer+1)
-        self.agregar(self.lblTipo,self.layer+1)
-        self.agregar(self.lblNombre,self.layer+1)
+        self.agregar(self.carpetas)
+        self.agregar(self.archivos)
+        self.agregar(self.entryNombre)
+        self.agregar(self.BtnAccion)
+        self.agregar(self.tipos)
+        self.agregar(self.BtnCancelar)
+        self.agregar(self.lblTipo)
+        self.agregar(self.lblNombre)
         
     def titular(self,texto):
         fuente = font.SysFont('verdana',12)
@@ -113,13 +113,10 @@ class arbolCarpetas(Marco):
     CarpetaSeleccionada = ''
     
     def __init__(self,parent,x,y,w,h,carpeta_actual,**opciones):
-        self.nombre = parent.nombre+'.ArbolDeCarpetas'
-        self.layer = parent.layer+2
-        super().__init__(x,y,w,h,False,**opciones)
+        super().__init__(x,y,w,h,False,parent,**opciones)
+        self.nombre = self.parent.nombre+'.ArbolDeCarpetas'
         self.arbol = Tree(self,self.x,self.y,self.w-16,self.h,self._generar_arbol(os.getcwd()),carpeta_actual)
-        self.arbol.ScrollY = ScrollV(self.arbol,self.x+self.w-16,self.y)
-        self.agregar(self.arbol.ScrollY,self.layer+1)
-        self.agregar(self.arbol,self.layer+1)
+        self.agregar(self.arbol)
         self.CarpetaSeleccionada = carpeta_actual
     
     @staticmethod #decorator! ^^ 'cause explicit is better than implicit
@@ -167,16 +164,15 @@ class arbolCarpetas(Marco):
         self.dirty = 1
 
 class listaDeArchivos(Marco):
-    layer = 4
     SeleccionMultiple = False
     UltimaSeleccion = ''
     def __init__(self,parent,x,y,w,h,permitirmultiple=False,**opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysMenBack'
         self.nombre = parent.nombre+'.ListaDeArchivos'
-        super().__init__(x,y,w,h,False,**opciones)
+        super().__init__(x,y,w,h,False,parent,**opciones)
         self.ScrollY = ScrollV(self,self.x+self.w-16,self.y)
-        self.agregar(self.ScrollY,self.layer+1)
+        self.agregar(self.ScrollY)
         self.items = LayeredDirty()
         self.Seleccionados = []
         self.SeleccionMultiple = permitirmultiple
@@ -216,7 +212,7 @@ class listaDeArchivos(Marco):
             h = opcion.image.get_height()
             self.items.add(opcion)
             if self.rect.contains(opcion.rect):
-                self.agregar(opcion,self.layer+1)
+                self.agregar(opcion)
        
     def borrarLista(self):
         for item in self.items:

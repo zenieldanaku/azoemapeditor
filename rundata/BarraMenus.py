@@ -5,7 +5,7 @@ from .menus import *
 
 class barraMenus (Marco):
     menus = {}
-    layer=3
+    layer = 1
     def __init__(self, **opciones):
         self.nombre = 'Barra_Menus'
         super().__init__(0,0,24*C,19,False,**opciones)

@@ -10,10 +10,9 @@ class BaseRegla(BaseWidget):
     tip = 'Haga clic y arrastre para generar una guía'+' '#el espacio es intencional
     
     def __init__(self,parent,x,y,**opciones):
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.lineas = []
         self.x,self.y = x,y
-        self.parent = parent
     
     def actualizar_tamanio(self,nuevotamanio):
         self.FONDO = self.crear(nuevotamanio)

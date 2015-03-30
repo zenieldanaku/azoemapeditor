@@ -25,8 +25,7 @@ class Entry(BaseWidget):
             opciones['fontType'] = 'courier new'
         if 'fontSize' not in opciones:
             opciones['fontSize'] = 14
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self._nombre = nombre
         self.nombre = self.parent.nombre+'.Entry.'+self._nombre
         self.fuente = font.SysFont(opciones['fontType'],opciones['fontSize'])

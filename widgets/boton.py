@@ -9,10 +9,9 @@ class Boton(BaseWidget):
     presionado = False
     def __init__(self,parent,x,y,nombre,cmd,scr,tip=None,**opciones):
         opciones = self._opcionesPorDefault(opciones)
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
         self.w,self.h = self.opciones['w'],self.opciones['h']
-        self.parent = parent
         self.nombre = self.parent.nombre+'.Boton.'+nombre
         self.comando = cmd
         if tip is not None:

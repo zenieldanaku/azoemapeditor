@@ -11,10 +11,8 @@ class Menu (BaseWidget):
     nombre = ''
     referencias = None
     def __init__(self,parent,nombre,ops,x,y,**opciones):
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.Menu.'+nombre
-        self.layer = self.parent.layer +1
         self.fuente = font.Font(Sys.fdLibs+'\\fonts_tahoma.ttf',12)
         self.cascada = None
         self.boton = None
@@ -53,13 +51,14 @@ class _Boton(BaseWidget):
         super().__init__(**opciones)
         self.parent = parent
         self.nombre = self.parent.nombre+'.Boton'
+        self.layer = self.parent.layer +1
         self.img_des = self.crear_boton(nombre,parent.fuente,color(opciones['colorTexto']),color(self.opciones['colorFondo']))
         self.img_sel = self.crear_boton(nombre,parent.fuente,color(opciones['colorTexto']),color(self.opciones['colorBgSel']))
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
         self.dirty = 1
-        EventHandler.addWidget(self,self.parent.layer+1)
+        EventHandler.addWidget(self)
     
     @staticmethod
     def crear_boton(nombre,fuente,fgcolor,bgcolor):
@@ -141,7 +140,7 @@ class _Cascada (BaseWidget):
         self.image = Surface((self.w+5,self.h+ajuste))
         self.image.fill(color('sysMenBack'),(1,1,self.w+3,self.h+ajuste-2))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        EventHandler.addWidget(self,self.layer)
+        EventHandler.addWidget(self)
     
     def addToReferences(self,key,item):
         recursion = True

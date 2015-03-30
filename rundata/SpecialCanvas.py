@@ -146,10 +146,10 @@ class SpecialCanvas (Canvas):
         for tile in self.tiles:
             if not tile.isMoving:#el que estamos moviendo manualmente
                 if tile.selected:
-                    cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.layer)+')')
+                    cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.z)+')')
                     tile.mover(dx,dy)#el resto de los que estan seleccionados
             else:
-                cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.layer)+')')
+                cadena.insert(tile.index,tile.tipo+' '+tile._nombre+' #'+str(tile.index)+' @ ('+str(tile.rect.x)+','+str(tile.rect.y)+','+str(tile.z)+')')
             Sys.estado = ', '.join(cadena)
     
     def habilitar(self,control):

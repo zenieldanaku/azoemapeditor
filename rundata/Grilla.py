@@ -14,6 +14,7 @@ class Grilla(Marco):
     BtnVerCapa = None
     verGrilla = False
     verRegla = False
+    layer = 1
     def __init__(self):
         self.nombre = 'Grilla'
         super().__init__(0,19,15*C+15,15*C+16,False)
@@ -32,12 +33,12 @@ class Grilla(Marco):
         self.canvas.ReglaY = ReglaV(self.canvas,self.x,self.y+15,15*C)
         self.canvas.HandlerRegla = HandlerRegla(self.canvas,self.x,self.y)
         
-        self.agregar(self.canvas,0)
-        self.agregar(self.canvas.ScrollX,self.canvas.ScrollX.layer)
-        self.agregar(self.canvas.ScrollY,self.canvas.ScrollY.layer)
-        self.agregar(self.BtnCerrarMapa,6)
-        self.agregar(self.BtnVerGr,6)
-        self.agregar(self.BtnVerCapa,6)
+        self.agregar(self.canvas)
+        self.agregar(self.canvas.ScrollX)
+        self.agregar(self.canvas.ScrollY)
+        self.agregar(self.BtnCerrarMapa)
+        self.agregar(self.BtnVerGr)
+        self.agregar(self.BtnVerCapa)
         self.agregar(self.canvas.ReglaX)
         self.agregar(self.canvas.ReglaY)
         self.agregar(self.canvas.HandlerRegla)

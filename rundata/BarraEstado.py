@@ -5,7 +5,7 @@ from widgets import Marco, Label
 class barraEstado (Marco):
     _estado = ''
     lblEstado = None
-    layer = 5
+    layer = 1
     def __init__(self,**opciones):
         self.nombre = 'BarraEstado'
         super().__init__(0,16*C+19,20*C+8,26,**opciones)
@@ -13,7 +13,7 @@ class barraEstado (Marco):
         self._estado = ''
         self.lblEstado = Label(self,'Estado',self.x+4,self.y+3)
         self.draw_area = Rect(4,3,self.w-8,self.h-8)
-        EventHandler.addWidget(self.lblEstado,self.layer+1)
+        EventHandler.addWidget(self.lblEstado)
     
     def mostrar_estado(self,mensaje):
         bgcolor = color(self.opciones.get('colorFondo', 'sysElmFace'))
