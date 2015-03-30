@@ -21,7 +21,7 @@ class Tree (Marco):
     def scroll(self,dy):
         pass
     
-    def crearLista(self,opciones):        
+    def crearLista(self,opciones):
         h = 0
         for y in range(len(opciones)):
             x = opciones[y]['x']

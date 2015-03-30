@@ -74,6 +74,8 @@ class SpecialCanvas (Canvas):
         self.ReglaX.actualizar_tamanio(w)
         self.ReglaY.actualizar_tamanio(h)
         self.Grilla.actualizar_tamanio(w,h)
+        self.ScrollX.actualizar_tamanio(w)
+        self.ScrollY.actualizar_tamanio(h)
         self.doc_w,self.doc_h = w,h
         self.Th,self.Tw = w,h
     
@@ -117,9 +119,9 @@ class SpecialCanvas (Canvas):
         self.tiles.add(tile)
     
     def scroll(self,dx=0,dy=0):
-        self.clip.x += dx
-        self.clip.y += dy
         try:
+            self.clip.x += dx
+            self.clip.y += dy
             self.image.set_clip(self.clip)
             self.image = self.FONDO.subsurface(self.clip)
             self.HandlerRegla.scroll(dx,dy)
@@ -127,9 +129,10 @@ class SpecialCanvas (Canvas):
             self.ReglaY.scroll(dx,dy)
             self.Grilla.scroll(dx,dy)
         except:
-            self.clip.x -= dx
-            self.clip.y -= dy
-            self.image.set_clip(self.clip)
+            pass
+            #self.clip.x -= dx
+            #self.clip.y -= dy
+            #self.image.set_clip(self.clip)
     
     def render(self):
         base = self.capas.get_sprites_from_layer(LAYER_COLISIONES)[0].image
