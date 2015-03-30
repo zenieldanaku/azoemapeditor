@@ -15,6 +15,7 @@ class SimboloVirtual(SimboloBase):
         self.datos = data
         data = {'nombre':'Virtual',
                 'image':imagen,'pos':[_rect.x,_rect.y,z,rot]}
+        
         super().__init__(parent,data,**opciones)
         self.image = self._crear_transparencia(self._imagen)
         if not self.nombre in EventHandler.widgets:
@@ -55,4 +56,3 @@ class SimboloVirtual(SimboloBase):
             self.dirty = 1
         elif self.copiar:
             self.copy()
-    

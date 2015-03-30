@@ -86,7 +86,8 @@ class Proyecto:
                 index = len(root[nombre])-1
             else:
                 nombre+='_'+str(len(self.script['refs']))
-                index = self.addItem(nombre,ruta,grupo,code)
+                data = {'nombre':nombre,'ruta':ruta,'grupo':grupo,'cols_code':code}
+                index = self.addItem(data)
                 
         return index
     

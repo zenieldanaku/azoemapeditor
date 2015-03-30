@@ -60,10 +60,10 @@ class SimboloBase (BaseWidget):
     
     @staticmethod
     def _crear_transparencia(imagen):
-        pxArray = PixelArray(imagen)
+        pxArray = PixelArray(imagen.copy())
         for y in range(imagen.get_height()):
             for x in range(imagen.get_width()):
                 _color = imagen.unmap_rgb(pxArray[x,y])
                 if _color.a == 255: _color.a = 200
                 pxArray[x,y] = _color
-        return pxArray.surface
+        return pxArray.make_surface()

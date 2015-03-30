@@ -42,12 +42,14 @@ class ScrollV(_baseScroll):
         self.cursor = CursorV(self,parent,self.x,self.y,1/2*C)
         
     def actualizar_tamanio(self,doc_h):
-        win_h = self.h
+        win_h = 480
         self_h = self.area.h
         
-        h = win_h*self_h//doc_h
+        h = (win_h*self_h)//doc_h
         if h == self_h:
             h = 0
+        
+        self.cursor.velocidad = (doc_h-win_h)/(self_h - h)
         
         self.cursor.actualizar_tamanio(self.cursor.w,h)
 
@@ -61,12 +63,14 @@ class ScrollH(_baseScroll):
         self.cursor = CursorH(self,parent,self.x,self.y,1/2*C)
         
     def actualizar_tamanio(self,doc_w):
-        win_w = self.w
+        win_w = 480
         self_w = self.area.w
         
-        w = win_w*self_w//doc_w
+        w = (win_w*self_w)//doc_w
         if w == self_w:
             w = 0
+        
+        self.cursor.velocidad = (doc_w-win_w)/(self_w - w)
         
         self.cursor.actualizar_tamanio(w,self.cursor.h)
 
@@ -74,6 +78,7 @@ class _baseCursor(BaseWidget):
     parent = None
     pressed = False
     dx,dy = 0,0
+    velocidad = 0
     def __init__(self,parent,x,y,w,h):
         super().__init__(parent)
         self.x,self.y = x,y
@@ -146,22 +151,20 @@ class CursorH(_baseCursor):
         super().actualizar_tamanio(new_w,new_h)
         self.rel_rect.w = new_w
         
-    def mover(self,scroll=0):
+    def mover(self):
         dx = self.dx
         
         if dx > 0:
             opuesto = -1
         elif dx < 0:
             opuesto = +1
-        
+        print(dx)
         while True:
-            
             if self.parent.area.contains(self.rel_rect.move(dx,0)):
                 self.rect.x += dx
                 self.rel_rect.x += dx
                 self.x += dx
-                self.scrollable.scroll(dx = scroll)
-                #print(dx)
+                self.scrollable.scroll(dx = round(dx*self.velocidad))
                 break
             else:
                 dx += opuesto
@@ -195,7 +198,7 @@ class CursorV(_baseCursor):
         super().actualizar_tamanio(new_w,new_h)
         self.rel_rect.h = new_h
         
-    def mover(self,scroll=0):
+    def mover(self):
         dy = self.dy
         
         if dy > 0:
@@ -208,8 +211,7 @@ class CursorV(_baseCursor):
                 self.rect.y += dy
                 self.rel_rect.y += dy
                 self.y += dy
-                self.scrollable.scroll(dy = scroll)
-                #print(dy)
+                self.scrollable.scroll(dy = round(dy*self.velocidad))
                 break
             else:
                 dy += opuesto
@@ -256,8 +258,8 @@ class _baseBtn(BaseWidget):
         self.serDeselegido()
     
     def update(self):
-        if self.pressed:
-            self.serPresionado()
+        #if self.pressed:
+        #    self.serPresionado()
         self.enabled = self.parent.enabled
         self.dirty = 1
 
@@ -280,6 +282,14 @@ class _btnVer(_baseBtn):
         draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
     
+    def serPresionado(self):
+        super().serPresionado()
+        if self.orientacion == 'arriba':
+            self.parent.cursor.dy = -1
+        elif self.orientacion == 'abajo':
+            self.parent.cursor.dy = +1
+        self.parent.cursor.mover()
+    
 class _btnHor(_baseBtn):
     def __init__(self,parent,x,orientacion):
         self.w,self.h = 12,parent.h
@@ -298,3 +308,11 @@ class _btnHor(_baseBtn):
         
         draw.polygon(imagen, color('sysScrArrow'), points)
         return imagen
+    
+    def serPresionado(self):
+        super().serPresionado()
+        if self.orientacion == 'izquierda':
+            self.parent.cursor.dx = -1
+        elif self.orientacion == 'derecha':
+            self.parent.cursor.dx = +1
+        self.parent.cursor.mover()
