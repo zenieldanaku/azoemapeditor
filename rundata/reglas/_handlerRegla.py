@@ -85,6 +85,8 @@ class HandlerRegla(BaseWidget):
         self.lineaY.rect.x = abs_x
         self.lineaX.x = y
         self.lineaY.y = x
+        self.lineaX.dirty = 1
+        self.lineaY.dirty = 1
     
     def update(self):
         if not self.enabled:

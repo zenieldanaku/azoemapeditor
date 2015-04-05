@@ -34,7 +34,7 @@ class SimboloVirtual(SimboloBase):
     def onMouseUp(self,button):
         self.pressed = False
         self.x,self.y = mouse.get_pos()
-        if self.datos['colisiones'] == None:
+        if self.datos['colisiones'] is None:
             texto = 'El símbolo '+self.datos['nombre']+' carece de un mapa de colisiones.\n¿Desea continuar de todos modos?'
             copiar = self.copy
             eliminar = lambda:EventHandler.delWidget(self)
@@ -48,6 +48,7 @@ class SimboloVirtual(SimboloBase):
         widget = EventHandler.getWidget('Grilla.Canvas')
         if widget.rect.collidepoint((x,y)):
             self.datos['rect'] = self.rect.copy()
+            self.datos['original'] = True
             widget.colocar_tile(self.datos)
             EventHandler.delWidget(self)
     

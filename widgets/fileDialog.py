@@ -20,12 +20,13 @@ class FileDiag(subVentana):
         self.TipoComando = comando['tipo']
         self.nombre = 'FileDialog.'
         if self.TipoComando == 'A':
-            self.nombre += 'Abrir'
+            _nombre = 'Abrir'
         elif self.TipoComando == 'G':
-            self.nombre += 'Guardar'
+            _nombre = 'Guardar'
         elif self.TipoComando == 'Gc':
-            self.nombre += 'Guardar como...'
-        super().__init__(16*C,10*C+18,self.nombre,**opciones)
+            _nombre = 'Guardar como...'
+        self.nombre += _nombre
+        super().__init__(16*C,10*C+18,_nombre,**opciones)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
         self.ArchivosSeleccionados = []
@@ -106,8 +107,6 @@ class FileDiag(subVentana):
             elif self.archivos.UltimaSeleccion != self.nombredeArchivo:
                 self.entryNombre.setText(self.archivos.UltimaSeleccion)
                 self.UltimaSeleccion = self.archivos.UltimaSeleccion
-        
-        self.dirty = 1
 
 class arbolCarpetas(Marco):
     CarpetaSeleccionada = ''
@@ -161,7 +160,6 @@ class arbolCarpetas(Marco):
         item = self.arbol.ItemActual
         if item != '':
             self.CarpetaSeleccionada = item
-        self.dirty = 1
 
 class listaDeArchivos(Marco):
     SeleccionMultiple = False
@@ -177,7 +175,7 @@ class listaDeArchivos(Marco):
         self.Seleccionados = []
         self.SeleccionMultiple = permitirmultiple
         self.doc_h = h
-        
+    
     @staticmethod
     def _FiltrarExtS(archivos,extension):
         if extension != '':
@@ -243,7 +241,6 @@ class listaDeArchivos(Marco):
                     self.Seleccionados.append(item.texto)
                     if not self.SeleccionMultiple:
                         break
-        self.dirty = 1
 
 class _Opcion(BaseOpcion):
     isSelected = False
@@ -259,13 +256,15 @@ class _Opcion(BaseOpcion):
         super().onFocusIn()
         self.image = self.img_sel
         self.isSelected = True
-            
+        self.dirty = 1
+    
     def onFocusOut(self):
         super().onFocusOut()
         mods = key.get_mods()
         if not (mods & KMOD_LCTRL or mods & KMOD_RCTRL) or not self.MultipleSelection:
             self.image = self.img_des
             self.isSelected = False
+            self.dirty = 1
     
     def update(self):
         if self.hasMouseOver:

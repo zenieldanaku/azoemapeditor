@@ -59,7 +59,9 @@ class ToolTip(BaseWidget):
             if self.aparicion >= delay:
                 alpha = self.image.get_alpha()
                 self.image.set_alpha(alpha+60)
+        self.dirty = 1
     
     def hide(self):
         self.image.set_alpha(0)
         self.i = -1
+        self.dirty = 1

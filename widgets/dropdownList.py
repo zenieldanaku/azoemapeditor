@@ -131,13 +131,16 @@ class _Flecha(BaseWidget):
     def onMouseDown(self,dummy):
         self.image = self.img_pre
         self.parent.showItems()
+        self.dirty = 1
     
     def onMouseUp(self,dummy):
         self.image = self.img_uns
+        self.dirty = 1
         EventHandler.setFocus(self.parent)
     
     def onMouseOut(self):
         self.image = self.img_uns
+        self.dirty = 1
 
 class _Opcion(BaseOpcion):
     command = None
@@ -160,10 +163,9 @@ class _Opcion(BaseOpcion):
     def onMouseIn(self):
         super().onMouseIn()
         self.image = self.img_sel
+        self.dirty = 1
     
     def onMouseOut(self):
         super().onMouseOut()
         self.image = self.img_des
-        
-    def update(self):
         self.dirty = 1

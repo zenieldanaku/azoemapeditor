@@ -34,6 +34,7 @@ class SimboloCNVS (SimboloBase):
     def copiar(self):
         datos = self.data.copy()
         datos['rect'] = self.rect.copy()
+        datos['original'] = False
         return datos
         
     @staticmethod
@@ -65,8 +66,7 @@ class SimboloCNVS (SimboloBase):
             if not self.selected:
                 self.serElegido()
             self.context.show()
-        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.z)+')'
-
+    
     def onKeyDown(self,tecla,shift):
         if self.selected:
             x,y,d = 0,0,1
@@ -100,6 +100,8 @@ class SimboloCNVS (SimboloBase):
     def serElegido(self):
         self.selected = True
         Sys.selected = self
+        self.image = self.img_sel
+        Sys.estado = self.tipo+' '+self._nombre+' #'+str(self.index)+' @ ('+str(self.rect.x)+','+str(self.rect.y)+','+str(self.z)+')'
     
     def serDeselegido(self):
         self.selected = False
@@ -109,7 +111,6 @@ class SimboloCNVS (SimboloBase):
         self.dx,self.dy = 0,0
         self.isMoving = False
         if self.selected:
-            self.image = self.img_sel
             if self.pressed:
                 dx,dy = self._arrastrar()
                 if (dx,dy) != (0,0):
@@ -117,6 +118,7 @@ class SimboloCNVS (SimboloBase):
                 self.dx,self.dy = dx,dy
         elif Sys.capa_actual == LAYER_COLISIONES:
             self.image = self.img_cls
+        
         elif Sys.capa_actual == LAYER_FONDO:
             self.image = self.img_pos
         self.dirty = 1

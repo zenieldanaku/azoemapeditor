@@ -211,8 +211,6 @@ class EditarSimbolo(subVentana):
         if self.crop_visible:
             draw.rect(self.background,(0,255,0),self.crop_area,1)
         self.image.blit(self.background,(C,C))
-        
-        self.dirty = 1
 
 class Cursor(DirtySprite):
     alterar = False

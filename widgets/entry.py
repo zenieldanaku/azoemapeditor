@@ -104,6 +104,7 @@ class Entry(BaseWidget):
             render.blit(render_sel,(x,0))
 
         self.image.blit(render,self.write_area)
+        self.dirty = 1
     
     def dibujar_cursor(self,orden=None):
         x = self.cur_x
@@ -116,6 +117,7 @@ class Entry(BaseWidget):
             draw.line(self.image,color(self.opciones['colorTexto']),(x,3),(x,16),1)
         else:
             draw.line(self.image,color(self.opciones['colorFondo']),(x,3),(x,16),1)
+        self.dirty = 1
     
     def insertar_cursor(self):
         self.set_x()
@@ -283,4 +285,3 @@ class Entry(BaseWidget):
             self.dibujar_cursor()
         else:
             self.dibujar_cursor(False)
-        self.dirty = 1

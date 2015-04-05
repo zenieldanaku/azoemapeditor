@@ -68,13 +68,11 @@ class BaseWidget(DirtySprite):
         draw.lines(imagen, colorLuz, 0, [(w-2,0),(0,0),(0,h-4)],2)
         return imagen
     
-    def update(self):
-        self.dirty = 1
-    
     def reubicar_en_ventana(self,dx=0,dy=0):
         self.rect.move_ip(dx,dy)
         self.x += dx
         self.y += dy
+        self.dirty = 1
             
     def __repr__(self):
         return self.nombre

@@ -27,14 +27,11 @@ class Checkbox(BaseWidget):
     
     def check(self):
         self.state = not self.state
-    
-    def onMouseDown(self,dummy):
-        self.check()
-    
-    def update(self):
         if self.state:
             self.image = self.img_true
         else:
             self.image = self.img_false
-        
         self.dirty = 1
+        
+    def onMouseDown(self,dummy):
+        self.check()

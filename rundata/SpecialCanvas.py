@@ -20,7 +20,7 @@ class SpecialCanvas (Canvas):
             {'nom':'Pegar','cmd':lambda:Sys.pegar(),'icon':Sys.iconos['pegar']},
         ]
         self.context = ContextMenu(self,comandos)
-        
+    
     def onMouseOver (self):
         x,y = self.getRelMousePos()
         for tile in self.tiles.get_sprites_at((x,y)):
@@ -33,7 +33,7 @@ class SpecialCanvas (Canvas):
             super().onMouseDown(button)
             if button == 3:
                self.px,self.py = self.getRelMousePos()
-
+        
         elif self.ScrollY.enabled:
             if self.shift:                
                 if button == 5:
@@ -67,7 +67,7 @@ class SpecialCanvas (Canvas):
         for tile in self.tiles:
             if tile.selected:
                 tile.onKeyUp(event.key)
-        
+    
     def actualizar_tamanio_fondo (self,w,h):
         self.FONDO = transform.scale(self.FONDO,(w,h))
         self.image = self.FONDO.subsurface(self.clip)
@@ -78,6 +78,7 @@ class SpecialCanvas (Canvas):
         self.ScrollY.actualizar_tamanio(h)
         self.doc_w,self.doc_h = w,h
         self.Th,self.Tw = w,h
+        self.dirty = 1
     
     @staticmethod
     def _imagen_colisiones (w,h):
@@ -105,7 +106,10 @@ class SpecialCanvas (Canvas):
         pos = mouse.get_pos()
         rect = datos['rect']
         if self.rect.collidepoint(pos):
-            rect.center = self.getRelMousePos(*rect.center)
+            if datos['original']:
+                rect.center = self.getRelMousePos(*rect.center)
+            else:
+                rect.center = self.getRelMousePos()
         else:
             rect.center = self.rect.center
         z = datos['pos'][2]
@@ -119,17 +123,33 @@ class SpecialCanvas (Canvas):
         self.tiles.add(tile)
     
     def scroll(self,dx=0,dy=0):
-        try:
-            self.clip.x += dx
-            self.clip.y += dy
-            self.image.set_clip(self.clip)
-            self.image = self.FONDO.subsurface(self.clip)
-            self.HandlerRegla.scroll(dx,dy)
-            self.ReglaX.scroll(dx,dy)
-            self.ReglaY.scroll(dx,dy)
-            self.Grilla.scroll(dx,dy)
-        except:
-            pass
+        #try:
+            #top,left,right,bottom = self.clip.top,self.clip.left,self.clip.right,self.clip.bottom
+            #print('antes:',(top,left,right,bottom),end= ', ')
+            #self.clip.x += -dx
+            #self.clip.y += -dy
+            #print(dx,dy)
+            #self.ReglaX.scroll(dx,dy)
+            #self.ReglaY.scroll(dx,dy)
+            #self.Grilla.scroll(dx,dy)
+            #x,y,w,h = self.clip
+            
+            #self.FONDO.set_clip(self.clip)
+            #self.FONDO.scroll(-dx,-dy)
+            for capa in self.capas:
+                capa.rect.move_ip(-dx,-dy)
+            self.dirty = 1
+            #print()
+            #top,left,right,bottom = self.clip.top,self.clip.left,self.clip.right,self.clip.bottom
+            #x,y,w,h = self.clip
+            #print('despues:',(top,left,right,bottom))
+            #self.image = self.FONDO.subsurface(self.clip)
+            #self.HandlerRegla.scroll(dx,dy)
+            
+        #except Exception as error:
+        #    print('aca',error)
+        #    pass
+            
             #self.clip.x -= dx
             #self.clip.y -= dy
             #self.image.set_clip(self.clip)
@@ -164,8 +184,8 @@ class SpecialCanvas (Canvas):
     
     def update(self):
         super().update()
-            
-        if Sys.IMG_FONDO == None:
+        
+        if Sys.IMG_FONDO is None:
             self.capas.empty()
             self.pintarFondoCuadriculado()
 

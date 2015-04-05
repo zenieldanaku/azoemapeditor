@@ -139,22 +139,27 @@ class _Opcion(BaseOpcion):
         self.path = path
         self.tooltip = ToolTip(self.parent,path,x,y)
         self.nombre = self.parent.nombre+'.Opcion'
+    
+    def serElegido(self):
+        self.selected = True
+        self.image = self.img_sel
+        self.dirty = 1
+    
+    def serDeselegido(self):
+        self.selected = False
+        self.image = self.img_des
+        self.dirty = 1
         
     def onMouseDown(self,button):
         if button == 1:
-            self.selected = True
+            self.serElegido()
             self.parent.parent.ItemActual = self.path
     
     def onFocusOut(self):
         super().onFocusOut()
-        self.selected = False
+        self.serDeselegido()
     
-    def update(self):
-        if self.selected:
-            self.image = self.img_sel
-        else:
-            self.image = self.img_des
-        
+    def update(self):        
         if self.hasMouseOver:
             self.tooltip.show()
         else:
@@ -201,12 +206,11 @@ class _Cursor(BaseWidget):
         if self.open:
             self.image = self.img_opn
             self.parent.mostrarHijos()
+            self.dirty = 1
             dy = +1
         else:
             self.image = self.img_cld
             self.parent.colapsarHijos()
+            self.dirty = 1
             dy = -1
         return dy
-    
-    def update(self):
-        self.dirty = 1

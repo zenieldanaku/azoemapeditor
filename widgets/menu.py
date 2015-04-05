@@ -20,7 +20,7 @@ class Menu (BaseWidget):
         self.boton = _Boton(self,nombre,x,y)
         h = self.boton.rect.h
         self.cascada = _Cascada(self,nombre,ops,x,h+1)
-        
+    
     def showMenu(self):
         self.cascada.showMenu()
 
@@ -48,16 +48,13 @@ class _Boton(BaseWidget):
             opciones['colorTexto'] = 'sysMenText'
         if 'colorBgSel' not in opciones:
             opciones['colorBgSel'] = 'sysBoxSelBack'
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.Boton'
-        self.layer = self.parent.layer +1
         self.img_des = self.crear_boton(nombre,parent.fuente,color(opciones['colorTexto']),color(self.opciones['colorFondo']))
         self.img_sel = self.crear_boton(nombre,parent.fuente,color(opciones['colorTexto']),color(self.opciones['colorBgSel']))
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
-        self.dirty = 1
         EventHandler.addWidget(self)
     
     @staticmethod
@@ -74,10 +71,12 @@ class _Boton(BaseWidget):
     def onMouseIn(self):
         super().onMouseIn()
         self.image = self.img_sel
+        self.dirty = 1
     
     def onMouseOut(self):
         super().onMouseOut()
         self.image = self.img_des
+        self.dirty = 1
 
 class _Cascada (BaseWidget):
     opciones = None
@@ -187,7 +186,8 @@ class _Cascada (BaseWidget):
     def showMenu(self):
         self.mostrar = True
         self._visible = True
-            
+        self.dirty = 1
+        
     def hideMenu(self):
         self.mostrar = False
         for componente in self.componentes:
@@ -196,6 +196,7 @@ class _Cascada (BaseWidget):
                 if isinstance(componente.command,_Cascada):
                     componente.command.hideMenu()
         self._visible = False
+        self.dirty = 1
     
     def onMouseOver(self):
         if self.mostrar:
@@ -204,6 +205,7 @@ class _Cascada (BaseWidget):
             item = self.get_component()
             if item != self:
                 item.onMouseIn()
+        self.dirty = 1
     
     def onFocusIn(self):
         super().onFocusIn()
@@ -228,21 +230,19 @@ class _Cascada (BaseWidget):
     def update(self):
         self.componentes.update()
         self.componentes.draw(self.image)
-        self.dirty = 1
 
 class OpcionCascada(BaseWidget):
     command = None
     setFocus_onIn = True
     
     def __init__(self,parent,data,x,y,max_w,key_x,**opciones):
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         if 'Fuente' not in self.opciones:
             self.opciones['fontType'] = 'Tahoma'
         if 'fontSize' not in self.opciones:
             self.opciones['fontSize'] = 11
         fuente = font.SysFont(self.opciones['fontType'],self.opciones['fontSize'])
         self.x,self.y = x,y
-        self.parent = parent
         self.nombre = self.parent.nombre+'.OpcionCascada.'+data['nom']
         icon = False
         rapido = False
@@ -255,15 +255,14 @@ class OpcionCascada(BaseWidget):
         self.image = self.img_uns
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
-        self.dirty = 1
-        
+    
     @staticmethod
     def crear(data,fuente,fgcolor,bgcolor,w,key_x,icono,rapido):
         h = fuente.get_height()+3
-
+        
         if rapido:
             abrv = fuente.render(rapido,True,fgcolor,bgcolor)
-            
+        
         f = False
         nombre = data['nom']
         if data['scr'] == '...':
@@ -273,9 +272,8 @@ class OpcionCascada(BaseWidget):
             flecha.fill(bgcolor)
             draw.polygon(flecha, fgcolor, [[1,1],[1,8],[6,4]])
             f = True
-            
-        render = fuente.render(nombre,True,fgcolor,bgcolor)
         
+        render = fuente.render(nombre,True,fgcolor,bgcolor)
         
         imagen = Surface((w,h))
         imagen.fill(bgcolor)
@@ -312,18 +310,24 @@ class OpcionCascada(BaseWidget):
             self.serDeseleccionado()
     
     def serSeleccionado(self): 
-        if self.enabled: self.image = self.img_sel
+        if self.enabled: 
+            self.image = self.img_sel
+            self.dirty = 1
             
     def serDeseleccionado(self):
-        if self.enabled: self.image = self.img_uns
+        if self.enabled: 
+            self.image = self.img_uns
+            self.dirty = 1
     
     def serDeshabilitado(self):
         self.image = self.img_des
         self.enabled = False
+        self.dirty = 1
         
     def serHabilitado(self):
         self.image = self.img_uns
         self.enabled = True
+        self.dirty = 1
         
     def onMouseOver(self):
         if isinstance(self.command,_Cascada):

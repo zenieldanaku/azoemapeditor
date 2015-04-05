@@ -41,6 +41,7 @@ class SimboloBase (BaseWidget):
         self.rect.move_ip(dx,dy)
         self.x += dx
         self.y += dy
+        self.dirty = 1
     
     def onMouseDown(self,button):
         if button == 1:

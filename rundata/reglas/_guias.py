@@ -5,14 +5,11 @@ class BaseLinea (BaseWidget):
     pressed = False
     locked = False
     def __init__(self,parent,idx,**opciones):
-        super().__init__(**opciones)
-        self.parent = parent
+        super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.LineaGuia'
-        self.layer = self.parent.layer +1
         self.idx = idx
         self.x,self.y = self.parent.x,self.parent.y
         self.base_x,self.base_y = self.x,self.y
-        
         self.image = self._crear(self.w,self.h)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
     
@@ -35,9 +32,7 @@ class BaseLinea (BaseWidget):
     def update(self):
         if self.pressed and not self.locked:
             self.desplazar()
-        
-        self.dirty = 1
-    
+
 class LineaGuiaX(BaseLinea):
     def __init__(self,parent,idx,**opciones):
         self.w,self.h = 480,1

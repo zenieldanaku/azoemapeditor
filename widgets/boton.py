@@ -64,7 +64,6 @@ class Boton(BaseWidget):
                 w,h = fuente.size(scr)
                 _rect = Rect(-1,-1,w,h+1)
                 render = render_textrect(scr,fuente,_rect,color_texto,color_fondo,1)
-                 
         
         return render
     
@@ -91,26 +90,31 @@ class Boton(BaseWidget):
     def serElegido(self):
         if self.enabled:
             self.image = self.img_sel
+            self.dirty = 1
     
     def serDeselegido(self):
         if self.enabled:
             self.image = self.img_uns
             self.presionado = False
+            self.dirty = 1
     
     def serPresionado(self):
         if self.enabled:
             self.image = self.img_pre
             self.presionado = True
+            self.dirty = 1
     
     def serDeshabilitado(self):
         if self.enabled:
             self.image = self.img_dis
             self.enabled = False
+            self.dirty = 1
     
     def serHabilitado(self):
         if not self.enabled:
             self.image = self.img_uns
             self.enabled = True
+            self.dirty = 1
     
     def onMouseIn(self):
         super().onMouseIn()
@@ -139,7 +143,6 @@ class Boton(BaseWidget):
                     self.tooltip.hide()
             else:
                 self.tooltip.hide()
-        self.dirty = 1
 
 class BotonToggle(Boton):
     toggled = False

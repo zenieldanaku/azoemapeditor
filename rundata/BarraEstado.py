@@ -25,5 +25,5 @@ class barraEstado (Marco):
     def update(self):
         msj = Sys.estado
         self.mostrar_estado(msj)
-        self.dirty = 1
+        
     

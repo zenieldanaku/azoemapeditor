@@ -88,15 +88,13 @@ class Grilla(Marco):
         else:
             if not self.BtnCerrarMapa.enabled:
                 self.BtnCerrarMapa.serHabilitado()
-                
-        self.dirty = 1
-        
+
 class _grilla(BaseWidget):
+    
+    focusable = False
     def __init__(self,parent,x,y,w,h,**opciones):
-        super().__init__(**opciones)
+        super().__init__(parent,**opciones)
         self.x,self.y = x,y
-        self.parent = parent
-        self.focusable = False
         self.nombre = self.parent.nombre+'._grilla'
         self.FONDO = self._crear(w,h,C)
         self.clip = Rect(0,0,15*C,15*C)
@@ -121,13 +119,15 @@ class _grilla(BaseWidget):
         self.FONDO = self._crear(w,h,C)
         self.clip.topleft = 0,0
         self.image = self.FONDO.subsurface(self.clip)
-        
+        self.dirty = 1
+    
     def scroll(self,dx,dy):
         self.clip.y += dy
         self.clip.x += dx
         try:
             self.image.set_clip(self.clip)
             self.image = self.FONDO.subsurface(self.clip)
+            self.dirty = 1
         except:
             self.clip.y -= dy
             self.clip.x -= dx

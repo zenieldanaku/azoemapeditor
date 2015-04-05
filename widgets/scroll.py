@@ -86,12 +86,12 @@ class _baseCursor(BaseWidget):
         self.crear(w,h)
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.pressed = False
-        self.dirty = 1
     
     def crear(self,w,h):
         cF,cL,cS = color('sysElmFace'),color('sysElmLight'),color('sysElmShadow')
         self.image = self._biselar(self._agregar_barras(self._crear(w,h,cF),cL,cS),cL,cS)
-    
+        self.dirty = 1
+        
     def _arrastrar(self):
         abs_x,abs_y = mouse.get_pos()
         new_x,new_y = abs_x-self.x,abs_y-self.y
@@ -127,7 +127,6 @@ class _baseCursor(BaseWidget):
     
     def update(self):
         self.dx,self.dy = 0,0
-        self.dirty = 1
 
 class CursorH(_baseCursor):
     def __init__(self,parent,scrollable,x,y,w,h=1/2*C):
@@ -158,16 +157,17 @@ class CursorH(_baseCursor):
             opuesto = -1
         elif dx < 0:
             opuesto = +1
-        print(dx)
         while True:
             if self.parent.area.contains(self.rel_rect.move(dx,0)):
                 self.rect.x += dx
                 self.rel_rect.x += dx
                 self.x += dx
-                self.scrollable.scroll(dx = round(dx*self.velocidad))
+                self.dirty = 1
                 break
             else:
                 dx += opuesto
+        
+        self.scrollable.scroll(dx = round(dx*self.velocidad))
         
     def update(self):
         super().update()
@@ -211,11 +211,13 @@ class CursorV(_baseCursor):
                 self.rect.y += dy
                 self.rel_rect.y += dy
                 self.y += dy
-                self.scrollable.scroll(dy = round(dy*self.velocidad))
+                self.dirty = 1
                 break
             else:
                 dy += opuesto
-    
+        
+        self.scrollable.scroll(dy = round(dy*self.velocidad))
+        
     def update(self):
         super().update()
         if self.pressed:
@@ -240,14 +242,15 @@ class _baseBtn(BaseWidget):
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
         self.nombre = self.parent.nombre+'.Btn.'+self.orientacion
-        self.dirty = 1
     
     def serDeselegido(self):
         self.image = self.img_uns
+        self.dirty = 1
     
     def serPresionado(self):
         self.image = self.img_pre
         self.pressed = True
+        self.dirty = 1
         
     def onMouseDown(self,dummy):
         if self.enabled:
@@ -261,7 +264,7 @@ class _baseBtn(BaseWidget):
         #if self.pressed:
         #    self.serPresionado()
         self.enabled = self.parent.enabled
-        self.dirty = 1
+        
 
 class _btnVer(_baseBtn):
     def __init__(self,parent,y,orientacion):

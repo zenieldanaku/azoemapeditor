@@ -84,11 +84,13 @@ class ReglaH(BaseRegla):
         
         self.linea.rect.y = abs_y
         self.linea.y = y
+        self.linea.dirty = 1
     
     def scroll(self,dx,dy):
         self.clip.x += dx
         self.image.set_clip(self.clip)
         self.image = self.FONDO.subsurface(self.clip)
+        self.dirty = 1
         for i in range(len(self.lineas)):
             self.lineas[i].rect.y -= dy
     
@@ -136,11 +138,13 @@ class ReglaV(BaseRegla):
 
         self.linea.rect.x = abs_x
         self.linea.x = x
+        self.linea.dirty = 1
     
     def scroll(self,dx,dy):
         self.clip.y += dy
         self.image.set_clip(self.clip)
         self.image = self.FONDO.subsurface(self.clip)
+        self.dirty = 1
         for i in range(len(self.lineas)):
             self.lineas[i].rect.x -= dx
         

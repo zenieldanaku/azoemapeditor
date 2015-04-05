@@ -14,7 +14,6 @@ class BaseOpcion(BaseWidget):
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
-        self.dirty = 1
         
     def crear(self,nombre,fgcolor,bgcolor,w=0):
         if 'Fuente' not in self.opciones:
@@ -43,5 +42,6 @@ class BaseOpcion(BaseWidget):
         self.img_des = self.crear(text,color('sysElmText'),color('sysMenBack'),self.w)
         self.img_sel = self.crear(text,color('sysElmText'),color('sysBoxSelBack'),self.w)
         self.image = self.img_des
+        self.dirty = 1
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft = (self.x,self.y))
