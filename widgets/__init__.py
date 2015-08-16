@@ -7,6 +7,7 @@ from .scroll import ScrollH, ScrollV
 from .marco import Marco
 from .entry import Entry
 from .label import Label
+from .cuadrotexto import CuadroTexto
 from .menu import Menu, ContextMenu
 from .dropdownList import DropDownList
 from .tree import Tree

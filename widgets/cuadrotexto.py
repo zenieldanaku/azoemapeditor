@@ -86,3 +86,6 @@ class CuadroTexto(BaseWidget):
         #selected.set_clip(seleccion)
         #render.blit(selected,seleccion)
         self.image.blit(render,(0,0))
+    def scroll(self,dx=0,dy=0):
+        pass
+    
