@@ -1,5 +1,6 @@
-from globales import C, Sistema as Sys, EventHandler
-from widgets import subVentana, Label, Entry, Boton
+from azoe.widgets import subVentana, Label, Entry, Boton
+from azoe.engine import EventHandler
+from globales import C, Sistema as Sys
 
 class cuadroPreferencias (subVentana):    
     def __init__(self):

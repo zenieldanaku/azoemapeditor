@@ -1,7 +1,9 @@
-from pygame.sprite import DirtySprite, LayeredDirty
 from pygame import Rect,Surface,draw, mouse, mask, SRCALPHA, PixelArray, K_RCTRL,K_LCTRL, K_RSHIFT, K_LSHIFT
-from widgets import subVentana, Marco, Boton, BotonAceptarCancelar, Label
-from globales import Sistema as Sys, C, EventHandler, serialize, encode, comprimir
+from azoe.widgets import subVentana, Marco, Boton, BotonAceptarCancelar, Label
+from azoe.engine.RLE import serialize, encode, comprimir
+from pygame.sprite import DirtySprite, LayeredDirty
+from azoe.engine import EventHandler
+from globales import Sistema as Sys, C
 
 class EditarSimbolo(subVentana):
     pressed = False

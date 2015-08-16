@@ -1,6 +1,6 @@
 from . import BaseWidget
 from pygame import font,Rect, Surface
-from globales import color
+from azoe.engine import color
 #from libs.textrect import render_textrect
 
 class BaseOpcion(BaseWidget):

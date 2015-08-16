@@ -1,7 +1,7 @@
 from . import Marco, BaseWidget, BaseOpcion, ToolTip, ScrollV
+from azoe.libs.textrect import render_textrect
+from azoe.engine import EventHandler, color
 from pygame import font, Rect, Surface, draw
-from globales import EventHandler, color, C
-from libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 
 class Tree (Marco):

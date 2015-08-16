@@ -1,9 +1,10 @@
-from globales import Sistema as Sys, EventHandler, color, C, LAYER_COLISIONES,LAYER_FONDO
-from widgets import BaseWidget, ScrollH, ScrollV, Boton, BotonToggle, Marco, ToolTip, BotonCerrar
+from azoe.widgets import BaseWidget, ScrollH, ScrollV, Boton, BotonToggle, Marco, ToolTip, BotonCerrar
+from globales import Sistema as Sys, C, LAYER_COLISIONES,LAYER_FONDO
+from .reglas import ReglaH, ReglaV, HandlerRegla
+from .SpecialCanvas import SpecialCanvas
 from pygame.sprite import LayeredDirty
 from pygame import Surface,Rect,draw
-from .SpecialCanvas import SpecialCanvas
-from .reglas import ReglaH, ReglaV, HandlerRegla
+from azoe import EventHandler, color
 import os
 
 class Grilla(Marco):

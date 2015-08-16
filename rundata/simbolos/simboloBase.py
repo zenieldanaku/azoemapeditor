@@ -1,4 +1,4 @@
-from widgets import BaseWidget
+from azoe.widgets import BaseWidget
 from pygame import mouse, PixelArray
 
 class SimboloBase (BaseWidget):

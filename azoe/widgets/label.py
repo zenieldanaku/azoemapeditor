@@ -1,6 +1,6 @@
-from libs.textrect import render_textrect
+from azoe.libs.textrect import render_textrect
 from pygame import font,Rect,Surface
-from globales import color
+from azoe.engine import color
 from . import BaseWidget
 
 class Label (BaseWidget):

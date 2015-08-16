@@ -1,4 +1,4 @@
-from widgets import subVentana, Label, Entry, BotonAceptarCancelar, DataGrid, ScrollV
+from azoe.widgets import subVentana, Label, Entry, BotonAceptarCancelar, DataGrid, ScrollV
 from globales import C, Sistema
 from pygame import Rect
 

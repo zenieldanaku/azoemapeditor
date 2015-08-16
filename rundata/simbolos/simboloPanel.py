@@ -1,7 +1,7 @@
 from .simboloVirtual import SimboloVirtual
 from .simboloBase import SimboloBase
-from globales import EventHandler
-from widgets import ContextMenu
+from azoe.engine import EventHandler
+from azoe.widgets import ContextMenu
 from pygame import mouse, Surface
 
 class MetaSimbolo(SimboloBase):

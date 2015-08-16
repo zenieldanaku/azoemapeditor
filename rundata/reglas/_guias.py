@@ -1,4 +1,4 @@
-from widgets import BaseWidget
+from azoe.widgets import BaseWidget
 from pygame import Surface, mouse
 
 class BaseLinea (BaseWidget):

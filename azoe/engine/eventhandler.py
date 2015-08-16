@@ -12,6 +12,7 @@ class EventHandler:
     
     @classmethod
     def addWidget(cls,widget):
+        print(widget)
         cls.contents.add(widget,layer = widget.layer)
         cls.widgets[widget.nombre] = widget
         return widget

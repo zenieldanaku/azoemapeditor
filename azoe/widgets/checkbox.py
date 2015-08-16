@@ -1,5 +1,5 @@
-from .basewidget import BaseWidget
 from pygame import Rect, Surface, draw
+from .basewidget import BaseWidget
 
 class Checkbox(BaseWidget):
     state = False

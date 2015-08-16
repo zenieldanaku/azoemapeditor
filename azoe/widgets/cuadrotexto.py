@@ -1,8 +1,8 @@
-from . import BaseWidget
-from globales import color
-from libs.textrect import render_textrect
 from pygame import font, Rect, Surface, mouse,draw,cursors
+from azoe.libs.textrect import render_textrect
 from pygame import K_RETURN,K_BACKSPACE
+from azoe.engine import color
+from . import BaseWidget
 
 class CuadroTexto(BaseWidget):
     texto = []

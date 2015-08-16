@@ -1,9 +1,10 @@
 from . import BaseWidget,Marco, Entry, Boton, BotonAceptarCancelar, DropDownList, subVentana
 from . import Label, ScrollV, ScrollH, Tree, BaseOpcion, ToolTip
 from pygame import Rect, font, key, KMOD_LCTRL, KMOD_RCTRL
+from azoe.libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
-from libs.textrect import render_textrect
-from globales import color, C
+from azoe.engine import color
+from globales import C
 import os, os.path
 
 class FileDiag(subVentana):

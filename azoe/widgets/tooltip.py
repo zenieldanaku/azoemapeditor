@@ -1,5 +1,6 @@
-from globales import color, EventHandler, ANCHO, Sistema as Sys
 from pygame import Surface, Rect,Color, font, mouse
+from azoe.engine import color, EventHandler
+from globales import ANCHO, Sistema as Sys
 from .basewidget import BaseWidget
 
 class ToolTip(BaseWidget):
@@ -23,7 +24,7 @@ class ToolTip(BaseWidget):
         
     @staticmethod    
     def _crear(texto,opciones):
-        fuente = font.Font(opciones['fontType'],opciones['fontSize'])
+        fuente = font.SysFont(opciones['fontType'],opciones['fontSize'])
         fgColor,bgColor = opciones['colorText'],opciones['colorFondo']        
         w,h = fuente.size(texto)
         fondo = Surface((w+4,h+2))
@@ -35,7 +36,7 @@ class ToolTip(BaseWidget):
     @staticmethod
     def _opciones_por_default(opciones):
         if 'Fuente' not in opciones:
-            opciones['fontType'] = Sys.fdLibs+"\\fonts_tahoma.ttf"
+            opciones['fontType'] = "tahoma"#Sys.fdLibs+"\\fonts_tahoma.ttf"
         if 'fontSize' not in opciones:
             opciones['fontSize'] = 11
         if 'colorText' not in opciones:

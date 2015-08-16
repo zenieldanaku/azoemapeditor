@@ -1,6 +1,6 @@
-from globales import EventHandler, color, C
+from azoe import EventHandler, color, Marco
 from pygame import Surface,draw
-from widgets import Marco
+from globales import C
 from .menus import *
 
 class barraMenus (Marco):

@@ -1,5 +1,5 @@
+from azoe.widgets import Menu, FileDiag
 from globales import Sistema as Sys
-from widgets import Menu, FileDiag
 from .menu_mapa import CuadroMapa
 
 class Menu_Archivo(Menu):

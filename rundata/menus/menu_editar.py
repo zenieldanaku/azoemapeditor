@@ -1,7 +1,7 @@
-from widgets import Menu
-from globales import Sistema as Sys
 from ._cuadroEditarSimbolo import EditarSimbolo
 from ._cuadrosEntradas import CuadroEntrada
+from globales import Sistema as Sys
+from azoe.widgets import Menu
 
 class Menu_Editar(Menu):
     def  __init__(self,parent,x,y):

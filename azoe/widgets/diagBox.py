@@ -1,7 +1,8 @@
-from widgets import subVentana, BotonAceptarCancelar, Checkbox, Label
-from globales import C, color, EventHandler
-from libs.textrect import render_textrect
+from . import subVentana, BotonAceptarCancelar, Checkbox, Label
+from azoe.libs.textrect import render_textrect
+from azoe.engine import color, EventHandler
 from pygame import font, Rect
+from globales import C
 
 __all__ = ['Alerta','Pregunta','Error','Info']
 

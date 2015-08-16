@@ -1,5 +1,6 @@
-from globales import Sistema as Sys, C, EventHandler
-from widgets import Menu, FileDiag, subVentana, Label, Entry, BotonAceptarCancelar
+from azoe.widgets import Menu, FileDiag, subVentana, Label, Entry, BotonAceptarCancelar
+from globales import Sistema as Sys, C
+from azoe.engine import EventHandler
 
 class Menu_Mapa (Menu):
     def  __init__(self,parent,x,y):

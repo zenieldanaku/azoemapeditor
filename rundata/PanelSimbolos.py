@@ -1,7 +1,8 @@
-from globales import Sistema as Sys, Resources as r, C, color, LAYER_COLISIONES, LAYER_FONDO
-from widgets import Marco, FileDiag, Boton, DropDownList
+from globales import Sistema as Sys, C,LAYER_COLISIONES, LAYER_FONDO
+from azoe.widgets import Marco, FileDiag, Boton, DropDownList
 from .simbolos import SimboloSimple,SimboloMultiple
 from .menus.menu_mapa import CuadroMapa
+from azoe import Resources as r, color
 from pygame.sprite import LayeredDirty
 from pygame import Rect,draw, Surface
 from os import path

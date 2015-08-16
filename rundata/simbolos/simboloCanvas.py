@@ -1,7 +1,7 @@
 from pygame import mouse, K_RIGHT,K_LEFT,K_UP,K_DOWN,K_DELETE,Surface
-from .simboloBase import SimboloBase
 from globales import Sistema as Sys, LAYER_FONDO, LAYER_COLISIONES
-from widgets import ContextMenu
+from .simboloBase import SimboloBase
+from azoe.widgets import ContextMenu
 
 class SimboloCNVS (SimboloBase):
     selected = False

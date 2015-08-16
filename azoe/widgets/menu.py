@@ -1,6 +1,6 @@
-from globales import EventHandler, color, Sistema as Sys, Resources as r
+from azoe.engine import EventHandler, color, Resources as r
 from pygame import Surface,Rect,font,mouse,draw
-from libs.textrect import render_textrect
+from azoe.libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 from . import BaseWidget
 
@@ -13,7 +13,7 @@ class Menu (BaseWidget):
     def __init__(self,parent,nombre,ops,x,y,**opciones):
         super().__init__(parent,**opciones)
         self.nombre = self.parent.nombre+'.Menu.'+nombre
-        self.fuente = font.Font(Sys.fdLibs+'\\fonts_tahoma.ttf',12)
+        self.fuente = font.SysFont('tahoma',12)
         self.cascada = None
         self.boton = None
         self.referencias = {}

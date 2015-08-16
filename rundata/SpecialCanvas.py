@@ -1,11 +1,11 @@
-from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT, \
-                   K_DELETE,K_RSHIFT,K_LSHIFT, \
-                   transform, Surface,draw,mouse,Rect
+from pygame import K_UP,K_DOWN,K_RIGHT,K_LEFT,K_DELETE,K_RSHIFT,K_LSHIFT
+from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES
+from pygame import transform, Surface,draw,mouse,Rect
 from pygame.sprite import LayeredDirty, DirtySprite
-from globales import Sistema as Sys, C, LAYER_FONDO,LAYER_COLISIONES, EventHandler
-from .simbolos import SimboloCNVS
-from widgets import Canvas, ContextMenu
 from .menus._cuadrosEntradas import UnaEntrada
+from azoe.widgets import Canvas, ContextMenu
+from .simbolos import SimboloCNVS
+from azoe import EventHandler
 
 class SpecialCanvas (Canvas):
     capas = None

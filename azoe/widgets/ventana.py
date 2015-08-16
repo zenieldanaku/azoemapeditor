@@ -1,6 +1,6 @@
+from azoe.engine import color, EventHandler
 from pygame import Rect,Surface
 from . import BaseWidget
-from globales import color, EventHandler
 
 class Ventana(BaseWidget):
     focusable = False

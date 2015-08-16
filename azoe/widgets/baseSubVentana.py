@@ -1,5 +1,5 @@
+from azoe.libs.textrect import render_textrect
 from pygame import Rect, font, mouse
-from libs.textrect import render_textrect
 from . import Marco, BotonCerrar
 from globales import ANCHO, ALTO
 

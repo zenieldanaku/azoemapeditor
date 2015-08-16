@@ -1,7 +1,8 @@
-from globales import EventHandler, Sistema as Sys
+from globales import Sistema as Sys
+from azoe import EventHandler
 from .simboloBase import SimboloBase
 from pygame import PixelArray, mouse
-from widgets import Alerta
+from azoe.widgets import Alerta
 
 class SimboloVirtual(SimboloBase):
     copiar = False

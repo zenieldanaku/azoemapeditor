@@ -1,7 +1,7 @@
+from azoe.engine import color, EventHandler
 from pygame.sprite import LayeredDirty
 from pygame import Surface,draw
 from . import BaseWidget
-from globales import color, EventHandler
 
 class Marco(BaseWidget):
     contenido = None

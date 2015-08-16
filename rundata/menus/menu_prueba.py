@@ -1,4 +1,4 @@
-from widgets import Menu,subVentana, CuadroTexto, ScrollH,ScrollV
+from azoe.widgets import Menu,subVentana, CuadroTexto, ScrollH,ScrollV
 from globales import C
 
 class Menu_Prueba (Menu):

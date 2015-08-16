@@ -1,6 +1,7 @@
 from pygame import Rect,Surface,mouse,draw
+from azoe.engine import color, EventHandler
 from . import BaseWidget, Boton
-from globales import color, C, EventHandler
+from globales import C
 
 class _baseScroll(BaseWidget):
     nombre = ''

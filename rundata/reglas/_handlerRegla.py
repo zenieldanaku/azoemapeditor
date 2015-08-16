@@ -1,7 +1,7 @@
-from widgets import BaseWidget, ToolTip
-from pygame import Surface, draw, mouse
+from azoe.widgets import BaseWidget, ToolTip
 from ._guias import LineaGuiaX, LineaGuiaY
-from globales import EventHandler
+from pygame import Surface, draw, mouse
+from azoe.engine import EventHandler
 
 class HandlerRegla(BaseWidget):
     selected = False

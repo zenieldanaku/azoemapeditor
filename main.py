@@ -1,8 +1,8 @@
 from pygame import display as pantalla,time
-from globales import EventHandler, ANCHO,ALTO
-from widgets import Ventana
-from rundata import *
+from azoe import EventHandler, Ventana
+from globales import ANCHO,ALTO
 from globales import Sistema
+from rundata import *
 import pygame,sys,os
 
 rutas = [os.getcwd()+'\\proyectos',
@@ -31,6 +31,7 @@ while hayCambios:
     FPS.tick(60)
     events = pygame.event.get()
     hayCambios = EventHandler.update(events,fondo)
+
     if hayCambios:
         pantalla.update(hayCambios)
     Sistema.update()

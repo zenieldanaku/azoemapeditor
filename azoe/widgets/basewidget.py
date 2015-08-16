@@ -1,5 +1,5 @@
 from pygame.sprite import DirtySprite
-from globales import color
+from azoe.engine import color
 from pygame import draw
 
 class BaseWidget(DirtySprite):

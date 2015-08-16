@@ -1,6 +1,7 @@
-from globales import Sistema as Sys, EventHandler, C, color
+from azoe.engine import EventHandler, color
+from globales import Sistema as Sys, C
+from azoe.widgets import Marco, Label
 from pygame import Rect,Surface,draw
-from widgets import Marco, Label
 
 class barraEstado (Marco):
     _estado = ''

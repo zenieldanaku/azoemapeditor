@@ -1,13 +1,11 @@
+from azoe.engine.RLE import decode, descomprimir, deserialize
+from azoe.engine import Resources, EventHandler, Portapapeles
 from .constantes import LAYER_FONDO, LAYER_COLISIONES, C
 from pygame import image, quit as py_quit, Rect, mouse
 from pygame.sprite import DirtySprite
 from sys import exit as sys_exit
-from .resources import Resources
-from .eventhandler import EventHandler
-from .mapa import Proyecto
-from .portapapeles import Portapapeles
-from .RLE import decode, descomprimir, deserialize
 from os import getcwd, path
+from .mapa import Proyecto
 
 class Sistema:
     PROYECTO = None

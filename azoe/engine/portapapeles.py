@@ -18,8 +18,15 @@ class Portapapeles:
         if self._tipo == 'cut':
             self._item = None
             self._tipo = None
-        if item != None:
-            destino.pegar(item)
+        if item is not None:
+            if hasattr(destino, "pegar"):
+                destino.pegar(item)
+            elif hasattr(destino,"paste"):
+                destino.paste(item)
+            elif hasattr(destino, __repr__) and hasattr(item, __repr__):
+                raise TypeError(str(destino) + "cannot 'paste'"+str(item))
+            else:
+                raise TypeError()
     
     def __repr__(self):
         return 'item: '+str(self._item)+' ('+str(self._tipo)+')'

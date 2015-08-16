@@ -1,5 +1,5 @@
 #colores shortcut
-from .colores import *
+from azoe.engine.colores import *
 
 #tamaños
 C = 32
@@ -9,4 +9,3 @@ ALTO = 18*C-19
 #capas
 LAYER_COLISIONES = 0
 LAYER_FONDO = 1
-

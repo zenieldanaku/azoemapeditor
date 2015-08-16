@@ -1,5 +1,5 @@
+from azoe.engine import EventHandler
 from . import BaseWidget, Entry
-from globales import EventHandler
 
 class DataGrid(BaseWidget):
     def __init__(self,parent,nombre,x,y,datos,

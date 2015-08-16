@@ -1,6 +1,6 @@
+from azoe.engine import Resources as r, color, EventHandler
 from pygame import font,Rect,draw,Surface, Color 
-from globales import Resources as r, color, EventHandler
-from libs.textrect import render_textrect
+from azoe.libs.textrect import render_textrect
 from . import BaseWidget, ToolTip
 import os.path
 

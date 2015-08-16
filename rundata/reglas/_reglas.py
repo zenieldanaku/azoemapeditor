@@ -1,7 +1,8 @@
-from widgets import BaseWidget, ToolTip
 from pygame import Surface, Rect, font, draw, mouse
-from globales import C, EventHandler
+from azoe.widgets import BaseWidget, ToolTip
 from ._guias import LineaGuiaX, LineaGuiaY
+from azoe.engine import EventHandler
+from globales import C
 
 class BaseRegla(BaseWidget):
     pressed = False
