@@ -3,18 +3,19 @@
 def serialize(surf):
     mask = Mask.from_threshold(surf, (255,0,255), (1,1,1,255))
     w,h = mask.get_size()
-    serial = ''
+    serial = str(w)+','+str(h)+'!'
     for y in range(h):
         for x in range(w):
             serial += str(mask.get_at([x,y]))
-        
     return serial
 
 def encode(input_string):
     count = 1
     prev = ''
     code = ''
-    string = input_string.replace('0','A').replace('1','B')
+    dimensions,serial = input_string.split('!')
+    string = serial.replace('0','A').replace('1','B')
+    
     for character in string:
         if character != prev:
             if prev != '':
@@ -26,9 +27,10 @@ def encode(input_string):
             count += 1
     code += prev+str(count)
     
-    return code
+    return dimensions+'!'+code
 
 def decode(code):
+    dim,code = code.split('!')
     q = ""
     num = ''
     for character in code:
@@ -42,9 +44,12 @@ def decode(code):
         elif character.isnumeric():
             num += character
     q += char * int(num)
-    return q
+    return dim+'!'+q
 
-def deserialize(serial,w,h):
+def deserialize(serial):
+    size,code = serial.split('!')
+    sw,sh = size.split(',')
+    w,h = int(sw),int(sh)
     _surf = Surface((w,h))
     img = PixelArray(_surf)
     idx = -1
@@ -61,7 +66,7 @@ def deserialize(serial,w,h):
 
 def comprimir (encoded):
     s = 'B'
-    e = encoded
+    d,e = encoded.split('!')
     if s in e:
         while e.replace(s,'J').count('JJ') == 0:
             if len(s) < len(e):
@@ -82,14 +87,14 @@ def comprimir (encoded):
     else:
         print('La compresión es innecesaria')
         return e
-    
-    return comp
+    return d+'!'+comp
 
 def descomprimir(comp):
-    key,val = comp.split(':')
+    dimensions,code = comp.split('!')
+    key,val = code.split(':')
     n = int(key[key.find('J')+1])
     missing = val*int(n)
-    return missing.join(key.split('J'+str(n)))
+    return dimensions+'!'+missing.join(key.split('J'+str(n)))
 
 __all__ = ['serialize', 'encode','comprimir', 'descomprimir','decode','deserialize']
 
@@ -105,7 +110,7 @@ if __name__ == '__main__':
     compressed = comprimir(encoded)
     decompressed = descomprimir(compressed)
     decoded = decode(decompressed)
-    image = deserialize(decoded,53,71) #hay que suministrar las medidas de la imagen original
+    image = deserialize(decoded)
     
     fondo = pygame.display.set_mode((200,200))
     while True:
