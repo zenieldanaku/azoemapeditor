@@ -131,6 +131,8 @@ class arbolCarpetas(Marco):
             root = os.path.split(split[0])[1]
             if '.git' in dirnames:
                 dirnames.remove('.git')
+            if '.idea' in dirnames:
+                dirnames.remove('.idea')
             if '__pycache__' in dirnames:
                 dirnames.remove('__pycache__')
             for subdirname in dirnames:
