@@ -1,6 +1,5 @@
-from pygame import Surface, Rect,Color, font, mouse
+from pygame import Surface, Rect,Color, font, mouse, display
 from azoe.engine import color, EventHandler
-from globales import ANCHO, Sistema as Sys
 from .basewidget import BaseWidget
 
 class ToolTip(BaseWidget):
@@ -18,7 +17,8 @@ class ToolTip(BaseWidget):
         self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
         self.w,self.h = self.rect.size
-        self._ajustar()
+        w = display.get_surface().get_size()[0]
+        self._ajustar(w)
         if self.nombre not in EventHandler.widgets:
             EventHandler.addWidget(self)
         
@@ -46,9 +46,9 @@ class ToolTip(BaseWidget):
         
         return opciones
     
-    def _ajustar(self):
+    def _ajustar(self,ancho):
         while True:
-            if self.rect.x+self.w > ANCHO:
+            if self.rect.x+self.w > ancho:
                 self.rect.x -= 1
             else:
                 self.rect.y = self.parent.y+self.h+16

@@ -3,7 +3,6 @@ from pygame.constants import K_BACKSPACE, K_DELETE, K_RETURN, K_KP_ENTER
 from pygame import Rect,Surface,font,draw,mouse,cursors,key
 from azoe.engine import color
 from . import BaseWidget
-from globales import C
 
 class Entry(BaseWidget):
     texto = []

@@ -1,7 +1,6 @@
 from pygame import Rect,Surface,mouse,draw
 from azoe.engine import color, EventHandler
 from . import BaseWidget, Boton
-from globales import C
 
 class _baseScroll(BaseWidget):
     nombre = ''
@@ -34,13 +33,13 @@ class _baseScroll(BaseWidget):
         self.BtnNeg.reubicar_en_ventana(dx,dy)
 
 class ScrollV(_baseScroll):
-    def __init__(self,parent,x,y,w=1/2*C):
+    def __init__(self,parent,x,y,w=16):
         super().__init__(parent,x,y+12,w,parent.h-12*2)
         self.nombre = self.parent.nombre+'.ScrollV'
         self.area = Rect(0,0,self.w,self.h)
         self.BtnPos = _btnVer(self,self.rect.bottom,'abajo')
         self.BtnNeg = _btnVer(self,self.y-12,'arriba')
-        self.cursor = CursorV(self,parent,self.x,self.y,1/2*C)
+        self.cursor = CursorV(self,parent,self.x,self.y,16)
         
     def actualizar_tamanio(self,doc_h):
         win_h = 480
@@ -55,13 +54,13 @@ class ScrollV(_baseScroll):
         self.cursor.actualizar_tamanio(self.cursor.w,h)
 
 class ScrollH(_baseScroll):
-    def __init__(self,parent,x,y,h=1/2*C):
+    def __init__(self,parent,x,y,h=16):
         super().__init__(parent,x+12,y,parent.w-12*2,h)
         self.nombre = self.parent.nombre+'.ScrollH'
         self.area = Rect(0,0,self.w,self.h)
         self.BtnPos = _btnHor(self,self.rect.right,'derecha')
         self.BtnNeg = _btnHor(self,self.x-12,'izquierda')
-        self.cursor = CursorH(self,parent,self.x,self.y,1/2*C)
+        self.cursor = CursorH(self,parent,self.x,self.y,16)
         
     def actualizar_tamanio(self,doc_w):
         win_w = 480
@@ -130,7 +129,7 @@ class _baseCursor(BaseWidget):
         self.dx,self.dy = 0,0
 
 class CursorH(_baseCursor):
-    def __init__(self,parent,scrollable,x,y,w,h=1/2*C):
+    def __init__(self,parent,scrollable,x,y,w,h=16):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorH'
         self.scrollable = scrollable
@@ -178,7 +177,7 @@ class CursorH(_baseCursor):
                 self.mover()
 
 class CursorV(_baseCursor):
-    def __init__(self,parent,scrollable,x,y,h,w=1/2*C):
+    def __init__(self,parent,scrollable,x,y,h,w=16):
         super().__init__(parent,x,y,w,h)
         self.nombre = parent.nombre+'.CursorV'
         self.scrollable = scrollable

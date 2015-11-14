@@ -4,7 +4,6 @@ from pygame import Rect, font, key, KMOD_LCTRL, KMOD_RCTRL
 from azoe.libs.textrect import render_textrect
 from pygame.sprite import LayeredDirty
 from azoe.engine import color
-from globales import C
 import os, os.path
 
 class FileDiag(subVentana):
@@ -16,7 +15,8 @@ class FileDiag(subVentana):
     tipoSeleccinado = ''
     carpetaVieja = ''
     layer = 10
-    def __init__(self,comando,permitirmultiple=False,filetypes=[],carpeta_actual=os.getcwd(),**opciones):      
+    def __init__(self,comando,permitirmultiple=False,filetypes=[],carpeta_actual=os.getcwd(),**opciones):
+        C = 32
         self.comando = comando['cmd']
         self.TipoComando = comando['tipo']
         self.nombre = 'FileDialog.'

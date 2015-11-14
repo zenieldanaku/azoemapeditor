@@ -2,13 +2,12 @@ from . import subVentana, BotonAceptarCancelar, Checkbox, Label
 from azoe.libs.textrect import render_textrect
 from azoe.engine import color, EventHandler
 from pygame import font, Rect
-from globales import C
 
 __all__ = ['Alerta','Pregunta','Error','Info']
 
 class _DiagBox(subVentana):
     def __init__(self,nombre,**opciones):
-        super().__init__(C*8-2,C*4,nombre,**opciones)
+        super().__init__(32*8-2,32*4,nombre,**opciones)
         self.nombre = 'DialogBox:'+nombre
         
 class Alerta (_DiagBox):

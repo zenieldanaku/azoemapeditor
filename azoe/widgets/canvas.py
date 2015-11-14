@@ -1,6 +1,5 @@
 from pygame import Surface, mouse, mask,Rect,draw
 from . import BaseWidget
-from globales import C
 
 class Canvas(BaseWidget):
     
@@ -31,7 +30,7 @@ class Canvas(BaseWidget):
         self.clip = self.image.get_clip()
         self.rect = self.FONDO.get_rect(topleft=(self.x,self.y))
     
-    def pintarFondoCuadriculado(self):
+    def pintarFondoCuadriculado(self,C=32):
         self.FONDO.fill(self.opciones['colorFondo'])
         for y in range(self.FONDO.get_height()//C):
             for x in range(self.FONDO.get_width()//C):

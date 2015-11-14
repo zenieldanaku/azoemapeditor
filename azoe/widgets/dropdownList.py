@@ -3,7 +3,6 @@ from pygame import Surface,draw, Rect,font, mouse
 from pygame.sprite import LayeredDirty,DirtySprite
 from azoe.libs.textrect import render_textrect
 from azoe.engine import color, EventHandler
-from globales import C
 
 class DropDownList(BaseWidget):
     lista_de_opciones = None # LayeredDirty
