@@ -39,7 +39,7 @@ class EditarSimbolo(subVentana):
             tile = Sys.selected
             _titulo = ' #'+str(tile.index)
         else:
-            tile = EventHandler.getWidget('PanelSimbolos.AreaPrev').get_actual()
+            tile = EventHandler.get_widget('PanelSimbolos.AreaPrev').get_actual()
             _titulo = ' (nuevo)'
         
         if tile != None:
@@ -82,7 +82,7 @@ class EditarSimbolo(subVentana):
             self.area.image.blit(self.origin.img_cls,(self.tile.rect))
         self.titular(titulo)
         
-        EventHandler.setFocus(self)
+        EventHandler.set_focus(self)
     
     @staticmethod
     def crear_area(x,y):
@@ -130,7 +130,7 @@ class EditarSimbolo(subVentana):
         self.origin.img_cls = image
         self.origin.cls_code = comprimir(encode(serialize(image)))
         
-        EventHandler.delWidget(self)
+        EventHandler.del_widget(self)
     
     def alternar_transparencia(self): self.esTransparente = not self.esTransparente
     def alternar_capas(self): self.capas.switch_layer(self.LAYER_COLISION,self.LAYER_SPRITE)
@@ -155,12 +155,12 @@ class EditarSimbolo(subVentana):
         self.area.image = self.areaArray.make_surface()
         
     
-    def onMouseUp(self,button):
-        super().onMouseUp(button)
+    def on_mouse_up(self, button):
+        super().on_mouse_up(button)
         self.pressed = False
     
-    def onMouseDown(self,button):
-        super().onMouseDown(button)
+    def on_mouse_down(self, button):
+        super().on_mouse_down(button)
         x,y = mouse.get_pos()
         _rect = self.area.rect.copy()
         _rect.topleft = (self.x+C,self.y+C)
@@ -172,8 +172,8 @@ class EditarSimbolo(subVentana):
         elif button == 5:
             self.ajustar_brocha(-1)
     
-    def onMouseOver(self):
-        super().onMouseOver()
+    def on_mouse_over(self):
+        super().on_mouse_over()
         x,y = mouse.get_pos()
         _rect = self.area.rect.copy()
         _rect.topleft = (self.x+C,self.y+C)
@@ -185,13 +185,13 @@ class EditarSimbolo(subVentana):
         else:
             self.cursor.visible = 0
     
-    def onKeyDown(self,event):
+    def on_key_down(self, event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
             self.shift = True
         elif event.key == K_RCTRL or event.key == K_LCTRL:
             self.control = True
     
-    def onKeyUp(self,event):
+    def on_key_up(self, event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
             self.shift = False
         elif event.key == K_RCTRL or event.key == K_LCTRL:

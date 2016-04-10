@@ -6,7 +6,8 @@ class Menu_Mapa (Menu):
     def  __init__(self,parent,x,y):
         cascadas = {'imagen':[
                 {'nom':'Fondo','icon':Sys.iconos['fondo'],
-                 'win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaFondo},carpeta_actual=Sys.fdAssets)},
+                 'win':lambda: FileDiag({'scr': 'Abrir', 'tipo': 'A', 'cmd': Sys.setRutaFondo},
+                                        carpeta_actual=Sys.fdAssets)},
                 #{'nom':'Colisiones','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaColis},Sys.fdAssets)}
                 ]}
         opciones = [{'nom':'Imagen','csc':cascadas['imagen']},
@@ -75,4 +76,4 @@ class CuadroMapa(subVentana):
         self.cerrar()
     
     def cerrar(self):
-        EventHandler.delWidget(self)
+        EventHandler.del_widget(self)

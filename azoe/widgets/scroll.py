@@ -21,10 +21,10 @@ class _baseScroll(BaseWidget):
         imagen.fill(color('sysScrBack'))
         return imagen
     
-    def onDestruction(self):
-        EventHandler.delWidget(self.cursor)
-        EventHandler.delWidget(self.BtnPos)
-        EventHandler.delWidget(self.BtnNeg)
+    def on_destruction(self):
+        EventHandler.del_widget(self.cursor)
+        EventHandler.del_widget(self.BtnPos)
+        EventHandler.del_widget(self.BtnNeg)
         
     def reubicar_en_ventana(self,dx=0,dy=0):
         super().reubicar_en_ventana(dx,dy)
@@ -114,14 +114,14 @@ class _baseCursor(BaseWidget):
         self.crear(new_w,new_h)
         self.rect.size = new_w,new_h
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1:
             x,y = mouse.get_pos()
             self.px = x-self.x
             self.py = y-self.y
             self.pressed = True
         
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         if button == 1:
             self.pressed = False
     
@@ -134,7 +134,7 @@ class CursorH(_baseCursor):
         self.nombre = parent.nombre+'.CursorH'
         self.scrollable = scrollable
         self.rel_rect = Rect((0,0),(self.w,2))
-        EventHandler.addWidget(self)
+        EventHandler.add_widget(self)
         
     @staticmethod
     def _agregar_barras(imagen,c1,c2):
@@ -182,7 +182,7 @@ class CursorV(_baseCursor):
         self.nombre = parent.nombre+'.CursorV'
         self.scrollable = scrollable
         self.rel_rect = Rect((0,0),(2,self.h))
-        EventHandler.addWidget(self)
+        EventHandler.add_widget(self)
     
     @staticmethod
     def _agregar_barras(imagen,c1,c2):
@@ -252,11 +252,11 @@ class _baseBtn(BaseWidget):
         self.pressed = True
         self.dirty = 1
         
-    def onMouseDown(self,dummy):
+    def on_mouse_down(self, dummy):
         if self.enabled:
             self.serPresionado()
     
-    def onMouseUp(self,dummy):
+    def on_mouse_up(self, dummy):
         self.pressed = False
         self.serDeselegido()
     
@@ -270,7 +270,7 @@ class _btnVer(_baseBtn):
     def __init__(self,parent,y,orientacion):
         self.w,self.h = parent.w,12
         super().__init__(parent,parent.x,y,orientacion)
-        EventHandler.addWidget(self)
+        EventHandler.add_widget(self)
     
     @staticmethod
     def _crear(w,h,orientacion):
@@ -297,7 +297,7 @@ class _btnHor(_baseBtn):
     def __init__(self,parent,x,orientacion):
         self.w,self.h = 12,parent.h
         super().__init__(parent,x,parent.y,orientacion)
-        EventHandler.addWidget(self)
+        EventHandler.add_widget(self)
         
     @staticmethod
     def _crear(w,h,orientacion):

@@ -19,15 +19,15 @@ class BaseLinea (BaseWidget):
         img.fill((120,255,255))
         return img
         
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         self.pressed = True
         
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         self.pressed = False
       
-    def onMouseOut(self):
+    def on_mouse_out(self):
         if not self.pressed:
-            super().onMouseOut()
+            super().on_mouse_out()
         
     def update(self):
         if self.pressed and not self.locked:

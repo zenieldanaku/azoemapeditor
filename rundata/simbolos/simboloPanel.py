@@ -7,7 +7,7 @@ from pygame import mouse, Surface
 class MetaSimbolo(SimboloBase):
     '''Metaclass para no repetir onMouseOver'''
     
-    def onMouseOver(self):
+    def on_mouse_over(self):
         if self.pressed:
             x,y = mouse.get_pos()
             z = self.z
@@ -17,7 +17,7 @@ class MetaSimbolo(SimboloBase):
                 self.data['colisiones'] = self.img_cls
                 self.data['cols_code'] = self.cls_code
                 self.copia = SimboloVirtual(self,self.image.copy(),pos,self.data)
-                EventHandler.setFocus(self.copia)
+                EventHandler.set_focus(self.copia)
                 self.pressed = False
         else:
             pass #showTooltip()

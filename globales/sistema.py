@@ -61,7 +61,7 @@ class Sistema:
     
     @classmethod
     def GuardarMapaDeColisiones(cls,ruta):
-        widget = EventHandler.getWidget('Grilla.Canvas')
+        widget = EventHandler.get_widget('Grilla.Canvas')
         imagen = widget.render()
         Resources.guardar_imagen(imagen,ruta)
         cls.estado = 'Imagen '+ruta+' guardada exitosamente'
@@ -85,7 +85,7 @@ class Sistema:
                 if data[key] != "":
                     cls.setRutaFondo(data[key])
             elif key == 'props' or key == 'mobs':
-                widget = EventHandler.getWidget('Grilla.Canvas')
+                widget = EventHandler.get_widget('Grilla.Canvas')
                 for item in data[key]:
                     nombre = item
                     _ruta = data['refs'][item]['ruta']
@@ -170,7 +170,7 @@ class Sistema:
     def cortar(cls):
         elemento = cls.selected
         if elemento != None:
-            parent = EventHandler.getWidget(elemento.parent)
+            parent = EventHandler.get_widget(elemento.parent)
             cls.Portapapeles.cortar(elemento)
             parent.tiles.remove(elemento)
         
@@ -182,7 +182,7 @@ class Sistema:
         
     @classmethod
     def pegar(cls):
-        widget = EventHandler.getWidget('Grilla.Canvas')
+        widget = EventHandler.get_widget('Grilla.Canvas')
         cls.Portapapeles.pegar(widget)
     
     @classmethod

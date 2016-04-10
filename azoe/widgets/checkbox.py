@@ -33,5 +33,5 @@ class Checkbox(BaseWidget):
             self.image = self.img_false
         self.dirty = 1
         
-    def onMouseDown(self,dummy):
+    def on_mouse_down(self, dummy):
         self.check()

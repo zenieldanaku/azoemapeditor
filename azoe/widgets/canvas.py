@@ -41,7 +41,7 @@ class Canvas(BaseWidget):
                     if x%2 != 0:
                         self.FONDO.fill(self.opciones['colorCuadro'],(x*C,y*C,C,C))
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         x,y = self.getRelMousePos()
         tiles = []
         if button == 1 or button == 3:
@@ -62,7 +62,7 @@ class Canvas(BaseWidget):
                 item = tiles[-1]
                 mascara = mask.from_surface(item.image)
                 if mascara.get_at((x-item.x,y-item.y)):
-                    item.onMouseDown(button)
+                    item.on_mouse_down(button)
                     if selected > 1:
                         self.SeleccionMultiple = True                    
             else:
@@ -77,7 +77,7 @@ class Canvas(BaseWidget):
                     if hasattr(self,'context'):
                         self.context.show()
                     
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         x,y = self.getRelMousePos()
         tiles = []
         if button == 1:
@@ -85,7 +85,7 @@ class Canvas(BaseWidget):
                 tiles = self.tiles.get_sprites_at((x,y))
             if tiles != []:
                 for tile in tiles:
-                    tile.onMouseUp(button)
+                    tile.on_mouse_up(button)
             else:
                 self.pressed = False
                 self.SeleccionMultiple = False

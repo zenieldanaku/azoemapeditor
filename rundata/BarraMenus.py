@@ -18,12 +18,12 @@ class barraMenus (Marco):
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
    
-    def onFocusIn(self):
-        super().onFocusIn()
+    def on_focus_in(self):
+        super().on_focus_in()
         self.ocultarMenus()
         
-    def onFocusOut(self):
-        super().onFocusOut()
+    def on_focus_out(self):
+        super().on_focus_out()
         for menu in self.menus:
             self.menus[menu].hideMenu()
     

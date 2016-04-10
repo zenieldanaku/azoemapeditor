@@ -116,20 +116,20 @@ class Boton(BaseWidget):
             self.enabled = True
             self.dirty = 1
     
-    def onMouseIn(self):
-        super().onMouseIn()
+    def on_mouse_in(self):
+        super().on_mouse_in()
         self.serElegido()
 
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         self.serDeselegido()
         
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1:
             if self.hasMouseOver:
                 self.serPresionado()
     
-    def onMouseUp(self, dummy):
+    def on_mouse_up(self, dummy):
         if self.hasMouseOver and self.enabled:
             self.serElegido()
             self.comando()
@@ -159,8 +159,8 @@ class BotonToggle(Boton):
             self.img_dis = self.img_dis_nT
             self.img_pre = self.img_pre_nT
     
-    def onMouseDown(self,button):
-        super().onMouseDown(button)
+    def on_mouse_down(self, button):
+        super().on_mouse_down(button)
         self.toggle()
     
     def _crear_imagenes(self,scr):
@@ -206,7 +206,7 @@ class BotonAceptarCancelar(Boton):
             if hasattr(parent,'cerrar'):
                 nombre = 'Cancelar'
                 scr = 'Cancelar'
-                cmd = lambda:EventHandler.delWidget(parent)
+                cmd = lambda:EventHandler.del_widget(parent)
             else:
                 raise TypeError
         else:

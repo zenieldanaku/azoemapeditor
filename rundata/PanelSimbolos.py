@@ -23,16 +23,18 @@ class PanelSimbolos(Marco):
         n,s,t,c,d,i = 'nom','scr','tipo','cmd','des',Sys.iconos #aliases
         elementos = [
             {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:i['nuevo'],d:"Crear un mapa nuevo"},
-            {n:'Abrir',c:lambda:FileDiag({s:'Abrir',t:'A',c:Sys.abrirProyecto},carpeta_actual=Sys.fdProyectos,filetypes=['.json']),s:i['abrir'],d:"Abrir un mapa existente"},
+            {n:'Abrir', c:lambda: FileDiag({s: 'Abrir', t: 'A', c: Sys.abrirProyecto}, filetypes=['.json'],
+                                           carpeta_actual=Sys.fdProyectos), s:i['abrir'], d: "Abrir un mapa existente"},
             {n:'Guardar',c:self.Guardar,s:[i['guardar'],i['guardar_dis']],d:"Guardar el mapa actual"},
             {n:'barra'},
             {n:'Cortar',c:Sys.cortar,s:[i['cortar'],i['cortar_dis']],d:"Cortar"},
             {n:'Copiar',c:Sys.copiar,s:[i['copiar'],i['copiar_dis']],d:"Copiar"},
             {n:'Pegar',c:Sys.pegar,s:[i['pegar'],i['pegar_dis']],d:"Pegar"},
             {n:'barra'},
-            {n:'SetFondo',c:lambda:FileDiag({s:'Aceptar',t:'A',c:Sys.setRutaFondo},carpeta_actual=Sys.fdAssets),s:[i['fondo'],i['fondo_dis']],d:"Cargar imagen de fondo"},
-            {n:'addMob',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addMob},carpeta_actual=Sys.fdAssets),s:[i['mob'],i['mob_dis']],d:"Cargar símbolo de mob"},
-            {n:'addProp',c:lambda:FileDiag({s:'Aceptar',t:'A',c:self.addProps},True,carpeta_actual=Sys.fdAssets),s:[i['prop'],i['prop_dis']],d:"Cargar símbolo de prop"},
+            {n:'SetFondo', c:lambda: FileDiag({s: 'Aceptar', t: 'A', c: Sys.setRutaFondo}, carpeta_actual=Sys.fdAssets), s:[i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
+            {n:'addMob', c:lambda: FileDiag({s: 'Aceptar', t: 'A', c: self.addMob}, carpeta_actual=Sys.fdAssets), s:[i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
+            {n:'addProp', c:lambda: FileDiag({s: 'Aceptar', t: 'A', c: self.addProps}, None, True,
+                                             carpeta_actual=Sys.fdAssets), s:[i['prop'], i['prop_dis']], d: "Cargar símbolo de prop"},
             {n:'delSim',c:self.PrevArea.eliminarSimboloActual,s:[i['borrar'],i['borrar_dis']],d:"Eliminar este símbolo"}
             ]
         x = self.x+4
@@ -49,7 +51,7 @@ class PanelSimbolos(Marco):
         self.agregar(self.Items)
         self.habilitar(False)
     
-    def onKeyDown(self,tecla): 
+    def on_key_down(self, tecla):
         simbolo = self.PrevArea.get_actual()
         simbolo.renombrar(self.Items.getItemActual())
         self.PrevArea.simbolo_actual = simbolo._nombre
@@ -57,7 +59,8 @@ class PanelSimbolos(Marco):
     @staticmethod
     def Guardar():
         if not Sys.Guardado:
-            FileDiag({'scr':'Aceptar','tipo':'G','cmd':Sys.guardarProyecto},carpeta_actual=Sys.fdProyectos,filetypes=['.json'])
+            FileDiag({'scr': 'Aceptar', 'tipo': 'G', 'cmd': Sys.guardarProyecto}, filetypes=['.json'],
+                     carpeta_actual=Sys.fdProyectos)
         else:
             Sys.guardarProyecto(Sys.Guardado)
     

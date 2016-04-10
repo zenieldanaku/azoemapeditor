@@ -51,7 +51,7 @@ class CuadroTexto(BaseWidget):
             self.borrar_seleccion()
         self.texto.insert(index,char)
         
-    def onMouseOver(self):
+    def on_mouse_over(self):
         if self.hasFocus:
             text = self.cursor
             curs,mask = cursors.compile(text,'o','o')
@@ -60,11 +60,11 @@ class CuadroTexto(BaseWidget):
             #    self.sel_end = self.get_x()[1]
             #    self.seleccionar()
     
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         mouse.set_cursor(*cursors.arrow)
         
-    def onKeyDown(self,event):
+    def on_key_down(self, event):
         if event.key == K_RETURN:
             self.texto.append('\n')
         elif event.key == K_BACKSPACE:

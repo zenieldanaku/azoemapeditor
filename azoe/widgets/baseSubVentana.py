@@ -23,7 +23,7 @@ class subVentana(Marco):
         render = render_textrect(texto,fuente,rect,(255,255,255),(0,0,0))
         self.image.blit(render,rect)
     
-    def onMouseOver(self):
+    def on_mouse_over(self):
         if self.pressedTitle:
             abs_x,abs_y = mouse.get_pos()
             new_x,new_y = abs_x-self.x,abs_y-self.y
@@ -33,7 +33,7 @@ class subVentana(Marco):
             if dx or dy:
                 self.reubicar_en_ventana(dx,dy)
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         x,y = mouse.get_pos()
         rect = Rect(self.x+2,self.y+2,self.w-4,17)
         if rect.collidepoint((x,y)):
@@ -42,8 +42,8 @@ class subVentana(Marco):
             self.px = x-self.x
             self.py = y-self.y
         
-    def onMouseUp(self,button):   self.pressedTitle = False
+    def on_mouse_up(self, button):   self.pressedTitle = False
     
-    def onMouseOut(self):
+    def on_mouse_out(self):
         if not self.pressedTitle:
-            super().onMouseOut()
+            super().on_mouse_out()

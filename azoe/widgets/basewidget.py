@@ -1,9 +1,9 @@
 from pygame.sprite import DirtySprite
-from azoe.engine import color
 from pygame import draw
 
+
 class BaseWidget(DirtySprite):
-    '''clase base para todos los widgets'''
+    """clase base para todos los widgets"""
     focusable = True
     # si no es focusable, no se le llaman focusin y focusout
     # (por ejemplo, un contenedor, una etiqueta de texto)
@@ -20,59 +20,65 @@ class BaseWidget(DirtySprite):
     setFocus_onIn = False
     # if True: Renderer.setFocus se dispara onMouseIn también.
     KeyCombination = ''
-    
+
     layer = 0
-    def __init__(self,parent=None,**opciones):
+    rect = None
+    x, y = 0, 0
+
+    def __init__(self, parent=None, **opciones):
         if parent is not None:
             self.parent = parent
-            self.layer = self.parent.layer+1
+            self.layer = self.parent.layer + 1
         self.opciones = opciones
         super().__init__()
-        
-    def onFocusIn(self):
+
+    def on_focus_in(self):
         self.hasFocus = True
-    
-    def onFocusOut(self):
+
+    def on_focus_out(self):
         self.hasFocus = False
-    
-    def onMouseDown(self,mousedata):
+
+    def on_mouse_down(self, mousedata):
         pass
-    
-    def onMouseUp(self, mousedata):
+
+    def on_mouse_up(self, mousedata):
         pass
-    
-    def onMouseOver(self):
+
+    def on_mouse_over(self):
         pass
-    
-    def onMouseIn(self):
+
+    def on_mouse_in(self):
         self.hasMouseOver = True
-    
-    def onMouseOut(self):
+
+    def on_mouse_out(self):
         self.hasMouseOver = False
-    
-    def onKeyDown(self, keydata):
+
+    def on_key_down(self, keydata):
         pass
-    
-    def onKeyUp(self, keydata):
+
+    def on_key_up(self, keydata):
         pass
-    
-    def onDestruction(self):
-        #esta funcion se llama cuando el widget es quitado del renderer.
+
+    def on_destruction(self):
+        # esta funcion se llama cuando el widget es quitado del renderer.
         pass
-    
+
     @staticmethod
-    def _biselar(imagen,colorLuz,colorSombra):
-        w,h = imagen.get_size()
-        draw.line(imagen, colorSombra, (0,h-2),(w-1,h-2), 2)
-        draw.line(imagen, colorSombra, (w-2,h-2),(w-2,0), 2)
-        draw.lines(imagen, colorLuz, 0, [(w-2,0),(0,0),(0,h-4)],2)
+    def _biselar(imagen, color_luz, color_sombra):
+        w, h = imagen.get_size()
+        draw.line(imagen, color_sombra, (0, h - 2), (w - 1, h - 2), 2)
+        draw.line(imagen, color_sombra, (w - 2, h - 2), (w - 2, 0), 2)
+        draw.lines(imagen, color_luz, 0, [(w - 2, 0), (0, 0), (0, h - 4)], 2)
         return imagen
-    
-    def reubicar_en_ventana(self,dx=0,dy=0):
-        self.rect.move_ip(dx,dy)
+
+    def reubicar_en_ventana(self, dx=0, dy=0):
+        self.rect.move_ip(dx, dy)
         self.x += dx
         self.y += dy
         self.dirty = 1
-            
+
     def __repr__(self):
         return self.nombre
+
+    def is_visible(self):
+        return self._visible

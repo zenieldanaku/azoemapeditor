@@ -14,7 +14,7 @@ class barraEstado (Marco):
         self._estado = ''
         self.lblEstado = Label(self,'Estado',self.x+4,self.y+3)
         self.draw_area = Rect(4,3,self.w-8,self.h-8)
-        EventHandler.addWidget(self.lblEstado)
+        EventHandler.add_widget(self.lblEstado)
     
     def mostrar_estado(self,mensaje):
         bgcolor = color(self.opciones.get('colorFondo', 'sysElmFace'))

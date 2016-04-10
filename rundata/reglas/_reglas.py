@@ -20,22 +20,22 @@ class BaseRegla(BaseWidget):
         self.clip.topleft = 0,0
         self.image = self.FONDO.subsurface(self.clip)
         
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         if button == 1 and self.enabled:
             self.pressed = False
             self.lineas.append(self.linea)
             self.linea = None
     
-    def onMouseOut(self):
+    def on_mouse_out(self):
         if not self.pressed:
-            super().onMouseOut()
+            super().on_mouse_out()
         self.tooltip.hide()
 
-    def onMouseOver(self):
+    def on_mouse_over(self):
         x,y = mouse.get_pos()
         if self.pressed:
             if not self.rect.collidepoint((x,y)) and self.newLine:
-                EventHandler.addWidget(self.linea)
+                EventHandler.add_widget(self.linea)
                 self.newLine = False
                 
             self.moverLinea()
@@ -45,7 +45,7 @@ class BaseRegla(BaseWidget):
     def update(self):
         if not self.enabled:
             for linea in self.lineas:
-                EventHandler.delWidget(linea)
+                EventHandler.del_widget(linea)
             self.lineas.clear()
 
 class ReglaH(BaseRegla):
@@ -95,7 +95,7 @@ class ReglaH(BaseRegla):
         for i in range(len(self.lineas)):
             self.lineas[i].rect.y -= dy
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1 and self.enabled:
             self.pressed = True
             self.linea = LineaGuiaX(self.parent,len(self.lineas))
@@ -149,7 +149,7 @@ class ReglaV(BaseRegla):
         for i in range(len(self.lineas)):
             self.lineas[i].rect.x -= dx
         
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1 and self.enabled:
             self.pressed = True
             self.linea = LineaGuiaY(self.parent,len(self.lineas))

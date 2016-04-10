@@ -195,7 +195,7 @@ class Entry(BaseWidget):
         self.sel_start = self.idx
         self.sel_end = self.idx
         
-    def onMouseOver(self):
+    def on_mouse_over(self):
         if self.hasFocus:
             text = self.cursor
             curs,mask = cursors.compile(text,'o','o')
@@ -204,22 +204,22 @@ class Entry(BaseWidget):
                 self.sel_end = self.get_x()[1]
                 self.seleccionar()
     
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         mouse.set_cursor(*cursors.arrow)
     
-    def onMouseDown(self,dummy):
+    def on_mouse_down(self, dummy):
         self.insertar_cursor()
         self.seleccionando = True
         self.sel_start = self.idx
     
-    def onMouseUp(self,dummy):
+    def on_mouse_up(self, dummy):
         self.insertar_cursor()
         self.seleccionando = False
         self.sel_end = self.idx
         self.seleccionar()
         
-    def onKeyDown(self,event):
+    def on_key_down(self, event):
         mods = key.get_mods()
         if event.key == K_BACKSPACE:
             if self.seleccion == None:
@@ -235,7 +235,7 @@ class Entry(BaseWidget):
                 self.borrar_seleccion()
         
         elif event.key == K_RETURN or event.key == K_KP_ENTER:
-            self.parent.onKeyDown(event.key)
+            self.parent.on_key_down(event.key)
             self.hasFocus = False
         
         elif event.key == K_END:

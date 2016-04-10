@@ -25,14 +25,14 @@ class HandlerRegla(BaseWidget):
         draw.line(imagen,(0,0,0),(10,0),(10,14))
         return imagen
         
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1 and self.enabled:
             self.pressed = True
             self.lineaX = LineaGuiaX(self.parent,len(self.lineas))
             self.lineaY = LineaGuiaY(self.parent,len(self.lineas))
             self.newLine = True
     
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         if button == 1 and self.enabled:
             self.pressed = False
             self.lineas.append(self.lineaX)
@@ -40,22 +40,22 @@ class HandlerRegla(BaseWidget):
             self.lineaX = None
             self.lineaY = None
     
-    def onMouseIn(self):
-        super().onMouseIn()
+    def on_mouse_in(self):
+        super().on_mouse_in()
         self.ToggleSel(True)
     
-    def onMouseOut(self):
+    def on_mouse_out(self):
         self.ToggleSel(False)
         if not self.pressed:
-            super().onMouseOut()
+            super().on_mouse_out()
             self.tooltip.hide()
     
-    def onMouseOver(self):
+    def on_mouse_over(self):
         x,y = mouse.get_pos()
         if self.pressed:
             if not self.rect.collidepoint((x,y)) and self.newLine:
-                EventHandler.addWidget(self.lineaX)
-                EventHandler.addWidget(self.lineaY)
+                EventHandler.add_widget(self.lineaX)
+                EventHandler.add_widget(self.lineaY)
                 self.newLine = False
                 
             self.moverLineas()
@@ -91,5 +91,5 @@ class HandlerRegla(BaseWidget):
     def update(self):
         if not self.enabled:
             for linea in self.lineas:
-                EventHandler.delWidget(linea)
+                EventHandler.del_widget(linea)
             self.lineas.clear()

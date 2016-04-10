@@ -20,8 +20,8 @@ class DropDownList(BaseWidget):
         self.lista_de_opciones = LayeredDirty(*self.crearLista(self.lista))
         
         self.ItemActual = ''
-        EventHandler.addWidget(self.entry)
-        EventHandler.addWidget(self.flecha)
+        EventHandler.add_widget(self.entry)
+        EventHandler.add_widget(self.flecha)
         
         self.visible = 0
             
@@ -79,24 +79,24 @@ class DropDownList(BaseWidget):
         self.lista.clear()
         self.entry.borrar_todo()
         
-    def onDestruction(self):
-        EventHandler.delWidget(self.entry)
-        EventHandler.delWidget(self.flecha)
+    def on_destruction(self):
+        EventHandler.del_widget(self.entry)
+        EventHandler.del_widget(self.flecha)
         self.hideItems()
         
     def showItems(self):
         for item in self.lista_de_opciones:
-            EventHandler.addWidget(item)
+            EventHandler.add_widget(item)
     
     def hideItems(self):
         for item in self.lista_de_opciones:
-            EventHandler.delWidget(item)
+            EventHandler.del_widget(item)
     
-    def onFocusOut(self):
-        super().onFocusOut()
+    def on_focus_out(self):
+        super().on_focus_out()
         self.hideItems()
         
-    def onKeyDown(self,key):
+    def on_key_down(self, key):
         entry = self.entry.devolver_texto()
         if self.ItemActual in self.lista:
             idx = self.lista.index(self.ItemActual)
@@ -105,7 +105,7 @@ class DropDownList(BaseWidget):
                 self.lista_de_opciones.get_sprite(idx).setText(entry)
                 self.ItemActual = self.lista[idx]
         
-        self.parent.onKeyDown(key)
+        self.parent.on_key_down(key)
         
 class _Flecha(BaseWidget):
     def __init__(self,parent,w,**opciones):
@@ -128,17 +128,17 @@ class _Flecha(BaseWidget):
         draw.polygon(imagen,cFlecha,points)
         return imagen
       
-    def onMouseDown(self,dummy):
+    def on_mouse_down(self, dummy):
         self.image = self.img_pre
         self.parent.showItems()
         self.dirty = 1
     
-    def onMouseUp(self,dummy):
+    def on_mouse_up(self, dummy):
         self.image = self.img_uns
         self.dirty = 1
-        EventHandler.setFocus(self.parent)
+        EventHandler.set_focus(self.parent)
     
-    def onMouseOut(self):
+    def on_mouse_out(self):
         self.image = self.img_uns
         self.dirty = 1
 
@@ -156,16 +156,16 @@ class _Opcion(BaseOpcion):
     def devolverTexto(self):
         self.parent.setText(self.texto)
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         self.devolverTexto()
-        self.parent.onFocusOut()
+        self.parent.on_focus_out()
         
-    def onMouseIn(self):
-        super().onMouseIn()
+    def on_mouse_in(self):
+        super().on_mouse_in()
         self.image = self.img_sel
         self.dirty = 1
     
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         self.image = self.img_des
         self.dirty = 1

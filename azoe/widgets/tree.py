@@ -58,7 +58,7 @@ class Tree (Marco):
             widget = self.items.get_sprite(i)
             widget.mover(dh*dy)
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if self.ScrollY.enabled:
             if button == 5:
                 self.ScrollY.moverCursor(dy=+10)
@@ -87,13 +87,13 @@ class Item (BaseWidget):
         w = self.cursor.rect.w+3+self.opcion.rect.w
         self.rect = Rect(x,y,w,h)
         self.w,self.h = self.rect.size
-        EventHandler.addWidget(self.opcion)
-        EventHandler.addWidget(self.cursor)
+        EventHandler.add_widget(self.opcion)
+        EventHandler.add_widget(self.cursor)
                 
-    def onDestruction(self):
-        EventHandler.delWidget(self.opcion.tooltip)
-        EventHandler.delWidget(self.opcion)
-        EventHandler.delWidget(self.cursor)
+    def on_destruction(self):
+        EventHandler.del_widget(self.opcion.tooltip)
+        EventHandler.del_widget(self.opcion)
+        EventHandler.del_widget(self.cursor)
     
     def reubicar_en_ventana(self,dx=0,dy=0):
         super().reubicar_en_ventana(dx,dy)
@@ -150,13 +150,13 @@ class _Opcion(BaseOpcion):
         self.image = self.img_des
         self.dirty = 1
         
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1:
             self.serElegido()
             self.parent.parent.ItemActual = self.path
     
-    def onFocusOut(self):
-        super().onFocusOut()
+    def on_focus_out(self):
+        super().on_focus_out()
         self.serDeselegido()
     
     def update(self):        
@@ -192,7 +192,7 @@ class _Cursor(BaseWidget):
         draw.rect(imagen,(0,0,0),(2,2,rect.w-2,rect.h-2),1)
         return imagen
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1:
             if not self.vacio:
                 self.open = not self.open

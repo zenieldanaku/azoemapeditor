@@ -55,7 +55,7 @@ class _Boton(BaseWidget):
         self.image = self.img_des
         self.w,self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x,y))
-        EventHandler.addWidget(self)
+        EventHandler.add_widget(self)
     
     @staticmethod
     def crear_boton(nombre,fuente,fgcolor,bgcolor):
@@ -64,17 +64,17 @@ class _Boton(BaseWidget):
         render = render_textrect(nombre,fuente,rect,fgcolor,bgcolor,1)
         return render
         
-    def onMouseDown (self,dummy):
-        EventHandler.setFocus(self.parent.cascada)
+    def on_mouse_down (self, dummy):
+        EventHandler.set_focus(self.parent.cascada)
         self.parent.parent.soloUnMenu(self.parent)
  
-    def onMouseIn(self):
-        super().onMouseIn()
+    def on_mouse_in(self):
+        super().on_mouse_in()
         self.image = self.img_sel
         self.dirty = 1
     
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         self.image = self.img_des
         self.dirty = 1
 
@@ -139,7 +139,7 @@ class _Cascada (BaseWidget):
         self.image = Surface((self.w+5,self.h+ajuste))
         self.image.fill(color('sysMenBack'),(1,1,self.w+3,self.h+ajuste-2))
         self.rect = self.image.get_rect(topleft=(self.x,self.y))
-        EventHandler.addWidget(self)
+        EventHandler.add_widget(self)
     
     def addToReferences(self,key,item):
         recursion = True
@@ -171,17 +171,17 @@ class _Cascada (BaseWidget):
             return self.componentes.get_sprites_at((x,y))[-1]
         return self
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         item = self.get_component()
         if item != self:
-            item.onMouseDown(button)
+            item.on_mouse_down(button)
         if not self.parent._visible:
             self._visible = False
         
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         item = self.get_component()
         if item != self:
-            item.onMouseUp(button)
+            item.on_mouse_up(button)
     
     def showMenu(self):
         self.mostrar = True
@@ -198,21 +198,21 @@ class _Cascada (BaseWidget):
         self._visible = False
         self.dirty = 1
     
-    def onMouseOver(self):
+    def on_mouse_over(self):
         if self.mostrar:
             for item in self.componentes:
-                item.onMouseOut()
+                item.on_mouse_out()
             item = self.get_component()
             if item != self:
-                item.onMouseIn()
+                item.on_mouse_in()
         self.dirty = 1
     
-    def onFocusIn(self):
-        super().onFocusIn()
+    def on_focus_in(self):
+        super().on_focus_in()
         self.showMenu()
         
-    def onFocusOut(self):
-        super().onFocusOut()
+    def on_focus_out(self):
+        super().on_focus_out()
         recursion = True
         ancestro = self.parent
         while recursion:
@@ -291,21 +291,21 @@ class OpcionCascada(BaseWidget):
             imagen.blit(abrv,(key_x,2))
         return imagen
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if self.enabled:
             if isinstance(self.command,_Cascada):
                 self.command.showMenu()
             else:
                 self.command()
-                self.parent.onFocusOut()
+                self.parent.on_focus_out()
             
-    def onMouseIn(self):
+    def on_mouse_in(self):
         if self.enabled:
-            super().onMouseIn()
+            super().on_mouse_in()
             self.serSeleccionado()
     
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         if self.enabled:
             self.serDeseleccionado()
     
@@ -329,7 +329,7 @@ class OpcionCascada(BaseWidget):
         self.enabled = True
         self.dirty = 1
         
-    def onMouseOver(self):
+    def on_mouse_over(self):
         if isinstance(self.command,_Cascada):
             self.command.showMenu()
             
@@ -347,6 +347,6 @@ class ContextMenu(_Cascada):
         self.x,self.y = x,y
         self.showMenu()
     
-    def onFocusOut(self):
+    def on_focus_out(self):
         self.hasFocus = False
         self.hideMenu()

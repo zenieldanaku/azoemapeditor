@@ -51,9 +51,9 @@ class SimboloCNVS (SimboloBase):
             img.set_alpha(0)
             return img
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1:
-            self.onFocusIn()
+            self.on_focus_in()
             self.img_sel = self.crear_img_sel(self._imagen.copy())
             if not self.selected:
                 self.serElegido()
@@ -67,7 +67,7 @@ class SimboloCNVS (SimboloBase):
                 self.serElegido()
             self.context.show()
     
-    def onKeyDown(self,tecla,shift):
+    def on_key_down(self, tecla, shift):
         if self.selected:
             x,y,d = 0,0,1
             if shift: d = 10
@@ -81,7 +81,7 @@ class SimboloCNVS (SimboloBase):
             self.dx,self.dy = x,y
             self.mover(self.dx,self.dy)
     
-    def onKeyUp(self,tecla):
+    def on_key_up(self, tecla):
         if tecla == K_RIGHT or tecla == K_LEFT:
             self.dx = 0
         elif tecla == K_DOWN or tecla == K_UP:

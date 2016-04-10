@@ -35,9 +35,9 @@ class CuadroEntrada(subVentana):
         self.agregar(self.btnAceptar)
         self.agregar(self.btnCanelar)
     
-    def onDestruction(self):
-        super().onDestruction()
-        self.grid.onDestruction()
+    def on_destruction(self):
+        super().on_destruction()
+        self.grid.on_destruction()
     
     def reubicar_en_ventana(self, dx, dy):
         self.grid.reubicar_en_ventana(dx,dy)

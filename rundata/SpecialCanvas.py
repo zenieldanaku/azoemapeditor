@@ -21,16 +21,16 @@ class SpecialCanvas (Canvas):
         ]
         self.context = ContextMenu(self,comandos)
     
-    def onMouseOver (self):
+    def on_mouse_over (self):
         x,y = self.getRelMousePos()
         for tile in self.tiles.get_sprites_at((x,y)):
             if tile.isMoving:
                 if self.SeleccionMultiple:
                     self.mover_tiles(tile.dx,tile.dy)
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1 or button == 3:
-            super().onMouseDown(button)
+            super().on_mouse_down(button)
             if button == 3:
                self.px,self.py = self.getRelMousePos()
         
@@ -46,12 +46,12 @@ class SpecialCanvas (Canvas):
                 if button == 4:
                     self.scroll(dy=-10)
     
-    def onKeyDown(self,event):
+    def on_key_down(self, event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
             self.shift = True
         for tile in self.tiles:
             if tile.selected:
-                if tile.onKeyDown(event.key,self.shift): #delete
+                if tile.on_key_down(event.key, self.shift): #delete
                     index = tile.index
                     self.tiles.remove(tile)
                     Sys.selected = None
@@ -60,13 +60,13 @@ class SpecialCanvas (Canvas):
                         if tile.index > index:
                             tile.index -= 1
     
-    def onKeyUp(self,event):
+    def on_key_up(self, event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
             self.shift = False
             
         for tile in self.tiles:
             if tile.selected:
-                tile.onKeyUp(event.key)
+                tile.on_key_up(event.key)
     
     def actualizar_tamanio_fondo (self,w,h):
         self.FONDO = transform.scale(self.FONDO,(w,h))
@@ -192,7 +192,7 @@ class SpecialCanvas (Canvas):
         else:
             spr = Sys.IMG_FONDO
             if self.FONDO.get_size() != spr.rect.size:
-                EventHandler.setFocus(self)
+                EventHandler.set_focus(self)
                 self.actualizar_tamanio_fondo(*spr.rect.size)
                 img = self._imagen_colisiones(*spr.rect.size)
                 

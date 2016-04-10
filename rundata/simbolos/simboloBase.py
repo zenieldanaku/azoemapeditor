@@ -24,7 +24,7 @@ class SimboloBase (BaseWidget):
         self.rect = self._imagen.get_rect(topleft=(self.x,self.y))
         self.px,self.py = self.rect.topleft
         
-    def onMouseUp(self,button):
+    def on_mouse_up(self, button):
         if button == 1:
             self.pressed = False
     
@@ -43,7 +43,7 @@ class SimboloBase (BaseWidget):
         self.y += dy
         self.dirty = 1
     
-    def onMouseDown(self,button):
+    def on_mouse_down(self, button):
         if button == 1:
             self.pressed = True
             x,y = mouse.get_pos()
@@ -52,8 +52,8 @@ class SimboloBase (BaseWidget):
         elif button == 3:
             self.context.show()
     
-    def onMouseOut(self):
-        super().onMouseOut()
+    def on_mouse_out(self):
+        super().on_mouse_out()
         self.pressed = False
     
     def hideMenu(self):

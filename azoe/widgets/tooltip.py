@@ -20,7 +20,7 @@ class ToolTip(BaseWidget):
         w = display.get_surface().get_size()[0]
         self._ajustar(w)
         if self.nombre not in EventHandler.widgets:
-            EventHandler.addWidget(self)
+            EventHandler.add_widget(self)
         
     @staticmethod    
     def _crear(texto,opciones):
