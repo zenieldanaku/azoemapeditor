@@ -16,20 +16,11 @@ class FileDiag(subVentana):
     carpetaVieja = ''
     layer = 10
 
-    def __init__(self, comando, filetypes=None, permitirmultiple=False, carpeta_actual=os.getcwd(), **opciones):
+    def __init__(self, comando, filetypes=None, permitirmultiple=False, carpeta_actual='', **opciones):
         c = 32
         self.comando = comando['cmd']
-        self.TipoComando = comando['tipo']
-        self.nombre = 'FileDialog.'
-        _nombre = ''
-        if self.TipoComando == 'A':
-            _nombre = 'Abrir'
-        elif self.TipoComando == 'G':
-            _nombre = 'Guardar'
-        elif self.TipoComando == 'Gc':
-            _nombre = 'Guardar como...'
-        self.nombre += _nombre
-        super().__init__(16 * c, 10 * c + 18, _nombre, **opciones)
+        self.nombre = 'FileDialog.' + comando['scr']
+        super().__init__(16 * c, 10 * c + 18+22, comando['scr'], **opciones)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
         self.ArchivosSeleccionados = []
@@ -38,25 +29,23 @@ class FileDiag(subVentana):
         self.tipoSeleccinado = ''
         self.carpetaVieja = ''
 
-        if filetypes is None:
-            filetypes = ['*.png', '*.json', '*.mob', '*.quest']
         x, y, w, h = self.x, self.y, self.w, self.h  # abreviaturas de legibilidad
-        self.carpetas = ArbolCarpetas(self, x + 2, y + 19, w // 2 - 2, 8 * c, carpeta_actual)
-        self.archivos = ListaDeArchivos(self, x + w // 2, y + 19, w // 2 - 2, 8 * c, self.SeleccionMultiple)
-        self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 8 * c + 23, 11 * c + 16, '')
-        self.BtnAccion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 8 * c + 24, self.ejecutar_comando,
-                                              comando['scr'])
-        self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 9 * c + 19, 11 * c + 16, filetypes)
-        self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 20)
-        self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c - 7, texto='Nombre:',
-                               **{'fontType': 'Tahoma', 'fontSize': 13})
-        self.lblTipo = Label(self, 'Tipo', x + 4, y + 9 * c + 19, texto="Tipo:",
-                             **{'fontType': 'Tahoma', 'fontSize': 13})
+        ft, fs = 'fontType', 'fontSize'
+        self.dir_base = Entry(self, 'IngrsarDireccion',  x + 2, y + 21, w-2, os.getcwd())
+        self.carpetas = ArbolCarpetas(self, x + 2, y + 43, w // 2 - 2, 8 * c, carpeta_actual)
+        self.archivos = ListaDeArchivos(self, x + w // 2, y + 43, w // 2 - 2, 8 * c, self.SeleccionMultiple)
+        self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 9 * c + 15, 11 * c + 16, '')
+        self.accion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 16, self.do_command, comando['scr'])
+        self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 11 * c + 16, filetypes)
+        self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 10 * c + 12)
+        self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:', **{ft: 'Tahoma', fs: 13})
+        self.lblTipo = Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:", **{ft: 'Tahoma', fs: 13})
 
+        self.agregar(self.dir_base)
         self.agregar(self.carpetas)
         self.agregar(self.archivos)
         self.agregar(self.entryNombre)
-        self.agregar(self.BtnAccion)
+        self.agregar(self.accion)
         self.agregar(self.tipos)
         self.agregar(self.BtnCancelar)
         self.agregar(self.lblTipo)
@@ -68,26 +57,14 @@ class FileDiag(subVentana):
         render = render_textrect(texto, fuente, rect, (255, 255, 255), (0, 0, 0))
         self.image.blit(render, rect)
 
-    def ejecutar_comando(self):
-        if self.TipoComando == 'A':
-            if self.SeleccionMultiple:
-                rutas = []
-                for archivo in self.ArchivosSeleccionados:
-                    rutas.append(os.path.join(self.carpetaActual, archivo))
-                self.comando(rutas)
-            else:
+    def do_command(self):
+        pass
 
-                ruta = os.path.join(self.carpetaActual, self.UltimaSeleccion)
-                self.comando(ruta)
-
-        elif self.TipoComando == 'G' or self.TipoComando == 'Gc':
-            if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
-                ruta = os.path.join(self.carpetaActual, self.nombredeArchivo + self.tipoSeleccinado)
-            else:
-                ruta = os.path.join(self.carpetaActual, self.nombredeArchivo)
-            self.comando(ruta)
-
-        self.cerrar()
+    def on_key_down(self, keydata):
+        ruta = self.dir_base.devolver_texto()
+        if ruta.endswith('\\'):
+            ruta = ruta[:-1]
+        self.carpetas.regenerate(ruta, ruta)
 
     def update(self):
         tipo = self.tipos.ItemActual.lstrip('*')
@@ -116,49 +93,74 @@ class FileDiag(subVentana):
                 self.UltimaSeleccion = self.archivos.UltimaSeleccion
 
 
+class FileOpenDialog(FileDiag):
+    def __init__(self, cmd, fd, ft=None):
+        comando = {'scr': 'Abrir', 'cmd': cmd}
+        super().__init__(comando, ft, permitirmultiple=True, carpeta_actual=fd)
+
+    def do_command(self):
+        if self.SeleccionMultiple:
+            rutas = []
+            for archivo in self.ArchivosSeleccionados:
+                rutas.append(os.path.join(self.carpetaActual, archivo))
+            self.comando(rutas)
+        else:
+
+            ruta = os.path.join(self.carpetaActual, self.UltimaSeleccion)
+            self.comando(ruta)
+        self.cerrar()
+
+
+class FileSaveDialog(FileDiag):
+    def __init__(self, cmd, fd, ft=None):
+        comando = {'scr': 'Guardar', 'cmd': cmd}
+        super().__init__(comando, ft, permitirmultiple=False, carpeta_actual=fd)
+
+    def do_command(self):
+        if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
+            ruta = os.path.join(self.carpetaActual, self.nombredeArchivo + self.tipoSeleccinado)
+        else:
+            ruta = os.path.join(self.carpetaActual, self.nombredeArchivo)
+        self.comando(ruta)
+        self.cerrar()
+
+
 class ArbolCarpetas(Marco):
     CarpetaSeleccionada = ''
+    arbol = None
 
     def __init__(self, parent, x, y, w, h, carpeta_actual, **opciones):
         super().__init__(x, y, w, h, False, parent, **opciones)
         self.nombre = self.parent.nombre + '.ArbolDeCarpetas'
         self.arbol = Tree(self, self.x, self.y, self.w - 16, self.h, self._generar_arbol(os.getcwd()), carpeta_actual)
         self.agregar(self.arbol)
-        self.CarpetaSeleccionada = carpeta_actual
+        self.CarpetaSeleccionada = self.arbol.ItemActual
 
-    @staticmethod  # decorator! ^^ 'cause explicit is better than implicit
-    def _generar_arbol(path):
+    def regenerate(self, path, carpeta):
+        self.arbol.regenerate(self._generar_arbol(path), carpeta)
+
+    @staticmethod
+    def _generar_arbol(_path):
         walk = []
-        x, y = -1, -1
-        root_ = ''
-        roots = []
-        for dirname, dirnames, dummy in os.walk(path):
-            split = os.path.split(dirname)
-            nombre = split[1]
-            root = os.path.split(split[0])[1]
-            if '.git' in dirnames:
-                dirnames.remove('.git')
-            if '.idea' in dirnames:
-                dirnames.remove('.idea')
-            if '__pycache__' in dirnames:
-                dirnames.remove('__pycache__')
-            for subdirname in dirnames:
+        dx = _path.count('\\')
+        for dirname, hijos, _ in os.walk(_path):
+            _split = os.path.split(dirname)
+            nombre = _split[1]
+            root = _split[0]
+            for exclude in ['.git', '.idea', '__pycache__']:
+                if exclude in hijos:
+                    hijos.remove(exclude)
+            for subdirname in hijos:
                 if subdirname.startswith('_'):
-                    dirnames.remove(subdirname)
+                    hijos.remove(subdirname)
 
-            if root in roots:
-                x = roots.index(root)
-            elif root != root_:
-                roots.append(root)
-                x += 1
-                root_ = root
-
-            if dirnames:
+            if hijos:
                 empty = False
             else:
                 empty = True
 
-            walk.append({'x': x, 'obj': nombre, 'empty': empty, 'path': dirname, 'hijos': dirnames})
+            x = dirname.count('\\') - dx
+            walk.append({'x': x, 'root': root, 'obj': nombre, 'empty': empty, 'path': dirname, 'hijos': hijos})
 
         return walk
 
@@ -169,6 +171,10 @@ class ArbolCarpetas(Marco):
         item = self.arbol.ItemActual
         if item != '':
             self.CarpetaSeleccionada = item
+        self.dirty = 1
+
+    def on_destruction(self):
+        self.arbol.on_destruction()
 
 
 class ListaDeArchivos(Marco):
@@ -238,11 +244,7 @@ class ListaDeArchivos(Marco):
         self.crear_lista(nuevalista, tipo)
 
     def on_mouse_down(self, button):
-        if self.ScrollY.enabled:
-            if button == 5:
-                self.ScrollY.moverCursor(dy=+10)
-            if button == 4:
-                self.ScrollY.moverCursor(dy=-10)
+        print(button)
 
     def update(self):
         for item in self.items:

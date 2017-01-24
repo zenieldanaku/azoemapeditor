@@ -39,7 +39,7 @@ class DataGrid(BaseWidget):
         try:
             for y in range(len(datos)):
                 for x in range(len(datos[y])):
-                    self.celdas[x,y].setText(datos[y][x])
+                    self.celdas[x,y].set_text(datos[y][x])
         except:
             pass
                 

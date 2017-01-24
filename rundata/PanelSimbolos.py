@@ -162,7 +162,7 @@ class area_prev(Marco):
                 else:
                     self.simbolo_actual = simbolo._nombre
                     simbolo.visible = True
-                    self.parent.Items.setText(self.simbolo_actual)
+                    self.parent.Items.set_text(self.simbolo_actual)
         
         if len(self.simbolos) != 0:
             self.parent.botones['delSim'].serHabilitado()

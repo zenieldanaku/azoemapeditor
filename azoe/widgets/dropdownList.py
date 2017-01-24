@@ -102,7 +102,7 @@ class DropDownList(BaseWidget):
             idx = self.lista.index(self.ItemActual)
             if entry != self.ItemActual:
                 self.lista[idx] = entry
-                self.lista_de_opciones.get_sprite(idx).setText(entry)
+                self.lista_de_opciones.get_sprite(idx).set_text(entry)
                 self.ItemActual = self.lista[idx]
         
         self.parent.on_key_down(key)
@@ -149,12 +149,12 @@ class _Opcion(BaseOpcion):
         super().__init__(parent,nombre,x,y,w)
         self.texto = nombre
     
-    def setText(self,texto):
-        super().setText(texto)
+    def set_text(self, texto):
+        super().set_text(texto)
         self.texto = texto
     
     def devolverTexto(self):
-        self.parent.setText(self.texto)
+        self.parent.set_text(self.texto)
     
     def on_mouse_down(self, button):
         self.devolverTexto()
