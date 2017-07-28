@@ -1,4 +1,4 @@
 from .PanelSimbolos import PanelSimbolos
-from .BarraEstado import barraEstado
-from .BarraMenus import barraMenus
+from .BarraEstado import BarraEstado
+from .BarraMenus import BarraMenus
 from .Grilla import Grilla

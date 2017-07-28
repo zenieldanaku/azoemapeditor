@@ -14,7 +14,7 @@ class Tree(Marco):
         self.nombre = parent.nombre + '.Tree'
         super().__init__(x, y, w, h, False, **opciones)
         self.parent = parent
-        self.layer = self.parent.layer + 1
+        # self.layer = self.parent.layer + 1
         self.items = LayeredDirty()
         self.crear_lista(walk, actual)
         self.ItemActual = actual  # ruta
@@ -158,7 +158,7 @@ class _Opcion(BaseOpcion):
 
     def __init__(self, parent, nombre, path, x, y, w=0):
         super().__init__(parent, nombre, x, y, w)
-        self.layer = self.parent.layer
+        # self.layer = self.parent.layer
         self.texto = nombre
         self.path = path
         self.tooltip = ToolTip(self.parent, path, x, y)
@@ -197,7 +197,7 @@ class _Cursor(BaseWidget):
     def __init__(self, parent, x, y, w, h, vacio, **opciones):
         super().__init__(parent, **opciones)
         self.nombre = self.parent.nombre + '.Cursor'
-        self.layer = self.parent.layer  # overwrite
+        # self.layer = self.parent.layer  # overwrite
         self.x, self.y = x, y
         self.w, self.h = w, h
         self.vacio = vacio

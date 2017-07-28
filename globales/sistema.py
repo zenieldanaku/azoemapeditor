@@ -116,7 +116,7 @@ class Sistema:
                             datos = {"nombre":nombre,"image":image,"tipo":tipo,
                                      "grupo":key,"ruta":_ruta,"pos":pos,
                                      "index":idx,"colisiones":colision,'rot':rot}
-                            widget.addTile(datos)
+                            widget.add_tile(datos)
             elif key == 'referencias':
                 cls.referencias = data[key]
         cls.Guardado = ruta
@@ -144,7 +144,7 @@ class Sistema:
     @classmethod
     def exportarMapa(cls,ruta):
         try:
-            mapa = cls.PROYECTO.exportarMapa()
+            mapa = cls.PROYECTO.exportar_mapa()
             Resources.guardar_json(ruta,mapa)
             cls.estado = "Mapa '"+ruta+"' exportado correctamente."
         except: 
@@ -200,11 +200,11 @@ class Sistema:
         if cls.KeyCombinations != []:
             combination = '+'.join(cls.KeyCombinations)
             for widget in EventHandler.contents:
-                if type(widget.KeyCombination) == str:
-                    if combination == widget.KeyCombination:
+                if type(widget.key_combination) == str:
+                    if combination == widget.key_combination:
                         print('anda!')
                 else:
-                    widget.KeyCombination(combination)
+                    widget.key_combination(combination)
         
         if cls.DiagBox != None:
             if cls.DiagMODE == False:

@@ -116,6 +116,8 @@ class EventHandler:
                         if widget.hasMouseOver:
                             widget.on_mouse_out()
 
+        # top = cls.contents.get_top_layer()
+        # print(cls.contents.get_sprites_from_layer(top))
         for widget in cls.contents:
             if widget.hasMouseOver:
                 widget.on_mouse_over()

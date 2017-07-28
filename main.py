@@ -1,27 +1,29 @@
-from pygame import display as pantalla,time
+from pygame import display as pantalla, time
 from azoe import EventHandler, Ventana
-from globales import ANCHO,ALTO
+from globales import ANCHO, ALTO
 from globales import Sistema
 from rundata import *
-import pygame,sys,os
+import pygame
+import sys
+import os
 
-rutas = [os.getcwd()+'\\proyectos',
-         os.getcwd()+'\\assets',
-         os.getcwd()+'\\export']
+rutas = [os.getcwd() + '\\proyectos',
+         os.getcwd() + '\\assets',
+         os.getcwd() + '\\export']
 
 for ruta in rutas:
     if not os.path.exists(ruta):
         os.mkdir(ruta)
 
 pygame.init()
-tamanio = ANCHO,ALTO
-os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0,0)
+tamanio = ANCHO, ALTO
+os.environ['SDL_VIDEO_CENTERED'] = "{!s},{!s}".format(0, 0)
 pantalla.set_caption("Azoe Engine's Map Editor")
 fondo = pantalla.set_mode(tamanio)
 Sistema.init()
 Ventana(fondo.get_size())
-BarraMenus = barraMenus()
-BarraEstado = barraEstado()
+BarraMenus = BarraMenus()
+BarraEstado = BarraEstado()
 Grilla = Grilla()
 Simbolos = PanelSimbolos()
 
@@ -30,7 +32,7 @@ FPS = time.Clock()
 while hayCambios:
     FPS.tick(60)
     events = pygame.event.get()
-    hayCambios = EventHandler.update(events,fondo)
+    hayCambios = EventHandler.update(events, fondo)
 
     if hayCambios:
         pantalla.update(hayCambios)

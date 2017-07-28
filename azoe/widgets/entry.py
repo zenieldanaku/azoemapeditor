@@ -54,24 +54,27 @@ class Entry(BaseWidget):
         self.image = Surface(self.rect.size)
         self.image.set_clip(self.erase_area)
         self.dx = x + 4
-        self.setText(texto)
+        self.set_text(texto)
 
-    def setText(self, texto):
+    def get_real_name(self):
+        return self._nombre
+
+    def set_text(self, texto):
         self.borrar_todo()
         self.texto = list(texto)
         self.imprimir()
 
-    def setMultipleTexts(self, lista):
+    def set_multiple_texts(self, lista):
         self.borrar_todo()
         self.texto = lista
         self.imprimir(True)
 
-    def devolver_texto(self):
+    def return_text(self):
         return ''.join(self.texto)
 
     def ingresar_caracter(self, char):
         index = self.idx
-        if self.seleccion != None:
+        if self.seleccion is not None:
             self.borrar_seleccion()
         self.texto.insert(index, char)
 
@@ -88,19 +91,19 @@ class Entry(BaseWidget):
         self.image.fill(color(self.opciones['colorFondo']), self.erase_area)
 
     def imprimir(self, lista=False):
-        cTexto = color(self.opciones['colorTexto'])
-        cFondo = color(self.opciones['colorFondo'])
-        cSelect = color(self.opciones['colorSelect'])
+        c_texto = color(self.opciones['colorTexto'])
+        c_fondo = color(self.opciones['colorFondo'])
+        c_select = color(self.opciones['colorSelect'])
 
         if not lista:
             txt = ''.join(self.texto)
         else:
             txt = ', '.join(self.texto)
-        render = self.fuente.render(txt, True, cTexto, cFondo)
+        render = self.fuente.render(txt, True, c_texto, c_fondo)
 
-        if self.seleccion != None:
+        if self.seleccion is not None:
             sel = ''.join(self.texto[self.seleccion])
-            render_sel = self.fuente.render(sel, True, cTexto, cSelect)
+            render_sel = self.fuente.render(sel, True, c_texto, c_select)
             x = self.seleccion.start * 8
             render.blit(render_sel, (x, 0))
 
@@ -109,7 +112,7 @@ class Entry(BaseWidget):
 
     def dibujar_cursor(self, orden=None):
         x = self.cur_x
-        if orden == None:
+        if orden is None:
             if not self.cur_visible:
                 draw.line(self.image, color(self.opciones['colorTexto']), (x, 3), (x, 16), 1)
             else:
@@ -137,14 +140,14 @@ class Entry(BaseWidget):
             self.idx = 0
 
     def set_x(self):
-        absX, absY = mouse.get_pos()
-        self.cur_x = round((absX - self.dx) / 8) * 8 + 4
-        self.idx = (round((absX - self.dx) / 8) * 8 + 4) // 8
+        abs_x, abs_y = mouse.get_pos()
+        self.cur_x = round((abs_x - self.dx) / 8) * 8 + 4
+        self.idx = (round((abs_x - self.dx) / 8) * 8 + 4) // 8
 
     def get_x(self):
-        absX, absY = mouse.get_pos()
-        cur_x = round((absX - self.dx) / 8) * 8 + 4
-        idx = (round((absX - self.dx) / 8) * 8 + 4) // 8
+        abs_x, abs_y = mouse.get_pos()
+        cur_x = round((abs_x - self.dx) / 8) * 8 + 4
+        idx = (round((abs_x - self.dx) / 8) * 8 + 4) // 8
         return cur_x, idx
 
     def seleccionar(self):
@@ -223,14 +226,14 @@ class Entry(BaseWidget):
     def on_key_down(self, event):
         mods = key.get_mods()
         if event.key == K_BACKSPACE:
-            if self.seleccion == None:
+            if self.seleccion is None:
                 self.borrar_caracter(-1)
                 self.mover_cursor(-1)
             else:
                 self.borrar_seleccion()
 
         elif event.key == K_DELETE:
-            if self.seleccion == None:
+            if self.seleccion is None:
                 self.borrar_caracter(+0)
             else:
                 self.borrar_seleccion()

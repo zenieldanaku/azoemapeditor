@@ -1,174 +1,187 @@
-from globales import Sistema as Sys, C,LAYER_COLISIONES, LAYER_FONDO
+from globales import Sistema as Sys, C, LAYER_COLISIONES, LAYER_FONDO
 from azoe.widgets import Marco, FileDiag, Boton, DropDownList
-from .simbolos import SimboloSimple,SimboloMultiple
-from .menus.menu_mapa import CuadroMapa
-from azoe import Resources as r, color
+from .simbolos import SimboloSimple, SimboloMultiple
+from .menus.menumapa import CuadroMapa
+from azoe import Resources, color
 from pygame.sprite import LayeredDirty
-from pygame import Rect,draw, Surface
+from pygame import Rect, draw, Surface
 from os import path
+
 
 class PanelSimbolos(Marco):
     simbolos = None
     botones = {}
-    layer = 1
-    def __init__(self,**opciones):
+    # layer = 1
+
+    def __init__(self, **opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
 
         self.nombre = 'PanelSimbolos'
-        super().__init__(16*C,19,4*C+8,16*C-1,**opciones)
+        super().__init__(16 * C, 19, 4 * C + 8, 16 * C - 1, **opciones)
         self.simbolos = LayeredDirty()
-        self.Items = DropDownList(self,'Items',self.x+3,self.y+3*C,self.w-6)
-        self.PrevArea = area_prev(self,self.x+3,self.y+4*C-8,self.w-6,4*C)
-        n,s,t,c,d,i = 'nom','scr','tipo','cmd','des',Sys.iconos #aliases
+        self.Items = DropDownList(self, 'Items', self.x + 3, self.y + 3 * C, self.w - 6)
+        self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C)
+        n, s, t, c, d, i = 'nom', 'scr', 'tipo', 'cmd', 'des', Sys.iconos  # aliases
         elementos = [
-            {n:'Nuevo',c:lambda:CuadroMapa('Nuevo Mapa'),s:i['nuevo'],d:"Crear un mapa nuevo"},
-            {n:'Abrir', c:lambda: FileDiag({s: 'Abrir', t: 'A', c: Sys.abrirProyecto}, filetypes=['.json'],
-                                           carpeta_actual=Sys.fdProyectos), s:i['abrir'], d: "Abrir un mapa existente"},
-            {n:'Guardar',c:self.Guardar,s:[i['guardar'],i['guardar_dis']],d:"Guardar el mapa actual"},
-            {n:'barra'},
-            {n:'Cortar',c:Sys.cortar,s:[i['cortar'],i['cortar_dis']],d:"Cortar"},
-            {n:'Copiar',c:Sys.copiar,s:[i['copiar'],i['copiar_dis']],d:"Copiar"},
-            {n:'Pegar',c:Sys.pegar,s:[i['pegar'],i['pegar_dis']],d:"Pegar"},
-            {n:'barra'},
-            {n:'SetFondo', c:lambda: FileDiag({s: 'Aceptar', t: 'A', c: Sys.setRutaFondo}, carpeta_actual=Sys.fdAssets), s:[i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
-            {n:'addMob', c:lambda: FileDiag({s: 'Aceptar', t: 'A', c: self.addMob}, carpeta_actual=Sys.fdAssets), s:[i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
-            {n:'addProp', c:lambda: FileDiag({s: 'Aceptar', t: 'A', c: self.addProps}, None, True,
-                                             carpeta_actual=Sys.fdAssets), s:[i['prop'], i['prop_dis']], d: "Cargar símbolo de prop"},
-            {n:'delSim',c:self.PrevArea.eliminarSimboloActual,s:[i['borrar'],i['borrar_dis']],d:"Eliminar este símbolo"}
-            ]
-        x = self.x+4
-        y = 19+4
+            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), s: i['nuevo'], d: "Crear un mapa nuevo"},
+            {n: 'Abrir', c: lambda: FileDiag({s: 'Abrir', t: 'A', c: Sys.abrirProyecto}, filetypes=['.json'],
+                                             carpeta_actual=Sys.fdProyectos), s: i['abrir'],
+             d: "Abrir un mapa existente"},
+            {n: 'Guardar', c: self.guardar, s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
+            {n: 'barra'},
+            {n: 'Cortar', c: Sys.cortar, s: [i['cortar'], i['cortar_dis']], d: "Cortar"},
+            {n: 'Copiar', c: Sys.copiar, s: [i['copiar'], i['copiar_dis']], d: "Copiar"},
+            {n: 'Pegar', c: Sys.pegar, s: [i['pegar'], i['pegar_dis']], d: "Pegar"},
+            {n: 'barra'},
+            {n: 'SetFondo',
+             c: lambda: FileDiag({s: 'aceptar', t: 'A', c: Sys.setRutaFondo}, carpeta_actual=Sys.fdAssets),
+             s: [i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
+            {n: 'addMob', c: lambda: FileDiag({s: 'aceptar', t: 'A', c: self.add_mob}, carpeta_actual=Sys.fdAssets),
+             s: [i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
+            {n: 'addProp', c: lambda: FileDiag({s: 'aceptar', t: 'A', c: self.add_props}, None, True,
+                                               carpeta_actual=Sys.fdAssets), s: [i['prop'], i['prop_dis']],
+             d: "Cargar símbolo de prop"},
+            {n: 'delSim', c: self.PrevArea.eliminar_simbolo_actual, s: [i['borrar'], i['borrar_dis']],
+             d: "Eliminar este símbolo"}
+        ]
+        x = self.x + 4
+        y = 19 + 4
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = Boton(self,x+5,y,e['nom'],e['cmd'],e['scr'],e['des'])
-                x = boton.rect.right-2
+                boton = Boton(self, x + 5, y, e['nom'], e['cmd'], e['scr'], e['des'])
+                x = boton.rect.right - 2
                 self.botones[e['nom']] = boton
                 self.agregar(boton)
             else:
-                x = self.x+4
+                x = self.x + 4
                 y += 32
         self.agregar(self.Items)
         self.habilitar(False)
-    
+
     def on_key_down(self, tecla):
         simbolo = self.PrevArea.get_actual()
-        simbolo.renombrar(self.Items.getItemActual())
-        self.PrevArea.simbolo_actual = simbolo._nombre
-        
+        simbolo.renombrar(self.Items.get_item_actual())
+        self.PrevArea.simbolo_actual = simbolo.get_real_name()
+
     @staticmethod
-    def Guardar():
+    def guardar():
         if not Sys.Guardado:
-            FileDiag({'scr': 'Aceptar', 'tipo': 'G', 'cmd': Sys.guardarProyecto}, filetypes=['.json'],
+            FileDiag({'scr': 'aceptar', 'tipo': 'G', 'cmd': Sys.guardarProyecto}, filetypes=['.json'],
                      carpeta_actual=Sys.fdProyectos)
         else:
             Sys.guardarProyecto(Sys.Guardado)
-    
-    def addMob(self,ruta):
-        sprite = r.split_spritesheet(ruta)
+
+    def add_mob(self, ruta):
+        sprite = Resources.split_spritesheet(ruta)
         nombre = path.split(ruta)[1][0:-4]
         _rect = sprite[0].get_rect(center=self.PrevArea.area.center)
-        datos = {'nombre':nombre,'imagenes':sprite,'grupo':'mobs','tipo':'Mob','ruta':ruta,'pos':[_rect.x,_rect.y,0]}
-        simbolo = SimboloMultiple(self.PrevArea,datos)
-        self.addToPrevArea(nombre,simbolo)
-        
-    def addProps(self,rutas):
+        datos = {'nombre': nombre, 'imagenes': sprite, 'grupo': 'mobs', 'tipo': 'Mob', 'ruta': ruta,
+                 'pos': [_rect.x, _rect.y, 0]}
+        simbolo = SimboloMultiple(self.PrevArea, datos)
+        self.add_to_prev_area(nombre, simbolo)
+
+    def add_props(self, rutas):
         for ruta in rutas:
-            sprite = r.cargar_imagen(ruta)
+            sprite = Resources.cargar_imagen(ruta)
             nombre = path.split(ruta)[1][0:-4]
             _rect = sprite.get_rect(center=self.PrevArea.area.center)
-            datos = {'nombre':nombre,'image':sprite,'grupo':'props','tipo':'Prop','ruta':ruta,'pos':[_rect.x,_rect.y,0]}
-            simbolo = SimboloSimple(self.PrevArea,datos)
-            self.addToPrevArea(nombre,simbolo)
-    
-    def addToPrevArea(self,nombre,simbolo):
-        self.Items.setItem(nombre)
-        self.PrevArea.agregarSimbolo(simbolo)
-    
-    def habilitar(self,control):
+            datos = {'nombre': nombre, 'image': sprite, 'grupo': 'props', 'tipo': 'Prop', 'ruta': ruta,
+                     'pos': [_rect.x, _rect.y, 0]}
+            simbolo = SimboloSimple(self.PrevArea, datos)
+            self.add_to_prev_area(nombre, simbolo)
+
+    def add_to_prev_area(self, nombre, simbolo):
+        self.Items.set_item(nombre)
+        self.PrevArea.agregar_simbolo(simbolo)
+
+    def habilitar(self, control):
         for nombre in self.botones:
-            if nombre not in ['Nuevo','Abrir','delSim']:
+            if nombre not in ['Nuevo', 'Abrir', 'delSim']:
                 item = self.botones[nombre]
                 if control:
-                    item.serHabilitado()
+                    item.ser_habilitado()
                 else:
-                    item.serDeshabilitado()
-    
-    def hideMenu(self):
+                    item.ser_deshabilitado()
+
+    @staticmethod
+    def hide_menu():
         print('dummy')
 
-class area_prev(Marco):
+
+class PreviewArea(Marco):
     simbolos = None
     simbolo_actual = ''
-    def __init__(self,parent,x,y,w,h,**opciones):
+
+    def __init__(self, parent, x, y, w, h, **opciones):
         if 'colorGrilla' not in opciones:
-            opciones['colorGrilla'] = (150,200,200)
-        
-        self.nombre = parent.nombre+'.AreaPrev'
-        super().__init__(x,y,w,h,False,parent,**opciones)
+            opciones['colorGrilla'] = (150, 200, 200)
+
+        self.nombre = parent.nombre + '.AreaPrev'
+        super().__init__(x, y, w, h, False, parent, **opciones)
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
-        grilla = self.opciones['colorGrilla']       
-        self.img_pos = self._dibujar_grilla(self._biselar(self.image,sombra,luz),grilla)
-        self.img_neg = self._dibujar_grilla(self._biselar(Surface((w,h)),sombra,luz),grilla)
+        grilla = self.opciones['colorGrilla']
+        self.img_pos = self._dibujar_grilla(self._biselar(self.image, sombra, luz), grilla)
+        self.img_neg = self._dibujar_grilla(self._biselar(Surface((w, h)), sombra, luz), grilla)
         self.image = self.img_pos
-        
-        self.area = Rect(self.x+2,self.y+2,self.w-4,self.h-18)
+
+        self.area = Rect(self.x + 2, self.y + 2, self.w - 4, self.h - 18)
         self.simbolos = LayeredDirty()
-    
+
     @staticmethod
-    def _dibujar_grilla(imagen,color):
-        w,h = imagen.get_size()
-        marco = Rect(0,0,w-2,h-2)
-        for x in range(1*C,6*C,C):
-            draw.line(imagen, color, (x,marco.top), (x,marco.bottom))
-        
-        for y in range(1*C,13*C,C):
-            draw.line(imagen, color, (marco.left,y), (marco.right,y))
+    def _dibujar_grilla(imagen, color_linea):
+        w, h = imagen.get_size()
+        marco = Rect(0, 0, w - 2, h - 2)
+        for x in range(1 * C, 6 * C, C):
+            draw.line(imagen, color_linea, (x, marco.top), (x, marco.bottom))
+
+        for y in range(1 * C, 13 * C, C):
+            draw.line(imagen, color_linea, (marco.left, y), (marco.right, y))
         return imagen
-       
-    def agregarSimbolo(self,nuevoSimbolo):
+
+    def agregar_simbolo(self, simbolo_nuevo):
         for simbolo in self.simbolos:
             simbolo.visible = False
-        
-        if nuevoSimbolo not in self.simbolos:
-            self.simbolos.add(nuevoSimbolo)
-        self.agregar(nuevoSimbolo)
-    
-    def eliminarSimboloActual(self):
+
+        if simbolo_nuevo not in self.simbolos:
+            self.simbolos.add(simbolo_nuevo)
+        self.agregar(simbolo_nuevo)
+
+    def eliminar_simbolo_actual(self):
         simbolo = self.get_actual()
-        
+
         self.simbolos.remove(simbolo)
         self.quitar(simbolo)
-        self.parent.Items.delItem(simbolo)
-                
+        self.parent.Items.del_item(simbolo)
+
     def get_actual(self):
         for simbolo in self.simbolos:
-            if simbolo._nombre == self.simbolo_actual:
+            if simbolo.get_real_name() == self.simbolo_actual:
                 return simbolo
-     
-    def habilitar(self,control):
+
+    def habilitar(self, control):
         if not control:
             self.simbolos.empty()
             self.limpiar()
             self.parent.Items.clear()
-    
+
     def update(self):
-        nombre = self.parent.Items.getItemActual()
+        nombre = self.parent.Items.get_item_actual()
         if nombre != self.simbolo_actual:
             for simbolo in self.simbolos:
-                if simbolo._nombre != nombre:
+                if simbolo.get_real_name() != nombre:
                     simbolo.visible = False
                 else:
-                    self.simbolo_actual = simbolo._nombre
+                    self.simbolo_actual = simbolo.get_real_name()
                     simbolo.visible = True
                     self.parent.Items.set_text(self.simbolo_actual)
-        
+
         if len(self.simbolos) != 0:
-            self.parent.botones['delSim'].serHabilitado()
+            self.parent.botones['delSim'].ser_habilitado()
         else:
-            self.parent.botones['delSim'].serDeshabilitado()
-        
+            self.parent.botones['delSim'].ser_deshabilitado()
+
         capa = Sys.capa_actual
         if capa == LAYER_FONDO:
             self.image = self.img_pos
@@ -178,4 +191,4 @@ class area_prev(Marco):
             self.image = self.img_neg
             for simbolo in self.simbolos:
                 simbolo.imagen_negativa()
-        self.dirty =1
+        self.dirty = 1

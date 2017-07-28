@@ -1,30 +1,32 @@
-from pygame import Rect, Surface, draw
+from pygame import Surface, draw
 from .basewidget import BaseWidget
+
 
 class Checkbox(BaseWidget):
     state = False
-    def __init__(self,parent,x,y,**opciones):
-        super().__init__(parent,**opciones)
-        self.x,self.y = x,y
-        self.nombre = self.parent.nombre+".checkbox"
+
+    def __init__(self, parent, x, y, **opciones):
+        super().__init__(parent, **opciones)
+        self.x, self.y = x, y
+        self.nombre = self.parent.nombre + ".checkbox"
         self.img_true = self._crear(True)
         self.img_false = self._crear(False)
-        
+
         self.image = self.img_false
-        self.rect = self.image.get_rect(topleft=(self.x,self.y))
-    
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
     @staticmethod
     def _crear(checked):
         lado = 12
-        img = Surface((lado,lado))
-        img.fill((255,255,255),(1,1,lado-2,lado-2))
-        
+        img = Surface((lado, lado))
+        img.fill((255, 255, 255), (1, 1, lado - 2, lado - 2))
+
         if checked:
-            draw.aaline(img,(0,0,0),[2,2],[9,10]) # \
-            draw.aaline(img,(0,0,0),[2,10],[9,2]) # /
-        
+            draw.aaline(img, (0, 0, 0), [2, 2], [9, 10])  # \
+            draw.aaline(img, (0, 0, 0), [2, 10], [9, 2])  # /
+
         return img
-    
+
     def check(self):
         self.state = not self.state
         if self.state:
@@ -32,6 +34,6 @@ class Checkbox(BaseWidget):
         else:
             self.image = self.img_false
         self.dirty = 1
-        
+
     def on_mouse_down(self, dummy):
         self.check()

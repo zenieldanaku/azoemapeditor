@@ -11,7 +11,7 @@ from .cuadrotexto import CuadroTexto
 from .menu import Menu, ContextMenu
 from .dropdownList import DropDownList
 from .tree import Tree
-from .baseSubVentana import subVentana
+from .baseSubVentana import SubVentana
 from .fileDialog import FileDiag, FileOpenDialog, FileSaveDialog
 from .canvas import Canvas
 from .checkbox import Checkbox

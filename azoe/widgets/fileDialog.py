@@ -1,4 +1,4 @@
-from . import Marco, Entry, BotonAceptarCancelar, DropDownList, subVentana
+from . import Marco, Entry, BotonAceptarCancelar, DropDownList, SubVentana
 from . import Label, ScrollV, Tree, BaseOpcion, ToolTip
 from pygame import Rect, font, key, KMOD_LCTRL, KMOD_RCTRL
 from azoe.libs.textrect import render_textrect
@@ -6,7 +6,7 @@ from pygame.sprite import LayeredDirty
 import os
 
 
-class FileDiag(subVentana):
+class FileDiag(SubVentana):
     pressed = False
     carpetaActual = ''
     ArchivosSeleccionados = []
@@ -14,7 +14,7 @@ class FileDiag(subVentana):
     nombredeArchivo = ''
     tipoSeleccinado = ''
     carpetaVieja = ''
-    layer = 10
+    # layer = 10
 
     def __init__(self, comando, filetypes=None, permitirmultiple=False, carpeta_actual='', **opciones):
         c = 32
@@ -36,7 +36,7 @@ class FileDiag(subVentana):
         self.archivos = ListaDeArchivos(self, x + w // 2, y + 43, w // 2 - 2, 8 * c, self.SeleccionMultiple)
         self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 9 * c + 15, 11 * c + 16, '')
         self.accion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 16, self.do_command, comando['scr'])
-        self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 11 * c + 16, filetypes)
+        self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 11 * c + 16, lista=filetypes)
         self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 10 * c + 12)
         self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:', **{ft: 'Tahoma', fs: 13})
         self.lblTipo = Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:", **{ft: 'Tahoma', fs: 13})
@@ -61,7 +61,7 @@ class FileDiag(subVentana):
         pass
 
     def on_key_down(self, keydata):
-        ruta = self.dir_base.devolver_texto()
+        ruta = self.dir_base.return_text()
         if ruta.endswith('\\'):
             ruta = ruta[:-1]
         self.carpetas.regenerate(ruta, ruta)
@@ -77,7 +77,7 @@ class FileDiag(subVentana):
             self.carpetaVieja = self.carpetaActual
             self.archivos.actualizar_lista(self.carpetaActual, self.tipoSeleccinado.lstrip('.'))
 
-        nombre = self.entryNombre.devolver_texto()
+        nombre = self.entryNombre.return_text()
         if nombre != '':
             self.nombredeArchivo = nombre
 
@@ -86,10 +86,10 @@ class FileDiag(subVentana):
                 for archivo in self.archivos.Seleccionados:
                     if archivo not in self.ArchivosSeleccionados:
                         self.ArchivosSeleccionados.append(archivo)
-                self.entryNombre.setMultipleTexts(self.archivos.Seleccionados)
+                self.entryNombre.set_multiple_texts(self.archivos.Seleccionados)
 
             elif self.archivos.UltimaSeleccion != self.nombredeArchivo:
-                self.entryNombre.setText(self.archivos.UltimaSeleccion)
+                self.entryNombre.set_text(self.archivos.UltimaSeleccion)
                 self.UltimaSeleccion = self.archivos.UltimaSeleccion
 
 
@@ -262,7 +262,7 @@ class _Opcion(BaseOpcion):
     MultipleSelection = False
 
     def __init__(self, parent, nombre, ruta, x, y, w=0, multi=False, **opciones):
-        super().__init__(parent, nombre, x, y, w)
+        super().__init__(parent, nombre, x, y, w, **opciones)
         self.texto = nombre
         self.tooltip = ToolTip(self, ruta, x, y)
         self.MultipleSelection = multi

@@ -4,7 +4,7 @@ from azoe.engine import color
 
 
 class BaseOpcion(BaseWidget):
-    def __init__(self, parent, nombre, x, y, w=0, h=0, **opciones):
+    def __init__(self, parent, nombre, x, y, w=0, **opciones):
         super().__init__(parent, **opciones)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + '.Opcion:' + nombre

@@ -1,9 +1,9 @@
-from .menu_archivo import Menu_Archivo
-from .menu_editar import Menu_Editar
-from .menu_mapa import Menu_Mapa
+from .menuarchivo import MenuArchivo
+from .menueditar import MenuEditar
+from .menumapa import MenuMapa
 
 __all__ = [
-    'Menu_Archivo',
-    'Menu_Editar',
-    'Menu_Mapa'
+    'MenuArchivo',
+    'MenuEditar',
+    'MenuMapa'
     ]
