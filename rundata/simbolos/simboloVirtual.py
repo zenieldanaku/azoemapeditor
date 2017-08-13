@@ -7,7 +7,6 @@ from azoe.widgets import Alerta
 
 class SimboloVirtual(SimboloBase):
     copiar = False
-    x, y = 0, 0
 
     def __init__(self, parent, imagen, pos, data, **opciones):
         x, y, z = pos
@@ -38,13 +37,12 @@ class SimboloVirtual(SimboloBase):
         self.pressed = False
         self.x, self.y = mouse.get_pos()
         if self.datos['colisiones'] is None:
-            texto = 'El símbolo ' + self.datos[
-                'nombre'] + ' carece de un mapa de colisiones.\n¿Desea continuar de todos modos?'
-            copiar = self.copy
+            texto = 'El símbolo ' + self.datos['nombre'] + ' '
+            texto += 'carece de un mapa de colisiones.\n¿Desea continuar de todos modos?'
+            borrar = lambda: EventHandler.del_widget(self)
 
-            Sys.DiagBox = Alerta(texto, copiar, lambda: EventHandler.del_widget(self))
-        else:
-            self.copiar = True
+            if NoColitionAlert.repeat(texto, self.copy, borrar):
+                self.copiar = True
 
     def copy(self):
         x, y = self.x, self.y
@@ -60,3 +58,21 @@ class SimboloVirtual(SimboloBase):
             self.dirty = 1
         elif self.copiar:
             self.copy()
+
+
+class NoColitionAlert(Alerta):
+    @classmethod
+    def repeat(cls, texto, accion_si, accion_no):
+        if 'NoColition' in Sys.DiagBoxes_repeat:
+            print('aparece')
+            if not Sys.DiagBoxes_repeat['NoColition']:
+                print('es false')
+                Sys.DiagBox = NoColitionAlert(texto, accion_si, accion_no)
+            else:
+                print('es true')
+                return True
+        else:
+            Sys.DiagBox = NoColitionAlert(texto, accion_si, accion_no)
+
+    def __init__(self, texto, accion_si, accion_no, **opciones):
+        super().__init__('NoColition', texto, accion_si, accion_no, **opciones)

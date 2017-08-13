@@ -29,6 +29,7 @@ class Sistema:
     fdLibs = getcwd() + '\\libs'
     DiagBox = None
     DiagMODE = False
+    DiagBoxes_repeat = {}
 
     @classmethod
     def init(cls):
@@ -163,13 +164,12 @@ class Sistema:
 
     @staticmethod
     def habilitar_todo(control):
-        widgets = EventHandler.widgets
-        for nombre in widgets:
+        for widget in EventHandler.contents.sprites():
+            nombre = widget.nombre
             if nombre == 'PanelSimbolos.AreaPrev':
                 simbolos = EventHandler.widgets[nombre]
                 simbolos.habilitar(control)
             else:
-                widget = EventHandler.widgets[nombre]
                 if hasattr(widget, 'habilitar'):
                     widget.habilitar(control)
 
@@ -227,6 +227,7 @@ class Sistema:
                 cls.DiagMODE = True
             else:
                 if cls.DiagBox.update():
+                    cls.DiagBoxes_repeat[cls.DiagBox.identifier] = cls.DiagBox.status
                     cls.DiagBox = None
                     for widget in EventHandler.contents:
                         if hasattr(widget, 'parent'):

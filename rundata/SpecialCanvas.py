@@ -193,6 +193,7 @@ class SpecialCanvas(Canvas):
 
     def update(self):
         super().update()
+        self.pintar_fondo_cuadriculado(self.fondo)
         self.tiles.update()
         self.capas.update()
 

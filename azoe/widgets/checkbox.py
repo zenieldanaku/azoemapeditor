@@ -5,12 +5,13 @@ from .basewidget import BaseWidget
 class Checkbox(BaseWidget):
     state = False
 
-    def __init__(self, parent, x, y, **opciones):
+    def __init__(self, parent, initial_state, x, y, **opciones):
         super().__init__(parent, **opciones)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + ".checkbox"
         self.img_true = self._crear(True)
         self.img_false = self._crear(False)
+        self.state = initial_state
 
         self.image = self.img_false
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
@@ -34,6 +35,7 @@ class Checkbox(BaseWidget):
         else:
             self.image = self.img_false
         self.dirty = 1
+        self.parent.status = self.state
 
     def on_mouse_down(self, dummy):
         self.check()

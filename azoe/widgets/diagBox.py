@@ -6,20 +6,22 @@ from pygame import font, Rect
 __all__ = ['Alerta', 'Pregunta', 'Error', 'Info']
 
 
-class _DiagBox(SubVentana):
+class DialogBox(SubVentana):
     def __init__(self, nombre, **opciones):
         super().__init__(32 * 8 - 2, 32 * 4, nombre, **opciones)
         self.nombre = 'DialogBox:' + nombre
 
 
-class Alerta(_DiagBox):
+class Alerta(DialogBox):
     # layer = 20
     _cerrar = False
     accion_true = None
     accion_false = None
+    status = None  # of the checkbox
 
-    def __init__(self, texto, accion_si, accion_no, **opciones):
+    def __init__(self, indentifier, texto, accion_si, accion_no, **opciones):
         super().__init__('Alerta', **opciones)
+        self.identifier = indentifier
         self.accion_true = accion_si
         self.accion_false = accion_no
 
@@ -31,7 +33,8 @@ class Alerta(_DiagBox):
         render = render_textrect(texto, fuente, self.area, (0, 0, 0), color('sysElmFace'))
         self.image.blit(render, self.area)
 
-        self.check = Checkbox(self, x + 3, y + h + 13)
+        self.check = Checkbox(self, False, x + 3, y + h + 13)
+        self.status = self.check.state
         lbl = Label(self, 'lblChk', x + 3 + 12 + 3, self.check.y - 2, "No mostrar esto nuevamente", **{'fontSize': 12})
 
         self.btnTrue = BotonAceptarCancelar(self, x + w - (62 * 2) - 12, y + h + 30, self.aceptar)
@@ -58,13 +61,13 @@ class Alerta(_DiagBox):
             return False
 
 
-class Pregunta(_DiagBox):
+class Pregunta(DialogBox):
     pass
 
 
-class Error(_DiagBox):
+class Error(DialogBox):
     pass
 
 
-class Info(_DiagBox):
+class Info(DialogBox):
     pass
