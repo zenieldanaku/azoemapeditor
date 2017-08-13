@@ -31,9 +31,10 @@ class Marco(BaseWidget):
             widget.reubicar_en_ventana(dx, dy)
         super().reubicar_en_ventana(dx, dy)
 
-    def agregar(self, objeto):
-        self.contenido.add(objeto)
-        EventHandler.add_widget(objeto)
+    def agregar(self, *objetos):
+        for item in objetos:
+            self.contenido.add(item)
+            EventHandler.add_widget(item)
 
     def quitar(self, objeto):
         if objeto in self.contenido:

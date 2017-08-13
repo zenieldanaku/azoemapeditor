@@ -1,5 +1,5 @@
 from globales import Sistema as Sys, C, LAYER_COLISIONES, LAYER_FONDO
-from azoe.widgets import Marco, FileDiag, Boton, DropDownList
+from azoe.widgets import Marco, Boton, DropDownList, FileOpenDialog as Fo, FileSaveDialog as Fs
 from .simbolos import SimboloSimple, SimboloMultiple
 from .menus.menumapa import CuadroMapa
 from azoe import Resources, color
@@ -11,37 +11,34 @@ from os import path
 class PanelSimbolos(Marco):
     simbolos = None
     botones = {}
-    # layer = 1
 
     def __init__(self, **opciones):
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = color('sysElmFace')
 
         self.nombre = 'PanelSimbolos'
-        super().__init__(16 * C, 19, 4 * C + 8, 16 * C - 1, **opciones)
+        super().__init__(21 * C, 19, 4 * C + 8, 16 * C - 1, **opciones)
         self.simbolos = LayeredDirty()
         self.Items = DropDownList(self, 'Items', self.x + 3, self.y + 3 * C, self.w - 6)
         self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C)
         n, s, t, c, d, i = 'nom', 'scr', 'tipo', 'cmd', 'des', Sys.iconos  # aliases
         elementos = [
             {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), s: i['nuevo'], d: "Crear un mapa nuevo"},
-            {n: 'Abrir', c: lambda: FileDiag({s: 'Abrir', t: 'A', c: Sys.abrirProyecto}, filetypes=['.json'],
-                                             carpeta_actual=Sys.fdProyectos), s: i['abrir'],
-             d: "Abrir un mapa existente"},
+            {n: 'Abrir', c: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['*.json']),
+             s: i['abrir'], d: "Abrir un mapa existente"},
             {n: 'Guardar', c: self.guardar, s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
             {n: 'barra'},
             {n: 'Cortar', c: Sys.cortar, s: [i['cortar'], i['cortar_dis']], d: "Cortar"},
             {n: 'Copiar', c: Sys.copiar, s: [i['copiar'], i['copiar_dis']], d: "Copiar"},
             {n: 'Pegar', c: Sys.pegar, s: [i['pegar'], i['pegar_dis']], d: "Pegar"},
             {n: 'barra'},
-            {n: 'SetFondo',
-             c: lambda: FileDiag({s: 'aceptar', t: 'A', c: Sys.setRutaFondo}, carpeta_actual=Sys.fdAssets),
+            {n: 'SetFondo', c: lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets, ft=['.png']),
              s: [i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
-            {n: 'addMob', c: lambda: FileDiag({s: 'aceptar', t: 'A', c: self.add_mob}, carpeta_actual=Sys.fdAssets),
+            {n: 'addMob', c: lambda: Fo(self.add_mob, Sys.fdAssets, ft=['.png']),
              s: [i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
-            {n: 'addProp', c: lambda: FileDiag({s: 'aceptar', t: 'A', c: self.add_props}, None, True,
-                                               carpeta_actual=Sys.fdAssets), s: [i['prop'], i['prop_dis']],
-             d: "Cargar símbolo de prop"},
+            {n: 'addProp', c: lambda: Fo(self.add_props, Sys.fdAssets, ft=['.png']),
+             s: [i['prop'], i['prop_dis']], d: "Cargar símbolo de prop"},
+
             {n: 'delSim', c: self.PrevArea.eliminar_simbolo_actual, s: [i['borrar'], i['borrar_dis']],
              d: "Eliminar este símbolo"}
         ]
@@ -67,10 +64,9 @@ class PanelSimbolos(Marco):
     @staticmethod
     def guardar():
         if not Sys.Guardado:
-            FileDiag({'scr': 'aceptar', 'tipo': 'G', 'cmd': Sys.guardarProyecto}, filetypes=['.json'],
-                     carpeta_actual=Sys.fdProyectos)
+            Fs(Sys.save_proyect, fd=Sys.fdProyectos, ft=['.json'])
         else:
-            Sys.guardarProyecto(Sys.Guardado)
+            Sys.save_proyect(Sys.Guardado)
 
     def add_mob(self, ruta):
         sprite = Resources.split_spritesheet(ruta)
@@ -81,15 +77,14 @@ class PanelSimbolos(Marco):
         simbolo = SimboloMultiple(self.PrevArea, datos)
         self.add_to_prev_area(nombre, simbolo)
 
-    def add_props(self, rutas):
-        for ruta in rutas:
-            sprite = Resources.cargar_imagen(ruta)
-            nombre = path.split(ruta)[1][0:-4]
-            _rect = sprite.get_rect(center=self.PrevArea.area.center)
-            datos = {'nombre': nombre, 'image': sprite, 'grupo': 'props', 'tipo': 'Prop', 'ruta': ruta,
-                     'pos': [_rect.x, _rect.y, 0]}
-            simbolo = SimboloSimple(self.PrevArea, datos)
-            self.add_to_prev_area(nombre, simbolo)
+    def add_props(self, ruta):
+        sprite = Resources.cargar_imagen(ruta)
+        nombre = path.split(ruta)[1][0:-4]
+        _rect = sprite.get_rect(center=self.PrevArea.area.center)
+        datos = {'nombre': nombre, 'image': sprite, 'grupo': 'props', 'tipo': 'Prop', 'ruta': ruta,
+                 'pos': [_rect.x, _rect.y, 0]}
+        simbolo = SimboloSimple(self.PrevArea, datos)
+        self.add_to_prev_area(nombre, simbolo)
 
     def add_to_prev_area(self, nombre, simbolo):
         self.Items.set_item(nombre)

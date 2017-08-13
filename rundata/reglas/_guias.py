@@ -41,24 +41,38 @@ class BaseLinea(BaseWidget):
 
 
 class LineaGuiaX(BaseLinea):
+    lin = 'x'
+
     def __init__(self, parent, idx, **opciones):
-        self.w, self.h = 480, 1
+        self.w, self.h = parent.w, 1
         super().__init__(parent, idx, **opciones)
         self.nombre += '.W:' + str(self.idx)
+        self.parent.guias.append(self)
 
     def desplazar(self):
         x, y = mouse.get_pos()
         if y > self.base_y:
             self.rect.y = y
 
+    def scroll(self, dy):
+        self.rect.move_ip(0, dy)
+        self.dirty = 1
+
 
 class LineaGuiaY(BaseLinea):
+    lin = 'y'
+
     def __init__(self, parent, idx, **opciones):
-        self.w, self.h = 1, 480
+        self.w, self.h = 1, parent.h
         super().__init__(parent, idx, **opciones)
         self.nombre += '.H:' + str(self.idx)
+        self.parent.guias.append(self)
 
     def desplazar(self):
         x, y = mouse.get_pos()
         if x > self.base_x:
             self.rect.x = x
+
+    def scroll(self, dx):
+        self.rect.move_ip(dx, 0)
+        self.dirty = 1

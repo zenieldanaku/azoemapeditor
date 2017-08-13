@@ -1,4 +1,4 @@
-from azoe.widgets import Menu, FileDiag, SubVentana, Label, Entry, BotonAceptarCancelar
+from azoe.widgets import Menu, FileOpenDialog as Fo, SubVentana, Label, Entry, BotonAceptarCancelar
 from globales import Sistema as Sys, C
 from azoe.engine import EventHandler
 
@@ -6,11 +6,7 @@ from azoe.engine import EventHandler
 class MenuMapa(Menu):
     def __init__(self, parent, x, y):
         cascadas = {'imagen': [
-            {'nom': 'Fondo', 'icon': Sys.iconos['fondo'],
-             'win': lambda: FileDiag({'scr': 'Abrir', 'tipo': 'A', 'cmd': Sys.setRutaFondo},
-                                     carpeta_actual=Sys.fdAssets)},
-            # {'nom':'Colisiones','win':lambda:FileDiag({'scr':'Abrir','tipo':'A','cmd':Sys.setRutaColis},Sys.fdAssets)}
-        ]}
+            {'nom': 'Fondo', 'icon': Sys.iconos['fondo'], 'win': lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets)}]}
         opciones = [{'nom': 'Imagen', 'csc': cascadas['imagen']},
                     {'nom': 'Ajustes', 'win': lambda: CuadroMapa('Ajustar Mapa')}]
         super().__init__(parent, 'Mapa', opciones, x, y)
@@ -72,7 +68,7 @@ class CuadroMapa(SubVentana):
             data[entry.get_real_name().lower()] = entry.return_text()
 
         if Sys.PROYECTO is None:
-            Sys.nuevoProyecto(data)
+            Sys.new_proyect(data)
         else:
             Sys.referencias.update(data)
 

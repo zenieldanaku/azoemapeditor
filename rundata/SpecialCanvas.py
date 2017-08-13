@@ -1,39 +1,55 @@
-from globales import Sistema as Sys, C, LAYER_FONDO, LAYER_COLISIONES
+from globales import Sistema, C, LAYER_FONDO, LAYER_COLISIONES
 from pygame import transform, Surface, draw, mouse, K_RSHIFT, K_LSHIFT
-from pygame.sprite import LayeredDirty, DirtySprite
+from pygame.sprite import LayeredDirty, DirtySprite, Rect
 from .menus.cuadroEntradas import UnaEntrada
 from azoe.widgets import Canvas, ContextMenu
 from .simbolos import SimboloCNVS
 from azoe import EventHandler
+
+__all__ = ['SpecialCanvas']
 
 
 class SpecialCanvas(Canvas):
     capas = None
     tiles = None
     px, py = 0, 0
+    scrolling_enabled = False
     ScrollX = None
     ScrollY = None
     ReglaX = None
     ReglaY = None
     Grilla = None
     HandlerRegla = None
+    guias = None
+    fondo_rect = Rect(0, 0, 0, 0)
 
-    def __init__(self, parent, x, y, w, h, clip, **opciones):
-        super().__init__(parent, x, y, w, h, clip, **opciones)
+    def __init__(self, parent, x, y, w, h, **opciones):
+        super().__init__(parent, x, y, w, h, **opciones)
         self.capas = LayeredDirty()
         self.tiles = LayeredDirty()
+        self.guias = []
         comandos = [
             {'nom': 'Entrada', 'cmd': lambda: UnaEntrada(self.px, self.py)},
-            {'nom': 'Pegar', 'cmd': lambda: Sys.pegar(), 'icon': Sys.iconos['pegar']},
-        ]
+            {'nom': 'Pegar', 'cmd': lambda: Sistema.pegar(), 'icon': Sistema.iconos['pegar']}]
         self.context = ContextMenu(self, comandos)
+        self.fondo = Surface(self.image.get_size())
+        self.pintar_fondo_cuadriculado(self.fondo)
 
     def on_mouse_over(self):
-        x, y = self.get_relative_mouse_position()
-        for tile in self.tiles.get_sprites_at((x, y)):
-            if tile.isMoving:
-                if self.SeleccionMultiple:
-                    self.mover_tiles(tile.dx, tile.dy)
+        if self.SeleccionMultiple:
+            x, y = self.get_relative_mouse_position()
+            tiles = self.tiles.get_sprites_at((x, y))
+            lista = self.tiles.sprites()
+            if tiles:
+                ref = tiles[0]
+                idx = lista.index(ref)
+                if ref.isMoving:
+                    dx = ref.dx
+                    dy = ref.dy
+
+                    for tile in lista[idx + 1:] + lista[:idx]:
+                        tile.mover(dx, dy)
+                self.mover_tiles()
 
     def on_mouse_down(self, button):
         if button == 1 or button == 3:
@@ -41,17 +57,17 @@ class SpecialCanvas(Canvas):
             if button == 3:
                 self.px, self.py = self.get_relative_mouse_position()
 
-        elif self.ScrollY.enabled:
+        elif self.scrolling_enabled:
             if self.shift:
                 if button == 5:
-                    self.scroll(dx=+10)
+                    self.scroll(dx=-C)
                 if button == 4:
-                    self.scroll(dx=-10)
+                    self.scroll(dx=+C)
             else:
                 if button == 5:
-                    self.scroll(dy=+10)
+                    self.scroll(dy=-C)
                 if button == 4:
-                    self.scroll(dy=-10)
+                    self.scroll(dy=+C)
 
     def on_key_down(self, event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
@@ -61,8 +77,8 @@ class SpecialCanvas(Canvas):
                 if tile.on_key_down(event.key, self.shift):  # delete
                     index = tile.index
                     self.tiles.remove(tile)
-                    Sys.selected = None
-                    del Sys.PROYECTO.script[tile.grupo][tile.get_real_name()][index]
+                    Sistema.selected = None
+                    del Sistema.PROYECTO.script[tile.grupo][tile.get_real_name()][index]
                     for _tile in self.tiles:
                         if _tile.index > index:
                             _tile.index -= 1
@@ -76,24 +92,17 @@ class SpecialCanvas(Canvas):
                 tile.on_key_up(event.key)
 
     def actualizar_tamanio_fondo(self, w, h):
-        self.FONDO = transform.scale(self.FONDO, (w, h))
-        self.image = self.FONDO.subsurface(self.clip)
+        self.fondo = transform.scale(self.fondo, (w, h))
+        self.fondo_rect = self.fondo.get_rect()
         self.ReglaX.actualizar_tamanio(w)
         self.ReglaY.actualizar_tamanio(h)
         self.Grilla.actualizar_tamanio(w, h)
         self.ScrollX.actualizar_tamanio(w)
         self.ScrollY.actualizar_tamanio(h)
-        self.doc_w, self.doc_h = w, h
-        self.Th, self.Tw = w, h
+        self.scrolling_enabled = True
+        # self.doc_w, self.doc_h = w, h
+        # self.Th, self.Tw = w, h
         self.dirty = 1
-
-    @staticmethod
-    def _imagen_colisiones(w, h):
-        spr = DirtySprite()
-        spr.image = Surface((w, h))
-        spr.rect = spr.image.get_rect()
-        spr.dirty = 2
-        return spr
 
     def pegar(self, item):
         if type(item) == dict:  # copy
@@ -121,45 +130,33 @@ class SpecialCanvas(Canvas):
             rect.center = self.rect.center
         z = datos['pos'][2]
         datos['pos'] = rect.x, rect.y, z
-        datos['index'] = Sys.PROYECTO.add_item(datos)
+        datos['index'] = Sistema.PROYECTO.add_item(datos)
         self.add_tile(datos)
         self.update()
 
     def add_tile(self, datos):
-        tile = SimboloCNVS(self, datos)
-        self.tiles.add(tile)
+        self.tiles.add(SimboloCNVS(self, datos))
 
     def scroll(self, dx=0, dy=0):
-        # try:
-        # top,left,right,bottom = self.clip.top,self.clip.left,self.clip.right,self.clip.bottom
-        # print('antes:',(top,left,right,bottom),end= ', ')
-        # self.clip.x += -dx
-        # self.clip.y += -dy
-        # print(dx,dy)
-        # self.ReglaX.scroll(dx,dy)
-        # self.ReglaY.scroll(dx,dy)
-        # self.Grilla.scroll(dx,dy)
-        # x,y,w,h = self.clip
+        if self.fondo_rect.top + dy > 0 or self.fondo_rect.bottom + dy <= 480:
+            dy = 0
+        if self.fondo_rect.left + dx > 0 or self.fondo_rect.right + dx <= 640:
+            dx = 0
+        self.fondo_rect.move_ip(dx, dy)
 
-        # self.FONDO.set_clip(self.clip)
-        # self.FONDO.scroll(-dx,-dy)
-        for capa in self.capas:
-            capa.rect.move_ip(-dx, -dy)
+        self.capas.update(dx, dy)
+        self.ReglaX.scroll(dx)
+        self.ReglaY.scroll(dy)
+        self.Grilla.scroll(dx, dy)
+        for linea in self.guias:
+            if linea.lin == 'x':
+                linea.scroll(dy)
+            elif linea.lin == 'y':
+                linea.scroll(dx)
+
+        for tile in self.tiles:
+            tile.rect.move_ip(dx, dy)
         self.dirty = 1
-        # print()
-        # top,left,right,bottom = self.clip.top,self.clip.left,self.clip.right,self.clip.bottom
-        # x,y,w,h = self.clip
-        # print('despues:',(top,left,right,bottom))
-        # self.image = self.FONDO.subsurface(self.clip)
-        # self.HandlerRegla.scroll(dx,dy)
-
-        # except Exception as error:
-        #    print('aca',error)
-        #    pass
-
-        # self.clip.x -= dx
-        # self.clip.y -= dy
-        # self.image.set_clip(self.clip)
 
     def render(self):
         base = self.capas.get_sprites_from_layer(LAYER_COLISIONES)[0].image
@@ -167,57 +164,55 @@ class SpecialCanvas(Canvas):
             base.blit(tile.img_cls, tile.rect)
         return base
 
-    def mover_tiles(self, dx, dy):
-
+    def mover_tiles(self):
         cadena = []
         for tile in self.tiles:
-            if not tile.isMoving:  # el que estamos moviendo manualmente
-                if tile.selected:
-                    cadena.insert(tile.index,
-                                  tile.tipo + ' ' + tile.get_real_name() +
-                                  ' #' + str(tile.index) + ' @ (' + str(tile.rect.x) +
-                                  ',' + str(tile.rect.y) + ',' + str(tile.z) + ')')
-                    tile.mover(dx, dy)  # el resto de los que estan seleccionados
-            else:
-                cadena.insert(tile.index,
-                              tile.tipo + ' ' + tile.get_real_name() +
-                              ' #' + str(tile.index) + ' @ (' + str(tile.rect.x) +
-                              ',' + str(tile.rect.y) + ',' + str(tile.z) + ')')
-            Sys.estado = ', '.join(cadena)
+            if tile.selected:
+                cadena.insert(tile.index, tile.estado())
+
+        Sistema.estado = ', '.join(cadena)
 
     def habilitar(self, control):
         if not control:
             self.capas.empty()
             self.tiles.empty()
-            self.clip.topleft = 0, 0
-            self.actualizar_tamanio_fondo(15 * C, 15 * C)
+            self.actualizar_tamanio_fondo(20 * C, 15 * C)
+            self.pintar_fondo_cuadriculado(self.fondo)
             self.enabled = False
         else:
             self.enabled = True
 
+    def set_bg_image(self, sprite):
+        EventHandler.set_focus(self)
+        self.actualizar_tamanio_fondo(*sprite.rect.size)
+        img = BackgroundImage(*sprite.rect.size)
+
+        if sprite not in self.capas:
+            self.capas.add(sprite, layer=LAYER_FONDO)
+            self.capas.add(img, layer=LAYER_COLISIONES)
+
     def update(self):
         super().update()
-
-        if Sys.IMG_FONDO is None:
-            self.capas.empty()
-            self.pintar_fondo_cuadriculado()
-
-        else:
-            spr = Sys.IMG_FONDO
-            if self.FONDO.get_size() != spr.rect.size:
-                EventHandler.set_focus(self)
-                self.actualizar_tamanio_fondo(*spr.rect.size)
-                img = self._imagen_colisiones(*spr.rect.size)
-
-                if spr not in self.capas:
-                    self.capas.add(spr, layer=LAYER_FONDO)
-                    self.capas.add(img, layer=LAYER_COLISIONES)
-            self.capas.draw(self.FONDO)
-
         self.tiles.update()
-        self.tiles.draw(self.FONDO)
+        self.capas.update()
+
+        self.capas.draw(self.fondo)
+        self.tiles.draw(self.fondo)
+
         if self.eleccion.size != (0, 0):
-            draw.rect(self.FONDO, (0, 255, 255), self.eleccion, 1)
+            draw.rect(self.fondo, (0, 255, 255), self.eleccion, 1)
         for tile in self.tiles:
-            Sys.PROYECTO.update_item_pos(tile)
+            Sistema.PROYECTO.update_item_pos(tile)
+        self.image.blit(self.fondo, (0, 0))
+        self.dirty = 1
+
+
+class BackgroundImage(DirtySprite):
+    def __init__(self, w, h):
+        super().__init__()
+        self.image = Surface((w, h))
+        self.rect = self.image.get_rect()
+
+    def update(self, dx=0, dy=0):
+        self.rect.move_ip(dx, dy)
         self.dirty = 1

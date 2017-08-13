@@ -24,8 +24,8 @@ Sistema.init()
 Ventana(fondo.get_size())
 BarraMenus = BarraMenus()
 BarraEstado = BarraEstado()
-Grilla = Grilla()
 Simbolos = PanelSimbolos()
+Grilla = Grilla()
 
 hayCambios = True
 FPS = time.Clock()

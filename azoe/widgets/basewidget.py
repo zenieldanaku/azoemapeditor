@@ -28,7 +28,7 @@ class BaseWidget(DirtySprite):
     def __init__(self, parent=None, **opciones):
         if parent is not None:
             self.parent = parent
-            self.layer = self.parent.layer + 1
+            # self.layer = self.parent.layer + 1
         self.opciones = opciones
         super().__init__()
 

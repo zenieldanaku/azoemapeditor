@@ -9,18 +9,18 @@ class MenuArchivo(Menu):
         incons = Sys.iconos
         cascadas = {
             'exportar': [
-                {n: 'Colisiones', w: lambda: Fs(Sys.GuardarMapaDeColisiones, Sys.fdExport, ft=['*.png'], )},
-                {n: 'Mapa', w: lambda: Fs(Sys.exportarMapa, Sys.fdExport, ft=['*.json'])}
+                {n: 'Colisiones', w: lambda: Fs(Sys.guardar_mapa_de_colisiones, Sys.fdExport, ft=['*.png'], )},
+                {n: 'Mapa', w: lambda: Fs(Sys.exportar_mapa, Sys.fdExport, ft=['*.json'])}
             ],
         }
         opciones = [
             {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), "icon": Sys.iconos['nuevo'], k: 'Ctrl+N'},
-            {n: 'Abrir', w: lambda: Fo(Sys.abrirProyecto, Sys.fdProyectos, ft=['.json']), i: incons['abrir'],
+            {n: 'Abrir', w: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['.json']), i: incons['abrir'],
              k: 'Ctrl+A'},
-            {n: 'Guardar', c: self.guardar, i: Sys.iconos['guardar'], k: 'Ctrl+S'},
-            {n: 'Guardar como', w: lambda: Fs(Sys.guardarProyecto, Sys.fdProyectos, ft=['*.json']), k: 'Ctrl+Alt+S'},
+            {n: 'Guardar', c: lambda: Sys.save_proyect(Sys.Guardado), i: Sys.iconos['guardar'], k: 'Ctrl+S'},
+            {n: 'Guardar como', c: Sys.save_proyect, k: 'Ctrl+Alt+S'},
             {n: 'Exportar', s: cascadas['exportar']},
-            {n: 'Cerrar', c: Sys.cerrarProyecto, k: 'Ctrl+Q'},
+            {n: 'Cerrar', c: Sys.close_proyect, k: 'Ctrl+Q'},
             {n: 'Salir', c: Sys.salir, k: 'Esc'}]
 
         super().__init__(parent, 'Archivo', opciones, x, y)
@@ -28,9 +28,9 @@ class MenuArchivo(Menu):
     @staticmethod
     def guardar():
         if not Sys.Guardado:
-            Fs(Sys.guardarProyecto, Sys.fdProyectos, ft=['*.json'])
+            Fs(Sys.save_proyect, Sys.fdProyectos, ft=['*.json'])
         else:
-            Sys.guardarProyecto(Sys.Guardado)
+            Sys.save_proyect(Sys.Guardado)
 
     def update(self):
         nombres = ['Guardar', 'Guardar como', 'Cerrar', 'Exportar']

@@ -39,3 +39,4 @@ class Label(BaseWidget):
         self.image = render_textrect(texto, self.fuente, rect, fgcolor, bgcolor)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.w, self.h = self.image.get_size()
+        self.dirty = 1

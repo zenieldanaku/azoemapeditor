@@ -3,8 +3,8 @@
 
 # tamaños
 C = 32
-ANCHO = 20 * C + 8
-ALTO = 18 * C - 19
+ANCHO = 800 + 8
+ALTO = (15+3) * C - 19
 
 # capas
 LAYER_COLISIONES = 0

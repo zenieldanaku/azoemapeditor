@@ -1,5 +1,5 @@
 from pygame import mouse, K_RIGHT, K_LEFT, K_UP, K_DOWN, K_DELETE, Surface
-from globales import Sistema as Sys, LAYER_FONDO, LAYER_COLISIONES
+from globales import Sistema, LAYER_FONDO, LAYER_COLISIONES
 from .simboloBase import SimboloBase
 from azoe.widgets import ContextMenu
 
@@ -28,8 +28,8 @@ class SimboloCNVS(SimboloBase):
             {'nom': 'Subir', 'cmd': lambda: self.change_layer(+1)},
             {'nom': 'Bajar', 'cmd': lambda: self.change_layer(-1)},
             {'nom': 'barra'},
-            {'nom': 'Cortar', 'cmd': Sys.cortar, 'icon': Sys.iconos['cortar']},
-            {'nom': 'Copiar', 'cmd': Sys.copiar, 'icon': Sys.iconos['copiar']},
+            {'nom': 'Cortar', 'cmd': Sistema.cortar, 'icon': Sistema.iconos['cortar']},
+            {'nom': 'Copiar', 'cmd': Sistema.copiar, 'icon': Sistema.iconos['copiar']},
         ]
         self.context = ContextMenu(self, comandos)
 
@@ -38,6 +38,10 @@ class SimboloCNVS(SimboloBase):
         datos['rect'] = self.rect.copy()
         datos['original'] = False
         return datos
+
+    def estado(self):
+        at = ' @ (' + str(self.rect.x) + ',' + str(self.rect.y) + ',' + str(self.z) + ')'
+        return self.tipo + ' ' + self.get_real_name() + ' #' + str(self.index) + at
 
     @staticmethod
     def crear_img_sel(imagebase):
@@ -69,8 +73,7 @@ class SimboloCNVS(SimboloBase):
                 self.ser_elegido()
             self.context.show()
 
-    def on_key_down(self, tecla):
-        shift = self.parent.shift
+    def on_key_down(self, tecla, shift=False):
         if self.selected:
             x, y, d = 0, 0, 1
             if shift:
@@ -86,8 +89,9 @@ class SimboloCNVS(SimboloBase):
                 y = -1 * d
             elif tecla == K_DELETE:
                 return True
-            self.dx, self.dy = x, y
-            self.mover(self.dx, self.dy)
+
+            self.mover(x, y)
+            return False
 
     def on_key_up(self, tecla):
         if tecla == K_RIGHT or tecla == K_LEFT:
@@ -98,38 +102,36 @@ class SimboloCNVS(SimboloBase):
     def mover(self, dx=0, dy=0):
         self.isMoving = True
         super().mover(dx, dy)
-        Sys.estado = self.tipo + ' ' + self._nombre + ' #' + str(self.index) + ' @ (' + str(self.rect.x) + ',' + str(
-            self.rect.y) + ',' + str(self.z) + ')'
+        Sistema.estado = self.estado()
 
     def change_layer(self, mod):
         self.parent.cambiar_layer(self, mod)
         self.z += mod
-        Sys.estado = self.tipo + ' ' + self._nombre + ' #' + str(self.index) + ' @ (' + str(self.rect.x) + ',' + str(
-            self.rect.y) + ',' + str(self.z) + ')'
+        Sistema.estado = self.estado()
 
     def ser_elegido(self):
         self.selected = True
-        Sys.selected = self
+        Sistema.selected = self
         self.image = self.img_sel
-        Sys.estado = self.tipo + ' ' + self._nombre + ' #' + str(self.index) + ' @ (' + str(self.rect.x) + ',' + str(
-            self.rect.y) + ',' + str(self.z) + ')'
+        Sistema.estado = self.estado()
 
     def ser_deselegido(self):
         self.selected = False
-        Sys.selected = None
+        Sistema.selected = None
 
     def update(self):
-        self.dx, self.dy = 0, 0
         self.isMoving = False
-        if self.selected:
-            if self.pressed:
-                dx, dy = self._arrastrar()
-                if (dx, dy) != (0, 0):
-                    self.mover(dx, dy)
-                self.dx, self.dy = dx, dy
-        elif Sys.capa_actual == LAYER_COLISIONES:
+        if Sistema.capa_actual == LAYER_COLISIONES:
             self.image = self.img_cls
 
-        elif Sys.capa_actual == LAYER_FONDO:
-            self.image = self.img_pos
+        elif Sistema.capa_actual == LAYER_FONDO:
+            if self.selected:
+                self.image = self.img_sel
+                if self.pressed:
+                    dx, dy = self._arrastrar()
+                    if (dx, dy) != (0, 0):
+                        self.mover(dx, dy)
+                    self.dx, self.dy = dx, dy
+            else:
+                self.image = self.img_pos
         self.dirty = 1

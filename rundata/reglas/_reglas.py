@@ -9,17 +9,31 @@ class BaseRegla(BaseWidget):
     pressed = False
     lineas = []  # list
     linea = None  # object
+    fondo = None
+    image = None
+    clip = Rect(0, 0, 0, 0)
+    tooltip = None
+    newLine = False
     tip = 'Haga clic y arrastre para generar una guía' + ' '  # el espacio es intencional
 
-    def __init__(self, parent, x, y, **opciones):
+    def __init__(self, parent, x, y, w, h, **opciones):
         super().__init__(parent, **opciones)
-        self.lineas = []
+        self.clip = Rect(0, 0, w, h)
         self.x, self.y = x, y
+        self.w, self.h = w, h
+        self.lineas = []
+
+    @staticmethod
+    def crear(d):
+        pass
+
+    def mover_linea(self):
+        pass
 
     def actualizar_tamanio(self, nuevotamanio):
-        self.FONDO = self.crear(nuevotamanio)
-        self.clip.topleft = 0, 0
-        self.image = self.FONDO.subsurface(self.clip)
+        self.fondo = self.crear(nuevotamanio)
+        self.image.blit(self.fondo, self.clip)
+        self.dirty = 1
 
     def on_mouse_up(self, button):
         if button == 1 and self.enabled:
@@ -39,7 +53,7 @@ class BaseRegla(BaseWidget):
                 EventHandler.add_widget(self.linea)
                 self.newLine = False
 
-            self.moverLinea()
+            self.mover_linea()
         if self.hasFocus:
             self.tooltip.show()
 
@@ -51,22 +65,21 @@ class BaseRegla(BaseWidget):
 
 
 class ReglaH(BaseRegla):
-    def __init__(self, parent, x, y, w, **opciones):
-        super().__init__(parent, x, y, **opciones)
+
+    def __init__(self, parent, x, y, **opciones):
+        super().__init__(parent, x, y, parent.w, 16, **opciones)
         self.nombre = self.parent.nombre + '.ReglaH'
-        self.FONDO = self.crear(w)
-        self.w, self.h = w, self.FONDO.get_height()
-        self.lin = 'w'
-        self.clip = Rect(0, 0, 15 * C, self.h)
-        self.image = self.FONDO.subsurface(self.clip)
+        self.image = Surface((parent.w, 16))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.fondo = self.crear(parent.w)
+        self.image.blit(self.fondo, self.clip)
         self.tooltip = ToolTip(self, self.tip + 'horizontal', self.x, self.y)
 
     @staticmethod
-    def crear(w):
+    def crear(d):
         fuente = font.SysFont('verdana', 8)
-        regla = Surface((w, C // 2))
-        regla.fill((255, 255, 255), (1, 1, w - 2, 14))
+        regla = Surface((d, C // 2))
+        regla.fill((255, 255, 255), (1, 1, d - 2, 14))
         j = -1
         for i in range(1, 33):
             j += 1
@@ -81,7 +94,7 @@ class ReglaH(BaseRegla):
 
         return regla
 
-    def moverLinea(self):
+    def mover_linea(self):
         abs_x, abs_y = mouse.get_pos()
         x, y = self.parent.get_relative_mouse_position()
 
@@ -89,13 +102,10 @@ class ReglaH(BaseRegla):
         self.linea.y = y
         self.linea.dirty = 1
 
-    def scroll(self, dx, dy):
-        self.clip.x += dx
-        self.image.set_clip(self.clip)
-        self.image = self.FONDO.subsurface(self.clip)
+    def scroll(self, dx):
+        self.clip.move_ip(dx, 0)
+        self.image.blit(self.fondo, self.clip)
         self.dirty = 1
-        for i in range(len(self.lineas)):
-            self.lineas[i].rect.y -= dy
 
     def on_mouse_down(self, button):
         if button == 1 and self.enabled:
@@ -105,22 +115,21 @@ class ReglaH(BaseRegla):
 
 
 class ReglaV(BaseRegla):
-    def __init__(self, parent, x, y, h, **opciones):
-        super().__init__(parent, x, y, **opciones)
+
+    def __init__(self, parent, x, y, **opciones):
+        super().__init__(parent, x, y, 16, parent.h, **opciones)
         self.nombre = self.parent.nombre + '.ReglaV'
-        self.FONDO = self.crear(h)
-        self.w, self.h = self.FONDO.get_width(), h
-        self.lin = 'h'
-        self.clip = Rect(0, 0, self.w, 15 * C)
-        self.image = self.FONDO.subsurface(self.clip)
+        self.image = Surface((16, parent.h))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.fondo = self.crear(parent.h)
+        self.image.blit(self.fondo, self.clip)
         self.tooltip = ToolTip(self, self.tip + 'vertical', self.x, self.y)
 
     @staticmethod
-    def crear(h):
+    def crear(d):
         fuente = font.SysFont('verdana', 8)
-        regla = Surface((C // 2, h))
-        regla.fill((255, 255, 255), (1, 1, 14, h - 2))
+        regla = Surface((C // 2, d))
+        regla.fill((255, 255, 255), (1, 1, 14, d - 2))
 
         j = -1
         for i in range(1, 33):
@@ -136,7 +145,7 @@ class ReglaV(BaseRegla):
 
         return regla
 
-    def moverLinea(self):
+    def mover_linea(self):
         abs_x, abs_y = mouse.get_pos()
         x, y = self.parent.get_relative_mouse_position()
 
@@ -144,13 +153,10 @@ class ReglaV(BaseRegla):
         self.linea.x = x
         self.linea.dirty = 1
 
-    def scroll(self, dx, dy):
-        self.clip.y += dy
-        self.image.set_clip(self.clip)
-        self.image = self.FONDO.subsurface(self.clip)
+    def scroll(self, dy):
+        self.clip.move_ip(0, dy)
+        self.image.blit(self.fondo, self.clip)
         self.dirty = 1
-        for i in range(len(self.lineas)):
-            self.lineas[i].rect.x -= dx
 
     def on_mouse_down(self, button):
         if button == 1 and self.enabled:

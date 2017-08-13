@@ -148,7 +148,7 @@ class _Cascada(BaseWidget):
         self.image = Surface((self.w + 5, self.h + ajuste))
         self.image.fill(color('sysMenBack'), (1, 1, self.w + 3, self.h + ajuste - 2))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
-        EventHandler.add_widget(self)
+        # EventHandler.add_widget(self)
 
     def add_to_references(self, key, item):
         recursion = True
@@ -193,6 +193,7 @@ class _Cascada(BaseWidget):
             item.on_mouse_up(button)
 
     def show_menu(self):
+        EventHandler.add_widget(self)
         self.mostrar = True
         self._visible = True
         self.dirty = 1

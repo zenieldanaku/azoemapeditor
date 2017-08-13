@@ -1,4 +1,4 @@
-from azoe.engine import color, EventHandler
+from azoe.engine import color
 from pygame import font, Rect, draw, Surface, Color
 from azoe.libs.textrect import render_textrect
 from . import BaseWidget, ToolTip
@@ -227,14 +227,14 @@ class BotonAceptarCancelar(Boton):
             if hasattr(parent, 'cerrar'):
                 nombre = 'Cancelar'
                 scr = 'Cancelar'
-                cmd = lambda: EventHandler.del_widget(parent)
+                cmd = parent.cerrar
             else:
-                raise TypeError
+                raise TypeError()
         else:
             nombre = ''
             if scr == '':
                 nombre = 'aceptar'
-                scr = 'aceptar'
+                scr = 'Aceptar'
             elif type(scr) is str:
                 nombre = scr.title()
 

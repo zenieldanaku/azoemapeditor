@@ -21,8 +21,9 @@ class DropDownList(BaseWidget):
 
         self.rect = Rect(self.x, self.y, self.w, self.h)
         self.lista_de_opciones = LayeredDirty(*self.crear_lista(self.lista))
-
         self.ItemActual = ''
+        if len(self.lista) == 1:
+            self.ItemActual = self.lista[0]
         EventHandler.add_widget(self.entry)
         EventHandler.add_widget(self.flecha)
 

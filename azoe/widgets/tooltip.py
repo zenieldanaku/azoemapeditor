@@ -1,5 +1,5 @@
 from pygame import Surface, Color, font, display
-from azoe.engine import color, EventHandler
+from azoe.engine import color  # , EventHandler
 from .basewidget import BaseWidget
 
 
@@ -13,15 +13,15 @@ class ToolTip(BaseWidget):
         self.x, self.y = x, y
         self.mensaje = mensaje
         self.nombre = self.parent.nombre + '.ToolTip'
-        #self.layer = self.parent.layer
+        # self.layer = self.parent.layer
         self.image = self._crear(mensaje, opciones)
         self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.w, self.h = self.rect.size
         w = display.get_surface().get_size()[0]
         self._ajustar(w)
-        if self.nombre not in EventHandler.widgets:
-            EventHandler.add_widget(self)
+        # if self.nombre not in EventHandler.widgets:
+        #     EventHandler.add_widget(self)
 
     @staticmethod
     def _crear(texto, opciones):

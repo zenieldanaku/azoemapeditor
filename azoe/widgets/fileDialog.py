@@ -41,6 +41,9 @@ class FileDiag(SubVentana):
         self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:', **{ft: 'Tahoma', fs: 13})
         self.lblTipo = Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:", **{ft: 'Tahoma', fs: 13})
 
+        self.tipoSeleccinado = self.tipos.ItemActual
+        self.carpetaActual = self.carpetas.CarpetaSeleccionada
+
         self.agregar(self.dir_base)
         self.agregar(self.carpetas)
         self.agregar(self.archivos)
@@ -96,16 +99,13 @@ class FileDiag(SubVentana):
 class FileOpenDialog(FileDiag):
     def __init__(self, cmd, fd, ft=None):
         comando = {'scr': 'Abrir', 'cmd': cmd}
-        super().__init__(comando, ft, permitirmultiple=True, carpeta_actual=fd)
+        super().__init__(comando, filetypes=ft, permitirmultiple=True, carpeta_actual=fd)
 
     def do_command(self):
         if self.SeleccionMultiple:
-            rutas = []
             for archivo in self.ArchivosSeleccionados:
-                rutas.append(os.path.join(self.carpetaActual, archivo))
-            self.comando(rutas)
+                self.comando(os.path.join(self.carpetaActual, archivo))
         else:
-
             ruta = os.path.join(self.carpetaActual, self.UltimaSeleccion)
             self.comando(ruta)
         self.cerrar()
@@ -114,7 +114,7 @@ class FileOpenDialog(FileDiag):
 class FileSaveDialog(FileDiag):
     def __init__(self, cmd, fd, ft=None):
         comando = {'scr': 'Guardar', 'cmd': cmd}
-        super().__init__(comando, ft, permitirmultiple=False, carpeta_actual=fd)
+        super().__init__(comando, filetypes=ft, permitirmultiple=False, carpeta_actual=fd)
 
     def do_command(self):
         if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
@@ -174,6 +174,7 @@ class ArbolCarpetas(Marco):
         self.dirty = 1
 
     def on_destruction(self):
+        self.arbol.cerrar()
         self.arbol.on_destruction()
 
 

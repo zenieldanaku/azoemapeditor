@@ -1,6 +1,6 @@
-from azoe import color, Marco
-from globales import C
-from .menus import *
+from pygame import display
+from azoe import Marco
+from .menus import MenuArchivo, MenuEditar, MenuMapa
 
 
 class BarraMenus(Marco):
@@ -9,13 +9,12 @@ class BarraMenus(Marco):
 
     def __init__(self, **opciones):
         self.nombre = 'Barra_Menus'
-        super().__init__(0, 0, 24 * C, 19, False, **opciones)
+        super().__init__(0, 0, display.get_surface().get_width(), 19, False, **opciones)
 
         self.menus = {}
-        self.image.fill(color(opciones.get('colorFondo', 'sysMenBack')))
         prev = 0
-        for menu_nom in ['Archivo', 'Editar', 'Mapa']:
-            menu = eval('Menu' + menu_nom + '(self,prev,3)')
+        for menu in (MenuArchivo, MenuEditar, MenuMapa):
+            menu = menu(self, prev, 3)
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
 

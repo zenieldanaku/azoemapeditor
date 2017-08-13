@@ -1,7 +1,7 @@
 from azoe.engine import EventHandler, color
 from globales import Sistema as Sys, C
 from azoe.widgets import Marco, Label
-from pygame import Rect
+from pygame import Rect, display
 
 
 class BarraEstado(Marco):
@@ -11,7 +11,7 @@ class BarraEstado(Marco):
 
     def __init__(self, **opciones):
         self.nombre = 'BarraEstado'
-        super().__init__(0, 16 * C + 19, 20 * C + 8, 26, **opciones)
+        super().__init__(0, 16 * C + 19, display.get_surface().get_width(), 26, **opciones)
 
         self._estado = ''
         self.lblEstado = Label(self, 'Estado', self.x + 4, self.y + 3)

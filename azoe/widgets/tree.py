@@ -14,7 +14,6 @@ class Tree(Marco):
         self.nombre = parent.nombre + '.Tree'
         super().__init__(x, y, w, h, False, **opciones)
         self.parent = parent
-        # self.layer = self.parent.layer + 1
         self.items = LayeredDirty()
         self.crear_lista(walk, actual)
         self.ItemActual = actual  # ruta
@@ -51,7 +50,7 @@ class Tree(Marco):
                 for hijo in parentesco[padre.path]:
                     padre.hijos.add(hijo)
 
-    def mover(self, item, dy):
+    def mover(self, item, d):
         idx = item.idx
 
         h = 0
@@ -60,9 +59,8 @@ class Tree(Marco):
             h += dh
             idx += dy
 
-        for i in range(idx, len(self.items)):
-            widget = self.items.get_sprite(i)
-            widget.mover(dh * dy)
+        for widget in self.items.sprites()[idx+1:]:
+            widget.mover(h * d)
 
     def reselect(self, opcion):
         for item in self.items:
@@ -143,11 +141,11 @@ class Item(BaseWidget):
     def get_h(self):
         h = self.h
         y = 0
-        if not self.folded:
-            for hijo in self.hijos:
-                dh, y = hijo.get_h()
-                y = 1
-                h += dh
+        # if not self.folded:
+        for hijo in self.hijos:
+            dh, y = hijo.get_h()
+            y = 1
+            h += dh
 
         return h, y
 
