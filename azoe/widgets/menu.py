@@ -8,7 +8,7 @@ from . import BaseWidget
 class Menu(BaseWidget):
     cascada = None
     boton = None
-    visible = 0
+    visible = True
     nombre = ''
     referencias = None
 
@@ -17,9 +17,9 @@ class Menu(BaseWidget):
         self.nombre = self.parent.nombre + '.Menu.' + nombre
         self.fuente = font.SysFont('tahoma', 12)
         self.referencias = {}
-        self.boton = _Boton(self, nombre, x, y)
+        self.boton = BotonMenu(self, nombre, x, y)
         h = self.boton.rect.h
-        self.cascada = _Cascada(self, nombre, ops, x, h + 1)
+        self.cascada = Cascada(self, nombre, ops, x, h + 1)
 
     def show_menu(self):
         self.cascada.show_menu()
@@ -33,7 +33,7 @@ class Menu(BaseWidget):
         # de manera que cierre cualquier
         # cantidad de cascadas abiertas.
         for opcion in self.cascada.opciones:
-            if isinstance(opcion.command, _Cascada):
+            if isinstance(opcion.command, Cascada):
                 if opcion.command.mostrar:
                     opcion.command.hide_menu()
 
@@ -41,7 +41,7 @@ class Menu(BaseWidget):
             self.cascada.hide_menu()
 
 
-class _Boton(BaseWidget):
+class BotonMenu(BaseWidget):
     nombre = ''
     menu = None
 
@@ -61,7 +61,7 @@ class _Boton(BaseWidget):
         self.image = self.img_des
         self.w, self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x, y))
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
 
     @staticmethod
     def crear_boton(nombre, fuente, fgcolor, bgcolor):
@@ -85,7 +85,7 @@ class _Boton(BaseWidget):
         self.dirty = 1
 
 
-class _Cascada(BaseWidget):
+class Cascada(BaseWidget):
     opciones = None
     parent = None
     mostrar = False
@@ -133,7 +133,7 @@ class _Cascada(BaseWidget):
                 if 'csc' in opciones[n]:
                     x = self.x + self.w - 3
                     y = (n + 1) * h + ajuste - 1
-                    opcion.command = _Cascada(self, _nom, opciones[n]['csc'], x, y)
+                    opcion.command = Cascada(self, _nom, opciones[n]['csc'], x, y)
                 elif 'win' in opciones[n]:
                     opcion.command = opciones[n]['win']
                 else:
@@ -193,7 +193,7 @@ class _Cascada(BaseWidget):
             item.on_mouse_up(button)
 
     def show_menu(self):
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
         self.mostrar = True
         self._visible = True
         self.dirty = 1
@@ -203,7 +203,7 @@ class _Cascada(BaseWidget):
         for componente in self.componentes:
             if isinstance(componente, OpcionCascada):
                 componente.ser_deseleccionado()
-                if isinstance(componente.command, _Cascada):
+                if isinstance(componente.command, Cascada):
                     componente.command.hide_menu()
         self._visible = False
         self.dirty = 1
@@ -301,7 +301,7 @@ class OpcionCascada(BaseWidget):
 
     def on_mouse_down(self, button):
         if self.enabled:
-            if isinstance(self.command, _Cascada):
+            if isinstance(self.command, Cascada):
                 self.command.show_menu()
             else:
                 self.command()
@@ -339,14 +339,14 @@ class OpcionCascada(BaseWidget):
 
     def on_mouse_over(self):
         print(self.nombre)
-        if isinstance(self.command, _Cascada):
+        if isinstance(self.command, Cascada):
             self.command.show_menu()
 
     def execute_key_binding(self):
         self.command()
 
 
-class ContextMenu(_Cascada):
+class ContextMenu(Cascada):
     def __init__(self, parent, comandos=False):
         if not comandos:
             comandos = [{'nom': 'Dummy', 'cmd': lambda: None}]

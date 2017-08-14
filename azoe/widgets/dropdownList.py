@@ -24,9 +24,7 @@ class DropDownList(BaseWidget):
         self.ItemActual = ''
         if len(self.lista) == 1:
             self.ItemActual = self.lista[0]
-        EventHandler.add_widget(self.entry)
-        EventHandler.add_widget(self.flecha)
-
+        EventHandler.add_widgets(self.entry, self.flecha)
         self.visible = 0
 
     def crear_lista(self, opciones):
@@ -85,17 +83,17 @@ class DropDownList(BaseWidget):
         self.entry.borrar_todo()
 
     def on_destruction(self):
-        EventHandler.del_widget(self.entry)
-        EventHandler.del_widget(self.flecha)
+        EventHandler.del_widgets(self.entry)
+        EventHandler.del_widgets(self.flecha)
         self.hide_items()
 
     def show_items(self):
         for item in self.lista_de_opciones:
-            EventHandler.add_widget(item)
+            EventHandler.add_widgets(item)
 
     def hide_items(self):
         for item in self.lista_de_opciones:
-            EventHandler.del_widget(item)
+            EventHandler.del_widgets(item)
 
     def on_focus_out(self):
         super().on_focus_out()

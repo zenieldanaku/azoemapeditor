@@ -19,7 +19,7 @@ class Marco(BaseWidget):
         self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
         op = self.opciones
         luz = 'colorLuz', 'sysElmLight'
         sombra = 'colorSombra', 'sysElmShadow'
@@ -34,12 +34,12 @@ class Marco(BaseWidget):
     def agregar(self, *objetos):
         for item in objetos:
             self.contenido.add(item)
-            EventHandler.add_widget(item)
+            EventHandler.add_widgets(item)
 
     def quitar(self, objeto):
         if objeto in self.contenido:
             self.contenido.remove(objeto)
-            EventHandler.del_widget(objeto)
+            EventHandler.del_widgets(objeto)
         else:
             raise IndexError('El objeto ' + objeto.nombre + ' no pertenece a este marco')
 
@@ -48,7 +48,7 @@ class Marco(BaseWidget):
             self.quitar(objeto)
 
     def cerrar(self):
-        EventHandler.del_widget(self)
+        EventHandler.del_widgets(self)
 
     def devolver(self, objeto):
         if objeto in self.contenido:
@@ -69,4 +69,4 @@ class Marco(BaseWidget):
             self.quitar(widget)
             if hasattr(widget, 'tooltip'):
                 if widget.tooltip is not None:
-                    EventHandler.del_widget(widget.tooltip)
+                    EventHandler.del_widgets(widget.tooltip)

@@ -141,7 +141,7 @@ class EditarSimbolo(SubVentana):
         self.origin.img_cls = image
         self.origin.cls_code = comprimir(encode(serialize(image)))
 
-        EventHandler.del_widget(self)
+        EventHandler.del_widgets(self)
 
     def alternar_transparencia(self):
         self.esTransparente = not self.esTransparente

@@ -22,4 +22,4 @@ class CuadroPreferencias(SubVentana):
         self.cerrar()
 
     def cerrar(self):
-        EventHandler.del_widget(self)
+        EventHandler.del_widgets(self)

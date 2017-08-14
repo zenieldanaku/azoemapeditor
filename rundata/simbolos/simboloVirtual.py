@@ -21,7 +21,7 @@ class SimboloVirtual(SimboloBase):
         super().__init__(parent, data, **opciones)
         self.image = self._crear_transparencia(self._imagen)
         if self.nombre not in EventHandler.widgets:
-            EventHandler.add_widget(self)
+            EventHandler.add_widgets(self)
         self.pressed = True
 
     def on_mouse_out(self):
@@ -39,7 +39,7 @@ class SimboloVirtual(SimboloBase):
         if self.datos['colisiones'] is None:
             texto = 'El símbolo ' + self.datos['nombre'] + ' '
             texto += 'carece de un mapa de colisiones.\n¿Desea continuar de todos modos?'
-            borrar = lambda: EventHandler.del_widget(self)
+            borrar = lambda: EventHandler.del_widgets(self)
 
             if NoColitionAlert.repeat(texto, self.copy, borrar):
                 self.copiar = True
@@ -51,7 +51,7 @@ class SimboloVirtual(SimboloBase):
             self.datos['rect'] = self.rect.copy()
             self.datos['original'] = True
             widget.colocar_tile(self.datos)
-            EventHandler.del_widget(self)
+            EventHandler.del_widgets(self)
 
     def update(self):
         if self.pressed:

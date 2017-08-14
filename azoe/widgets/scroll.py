@@ -24,9 +24,7 @@ class BaseScroll(BaseWidget):
         return imagen
 
     def on_destruction(self):
-        EventHandler.del_widget(self.cursor)
-        EventHandler.del_widget(self.BtnPos)
-        EventHandler.del_widget(self.BtnNeg)
+        EventHandler.del_widgets(self.cursor, self.BtnPos, self.BtnNeg)
 
     def reubicar_en_ventana(self, dx=0, dy=0):
         super().reubicar_en_ventana(dx, dy)
@@ -145,7 +143,7 @@ class CursorH(BaseScrollCursor):
         self.nombre = parent.nombre + '.CursorH'
         self.scrollable = scrollable
         self.rel_rect = Rect((0, 0), (self.w, 2))
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
 
     @staticmethod
     def _agregar_barras(imagen, c1, c2):
@@ -196,7 +194,7 @@ class CursorV(BaseScrollCursor):
         self.nombre = parent.nombre + '.CursorV'
         self.scrollable = scrollable
         self.rel_rect = Rect((0, 0), (2, self.h))
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
 
     @staticmethod
     def _agregar_barras(imagen, c1, c2):
@@ -291,7 +289,7 @@ class BotonVertical(BaseScrollBoton):
     def __init__(self, parent, y, orientacion):
         self.w, self.h = parent.w, 12
         super().__init__(parent, parent.x, y, orientacion)
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
 
     @staticmethod
     def _crear(w, h, orientacion):
@@ -320,7 +318,7 @@ class BotonHorizontal(BaseScrollBoton):
     def __init__(self, parent, x, orientacion):
         self.w, self.h = 12, parent.h
         super().__init__(parent, x, parent.y, orientacion)
-        EventHandler.add_widget(self)
+        EventHandler.add_widgets(self)
 
     @staticmethod
     def _crear(w, h, orientacion):

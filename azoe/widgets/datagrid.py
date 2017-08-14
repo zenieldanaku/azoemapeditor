@@ -16,7 +16,7 @@ class DataGrid(BaseWidget):
         self.celdas = self._crear(fils, cols, cel_w, cel_h, sep)
         for x, y in self.celdas:
             e = self.celdas[x, y]
-            EventHandler.add_widget(e)
+            EventHandler.add_widgets(e)
 
         self.h = cel_h * fils + sep * (fils - 1)
 
@@ -55,4 +55,4 @@ class DataGrid(BaseWidget):
     def on_destruction(self):
         for x, y in self.celdas:
             e = self.celdas[x, y]
-            EventHandler.del_widget(e)
+            EventHandler.del_widgets(e)

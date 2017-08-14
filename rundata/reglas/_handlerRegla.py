@@ -59,8 +59,7 @@ class HandlerRegla(BaseWidget):
         x, y = mouse.get_pos()
         if self.pressed:
             if not self.rect.collidepoint((x, y)) and self.newLine:
-                EventHandler.add_widget(self.lineaX)
-                EventHandler.add_widget(self.lineaY)
+                EventHandler.add_widgets(self.lineaX, self.lineaY)
                 self.newLine = False
 
             self.mover_lineas()
@@ -96,5 +95,5 @@ class HandlerRegla(BaseWidget):
     def update(self):
         if not self.enabled:
             for linea in self.lineas:
-                EventHandler.del_widget(linea)
+                EventHandler.del_widgets(linea)
             self.lineas.clear()

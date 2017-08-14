@@ -12,19 +12,21 @@ class EventHandler:
     key = None
 
     @classmethod
-    def add_widget(cls, widget):
-        cls.contents.add(widget, layer=widget.layer)
-        cls.widgets[widget.nombre] = widget
-        return widget
+    def add_widgets(cls, *widgets):
+        for widget in widgets:
+            if widget not in cls.contents:
+                cls.contents.add(widget, layer=widget.layer)
+                cls.widgets[widget.nombre] = widget
 
     @classmethod
-    def del_widget(cls, widget):
-        if isinstance(widget, str):
-            widget = cls.widgets[widget]
-        widget.on_destruction()
-        cls.contents.remove(widget)
-        if widget.nombre in cls.widgets:
-            del cls.widgets[widget.nombre]
+    def del_widgets(cls, *widgets):
+        for widget in widgets:
+            if isinstance(widget, str):
+                widget = cls.widgets[widget]
+            widget.on_destruction()
+            cls.contents.remove(widget)
+            if widget.nombre in cls.widgets:
+                del cls.widgets[widget.nombre]
 
     @classmethod
     def get_widget(cls, widget):
