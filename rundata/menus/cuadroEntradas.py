@@ -9,12 +9,12 @@ class CuadroEntrada(SubVentana):
         super().__init__(6 * C + 16, 9 * C - 16, 'Entradas', **opciones)
         self.nombre = 'CuadroEntradas'
         dx = 18
-        self.grid = DataGrid(self, 'datos', self.x + 3 + dx, self.y + 23 + 15, {},
-                             titulos=['Nombre', 'X', 'Y'], cel_w=53, n_fil=9, sep=2)
-        ops = {'fontType': 'Tahoma', 'fontSize': 12}
-        nombre = Label(self, 'nmbr', self.x + 9 + dx, self.y + 23, 'Nombre', **ops)
-        lbl_pos_x = Label(self, 'PosX', self.x + C * 2 + 16 + dx, self.y + 23, 'X', **ops)
-        lbl_pos_y = Label(self, 'PosY', self.x + C * 4 + 6 + dx, self.y + 23, 'Y', **ops)
+        self.grid = DataGrid(self, 'datos', self.x + 3 + dx, self.y + 23 + 15, 3,
+                             titulos=['Nombre', 'X', 'Y'], cel_w=53, n_fil=9, sep=2, **opciones)
+        opciones.update({'fontType': 'Tahoma', 'fontSize': 12})
+        nombre = Label(self, 'nmbr', self.x + 9 + dx, self.y + 22, 'Nombre', **opciones)
+        lbl_pos_x = Label(self, 'PosX', self.x + C * 2 + 16 + dx, self.y + 22, 'X', **opciones)
+        lbl_pos_y = Label(self, 'PosY', self.x + C * 4 + 6 + dx, self.y + 22, 'Y', **opciones)
 
         sort = sorted([nombre for nombre in Sistema.PROYECTO.script['entradas']])
         relleno = []
@@ -29,12 +29,7 @@ class CuadroEntrada(SubVentana):
         self.btnAceptar = BotonAceptarCancelar(self, self.x + 63, self.y + self.h - 23, self.aceptar)
         self.btnCanelar = BotonAceptarCancelar(self, self.x + self.w - 73, self.y + self.h - 23)
 
-        self.agregar(nombre)
-        self.agregar(lbl_pos_x)
-        self.agregar(lbl_pos_y)
-        self.agregar(scroll)
-        self.agregar(self.btnAceptar)
-        self.agregar(self.btnCanelar)
+        self.agregar(nombre, lbl_pos_x, lbl_pos_y, scroll, self.btnAceptar, self.btnCanelar)
 
     def on_destruction(self):
         super().on_destruction()
@@ -53,17 +48,16 @@ class UnaEntrada(SubVentana):
     entrada_px = 0
     entrada_py = 0
 
-    def __init__(self, px, py):
+    def __init__(self, px, py, **opciones):
         super().__init__(4 * C + 16, C * 3 - 2, 'Insertar Entrada')
-        ops = {'fontType': 'Tahoma', 'fontSize': 12}
+        opciones.update({'fontType': 'Tahoma', 'fontSize': 12})
+        self.lblNombre = Label(self, 'nmbr', self.x + 3, self.y + 23, 'Nombre', **opciones)
+        self.lblPosX = Label(self, 'PosX', self.x + 3, self.y + 23 + 23, 'X', **opciones)
+        self.lblPosY = Label(self, 'PosY', self.x + C * 2 + 9, self.y + 23 + 23, 'Y', **opciones)
 
-        self.lblNombre = Label(self, 'nmbr', self.x + 3, self.y + 23, 'Nombre', **ops)
-        self.lblPosX = Label(self, 'PosX', self.x + 3, self.y + 23 + 23, 'X', **ops)
-        self.lblPosY = Label(self, 'PosY', self.x + C * 2 + 9, self.y + 23 + 23, 'Y', **ops)
-
-        self.entryNombre = Entry(self, 'nmbr', self.x + C * 2 + 9, self.y + 20, 68)
-        self.entryPosX = Entry(self, 'PosX', self.x + 3 + 10, self.y + 20 + 23, C + 26, texto=str(px))
-        self.entryPosY = Entry(self, 'PosY', self.x + C * 2 + 9 + 10, self.y + 20 + 23, C + 26, texto=str(py))
+        self.entryNombre = Entry(self, 'nmbr', self.x + C * 2 + 9, self.y + 20, 68, **opciones)
+        self.entryPosX = Entry(self, 'PosX', self.x + 3 + 10, self.y + 43, C + 26, texto=str(px), **opciones)
+        self.entryPosY = Entry(self, 'PosY', self.x + C * 2 + 19, self.y + 43, C + 26, texto=str(py), **opciones)
 
         self.btnAceptar = BotonAceptarCancelar(self, self.x + 3, self.y + 70, self.aceptar)
         self.btnCancelar = BotonAceptarCancelar(self, self.x + C * 2 + 9, self.y + 70)

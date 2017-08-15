@@ -26,7 +26,8 @@ class ToolTip(BaseWidget):
     @staticmethod
     def _crear(texto, opciones):
         fuente = font.SysFont(opciones['fontType'], opciones['fontSize'])
-        fg_color, bg_color = opciones['colorText'], opciones['colorFondo']
+        fg_color = opciones['colorText']
+        bg_color = opciones['colorFondo']
         w, h = fuente.size(texto)
         fondo = Surface((w + 4, h + 2))
         fondo.fill(bg_color, (1, 1, w + 2, h))
@@ -43,7 +44,7 @@ class ToolTip(BaseWidget):
         if 'colorText' not in opciones:
             opciones['colorText'] = color('sysElmText')
         if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = Color(255, 255, 225)  # color de sistema
+            opciones['colorFondo'] = color('sysMenBack')  # color de sistema
 
         return opciones
 

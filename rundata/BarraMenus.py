@@ -14,7 +14,7 @@ class BarraMenus(Marco):
         self.menus = {}
         prev = 0
         for menu in (MenuArchivo, MenuEditar, MenuMapa):
-            menu = menu(self, prev, 3)
+            menu = menu(self, prev, 3, **opciones)
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
 

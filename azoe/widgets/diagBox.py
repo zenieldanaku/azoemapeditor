@@ -30,7 +30,7 @@ class Alerta(DialogBox):
         self.area = Rect(3, 20, self.w - 6, (fuente.get_height() + 1) * 3)
         x, y, w, h = self.x, self.y, self.area.w, self.area.h + 20
 
-        render = render_textrect(texto, fuente, self.area, (0, 0, 0), color('sysElmFace'))
+        render = render_textrect(texto, fuente, self.area, (0, 0, 0), color(opciones.get('colorFondo', 'sysElmFace')))
         self.image.blit(render, self.area)
 
         self.check = Checkbox(self, False, x + 3, y + h + 13)

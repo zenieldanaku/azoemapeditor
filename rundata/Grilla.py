@@ -9,36 +9,36 @@ class Grilla(Marco):
     canvas = None
     ScrollX = None
     ScrollY = None
-    BtnVerGr = None
-    BtnVerCapa = None
+    VerGr = None
+    VerCapa = None
     verGrilla = False
     verRegla = False
 
     # layer = 1
 
-    def __init__(self):
+    def __init__(self, **opciones):
         self.nombre = 'Grilla'
-        super().__init__(0, 19, 20 * C + 15, 15 * C + 16, False)
+        super().__init__(0, 19, 20 * C + 15, 15 * C + 16, False, **opciones)
 
-        self.canvas = SpecialCanvas(self, self.x + 16, self.y + 16, 20 * C, 15 * C)
-        self.canvas.ScrollX = ScrollH(self.canvas, self.x + 16, self.y + self.h)
-        self.canvas.ScrollY = ScrollV(self.canvas, self.x + self.w, self.y + 16)
-        self.canvas.Grilla = SubGrilla(self, self.x + 16, self.y + 16, 20 * C, 15 * C)
+        self.canvas = SpecialCanvas(self, self.x + 16, self.y + 16, 20 * C, 15 * C, **opciones)
+        self.canvas.ScrollX = ScrollH(self.canvas, self.x + 16, self.y + self.h, **opciones)
+        self.canvas.ScrollY = ScrollV(self.canvas, self.x + self.w, self.y + 16, **opciones)
+        self.canvas.Grilla = SubGrilla(self, self.x + 16, self.y + 16, 20 * C, 15 * C, **opciones)
 
         i = Sistema.iconos  # alias
         t = [[i['ver_fondo'], i['ver_cls'], i['ver_dis']], "Alterna entre el mapa de colisiones y la imagen de fondo"]
         c = [[i['grilla'], i['grilla_tog'], i['grilla_dis']], "Muestra u oculta la grilla"]
 
-        self.BtnVerCapa = BotonToggle(self, 24 * C + 6, 23, 'BtnVerCapa', self.cmd_ver_capa, [*t[0]], t[1])
-        self.BtnVerGr = BotonToggle(self, 24 * C + 6, C + 23, 'BtnVerGr', self.cmd_ver_grilla, [*c[0]], c[1])
-        self.BtnCerrarMapa = BotonCerrar(self, self.w + 1, self.y, 15, 15, 'BtnCerrarMapa', Sistema.close_proyect)
+        self.VerCapa = BotonToggle(self, 24 * C + 6, 23, 'VerCapa', self.cmd_ver_capa, [*t[0]], t[1], **opciones)
+        self.VerGr = BotonToggle(self, 24 * C + 6, C + 23, 'VerGr', self.cmd_ver_grilla, [*c[0]], c[1], **opciones)
+        self.CerrarMapa = BotonCerrar(self, self.w + 1, self.y, 15, 15, 'CerrarMapa', Sistema.close_proyect, **opciones)
         self.canvas.ReglaX = ReglaH(self.canvas, self.x + 15, self.y)
         self.canvas.ReglaY = ReglaV(self.canvas, self.x, self.y + 15)
         self.canvas.HandlerRegla = HandlerRegla(self.canvas, self.x, self.y)
 
         self.agregar(self.canvas.ReglaX, self.canvas.ReglaY, self.canvas.HandlerRegla,
                      self.canvas, self.canvas.ScrollX, self.canvas.ScrollY,
-                     self.BtnCerrarMapa, self.BtnVerGr, self.BtnVerCapa)
+                     self.CerrarMapa, self.VerGr, self.VerCapa)
 
         self.habilitar(False)
 
@@ -64,8 +64,8 @@ class Grilla(Marco):
         if control:
             self.canvas.ScrollX.enabled = True
             self.canvas.ScrollY.enabled = True
-            self.BtnVerCapa.ser_habilitado()
-            self.BtnVerGr.ser_habilitado()
+            self.VerCapa.ser_habilitado()
+            self.VerGr.ser_habilitado()
             self.canvas.ReglaX.enabled = True
             self.canvas.ReglaY.enabled = True
             self.canvas.HandlerRegla.enabled = True
@@ -73,8 +73,8 @@ class Grilla(Marco):
         else:
             self.canvas.ScrollX.enabled = False
             self.canvas.ScrollY.enabled = False
-            self.BtnVerCapa.ser_deshabilitado()
-            self.BtnVerGr.ser_deshabilitado()
+            self.VerCapa.ser_deshabilitado()
+            self.VerGr.ser_deshabilitado()
             self.canvas.ReglaX.enabled = False
             self.canvas.ReglaY.enabled = False
             self.canvas.HandlerRegla.enabled = False
@@ -82,10 +82,10 @@ class Grilla(Marco):
 
     def update(self):
         if Sistema.PROYECTO is None:
-            self.BtnCerrarMapa.ser_deshabilitado()
+            self.CerrarMapa.ser_deshabilitado()
         else:
-            if not self.BtnCerrarMapa.enabled:
-                self.BtnCerrarMapa.ser_habilitado()
+            if not self.CerrarMapa.enabled:
+                self.CerrarMapa.ser_habilitado()
 
 
 class SubGrilla(BaseWidget):

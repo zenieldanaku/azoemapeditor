@@ -22,12 +22,11 @@ class EditarSimbolo(SubVentana):
     modo = 'Pintar'
     crop_visible = True
     crop_area = None
-    # layer = 20
 
-    def __init__(self):
+    def __init__(self, **opciones):
         titulo = None
         self.nombre = 'Editar Simbolo'
-        super().__init__(12 * C, 10 * C, self.nombre, False)
+        super().__init__(12 * C, 10 * C, self.nombre, False, **opciones)
         x, y, w, h = self.x, self.y, self.w, self.h
         self.color_actual = self.color_colision
 
@@ -57,39 +56,34 @@ class EditarSimbolo(SubVentana):
         self.capas.add(self.cursor, layer=2)
 
         self.btnMas = Boton(self, x + w - C, y + C, 'Aumentar', lambda: self.ajustar_brocha(+1), '+',
-                            tip='Aumenta en un punto el tamaño de la brocha')
+                            tip='Aumenta en un punto el tamaño de la brocha', **opciones)
         self.btnMenos = Boton(self, x + w - C, y + 2 * C - 7, 'Disminuir', lambda: self.ajustar_brocha(-1), '-',
-                              tip='Disminuye en un punto el tamaño de la brocha')
+                              tip='Disminuye en un punto el tamaño de la brocha', **opciones)
         self.btnTrans = Boton(self, x + w - C, y + 3 * C - 7, 'Transparencia', self.alternar_transparencia, 'Tr',
-                              tip='Alterna entre la transparencia del sprite')
+                              tip='Alterna entre la transparencia del sprite', **opciones)
         self.btnCapas = Boton(self, x + w - C, y + 4 * C - 14, 'AlterarCapas', self.alternar_capas, 'Cp',
-                              tip='Alerna el orden de las capas de sprite y de colisiones')
+                              tip='Alerna el orden de las capas de sprite y de colisiones', **opciones)
         self.btnBrocha = Boton(self, x + w - C, y + 5 * C - 14, 'AlternarBrocha', self.alternar_brocha, 'Br',
-                               'Alterna entre el color sólido y el transparente')
+                               'Alterna entre el color sólido y el transparente', **opciones)
         self.btnCrop = Boton(self, x + w - C, y + 6 * C - 14, 'VerCropArea', self.alternar_crop, 'Cr',
-                             'Muestra u oculta el area de corte')
+                             'Muestra u oculta el area de corte', **opciones)
 
-        self.btnAceptar = BotonAceptarCancelar(self, x + w - C * 4 - 16, y + h - 28, self.aceptar)
-        self.btnCancelar = BotonAceptarCancelar(self, x + w - C * 2 - 10, y + h - 28)
-        self.lblBrocha = Label(self, 'TamanioDeBrocha', x + 3, y + h - 28,
-                               'Brocha: ' + str(self.brocha) + ' ' + self.modo)
+        self.btnAceptar = BotonAceptarCancelar(self, x + w - C * 4 - 16, y + h - 28, self.aceptar, **opciones)
+        self.btnCancelar = BotonAceptarCancelar(self, x + w - C * 2 - 10, y + h - 28, **opciones)
 
-        self.agregar(self.btnMas)
-        self.agregar(self.btnMenos)
-        self.agregar(self.btnTrans)
-        self.agregar(self.btnCapas)
-        self.agregar(self.btnBrocha)
-        self.agregar(self.btnCrop)
-        self.agregar(self.btnAceptar)
-        self.agregar(self.btnCancelar)
-        self.agregar(self.lblBrocha)
+        txt_brch = 'Brocha: ' + str(self.brocha) + ' ' + self.modo
+        self.lblBrocha = Label(self, 'TamanioDeBrocha', x + 3, y + h - 28, txt_brch, **opciones)
+
+        self.agregar(self.btnMas, self.btnMenos, self.btnTrans, self.btnCapas, self.btnBrocha, self.btnCrop,
+                     self.btnAceptar, self.btnCancelar, self.lblBrocha)
+
         if self.tile is None:
             self.btnAceptar.ser_deshabilitado()
             self.btnCrop.ser_deshabilitado()
             titulo = self.nombre
         elif self.origin.img_cls is not None:
             self.area.image.blit(self.origin.img_cls, self.tile.rect)
-        self.titular(titulo)
+        self.titular(titulo, **self.opciones)
 
         EventHandler.set_focus(self)
 

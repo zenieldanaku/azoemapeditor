@@ -12,14 +12,14 @@ class Menu(BaseWidget):
     nombre = ''
     referencias = None
 
-    def __init__(self, parent, nombre, ops, x, y, **opciones):
+    def __init__(self, parent, nombre, items, x, y, **opciones):
         super().__init__(parent, **opciones)
         self.nombre = self.parent.nombre + '.Menu.' + nombre
         self.fuente = font.SysFont('tahoma', 12)
         self.referencias = {}
-        self.boton = BotonMenu(self, nombre, x, y)
+        self.boton = BotonMenu(self, nombre, x, y, **opciones)
         h = self.boton.rect.h
-        self.cascada = Cascada(self, nombre, ops, x, h + 1)
+        self.cascada = Cascada(self, nombre, items, x, h + 1, **opciones)
 
     def show_menu(self):
         self.cascada.show_menu()
@@ -54,9 +54,9 @@ class BotonMenu(BaseWidget):
             opciones['colorBgSel'] = 'sysBoxSelBack'
         super().__init__(parent, **opciones)
         self.nombre = self.parent.nombre + '.Boton'
-        self.img_des = self.crear_boton(nombre, parent.fuente, color(opciones['colorTexto']),
+        self.img_des = self.crear_boton(nombre, parent.fuente, color(self.opciones['colorTexto']),
                                         color(self.opciones['colorFondo']))
-        self.img_sel = self.crear_boton(nombre, parent.fuente, color(opciones['colorTexto']),
+        self.img_sel = self.crear_boton(nombre, parent.fuente, color(self.opciones['colorTexto']),
                                         color(self.opciones['colorBgSel']))
         self.image = self.img_des
         self.w, self.h = self.image.get_size()
@@ -86,11 +86,11 @@ class BotonMenu(BaseWidget):
 
 
 class Cascada(BaseWidget):
-    opciones = None
+    items = None
     parent = None
     mostrar = False
 
-    def __init__(self, parent, nombre, opciones, x, y):
+    def __init__(self, parent, nombre, items, x, y, **opciones):
         super().__init__()
         self.visible = False
         self.componentes = LayeredDirty()
@@ -102,51 +102,51 @@ class Cascada(BaseWidget):
         self.w = 0
         key_x = 0
 
-        for n in range(len(opciones)):
-            w = 19 + _fuente.size(opciones[n]['nom'])[0]  # ancho(icono)+ancho(nombre)
-            if 'win' in opciones[n]:
-                opciones[n]['scr'] = '...'
+        for n in range(len(items)):
+            w = 19 + _fuente.size(items[n]['nom'])[0]  # ancho(icono)+ancho(nombre)
+            if 'win' in items[n]:
+                items[n]['scr'] = '...'
                 w += _fuente.size('...')[0]
-            if 'key' in opciones[n]:
-                ancho = _fuente.size(opciones[n]['key'])[0]
+            if 'key' in items[n]:
+                ancho = _fuente.size(items[n]['key'])[0]
                 w += ancho + 30
                 if ancho > key_x:
                     key_x = ancho + 70
-            if 'csc' in opciones[n]:
-                opciones[n]['scr'] = 'flecha'
+            if 'csc' in items[n]:
+                items[n]['scr'] = 'flecha'
                 w += 30
-            if 'win' not in opciones[n] and 'csc' not in opciones[n]:
-                opciones[n]['scr'] = None
+            if 'win' not in items[n] and 'csc' not in items[n]:
+                items[n]['scr'] = None
 
             if w > self.w:
                 self.w = w
 
         h = 19
         ajuste = 0
-        self.h = h * len(opciones) + 2
+        self.h = h * len(items) + 2
         _h = 0
-        for n in range(len(opciones)):
-            _nom = opciones[n]['nom']
+        for n in range(len(items)):
+            _nom = items[n]['nom']
             if _nom != 'barra':
-                opcion = OpcionCascada(self, opciones[n], 1, n * h + ajuste + 1, self.w, key_x)
+                opcion = OpcionCascada(self, items[n], 1, n * h + ajuste + 1, self.w, key_x, **opciones)
                 _h = opcion.rect.bottom
-                if 'csc' in opciones[n]:
+                if 'csc' in items[n]:
                     x = self.x + self.w - 3
                     y = (n + 1) * h + ajuste - 1
-                    opcion.command = Cascada(self, _nom, opciones[n]['csc'], x, y)
-                elif 'win' in opciones[n]:
-                    opcion.command = opciones[n]['win']
+                    opcion.command = Cascada(self, _nom, items[n]['csc'], x, y, **opciones)
+                elif 'win' in items[n]:
+                    opcion.command = items[n]['win']
                 else:
-                    opcion.command = opciones[n]['cmd']
+                    opcion.command = items[n]['cmd']
                 self.add_to_references(_nom, opcion)
             else:
-                opcion = BaseWidget()
+                opcion = BaseWidget(**opciones)
                 opcion.image = self._linea_horizontal(self.w - 1)
                 opcion.rect = opcion.image.get_rect(topleft=(3, _h + 4))
                 ajuste -= 10
             self.componentes.add(opcion)
         self.image = Surface((self.w + 5, self.h + ajuste))
-        self.image.fill(color('sysMenBack'), (1, 1, self.w + 3, self.h + ajuste - 2))
+        self.image.fill(color(opciones.get('FondoMenus', 'sysMenBack')), (1, 1, self.w + 3, self.h + ajuste - 2))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         # EventHandler.add_widget(self)
 
@@ -258,9 +258,15 @@ class OpcionCascada(BaseWidget):
         icon = data.get('icon', False)
         rapido = data.get('key', False)
         self.KeyCombination = rapido
-        self.img_uns = self.crear(data, fuente, color('sysElmText'), color('sysMenBack'), max_w, key_x, icon, rapido)
-        self.img_sel = self.crear(data, fuente, color('sysElmText'), color('sysBoxSelBack'), max_w, key_x, icon, rapido)
-        self.img_des = self.crear(data, fuente, color('sysDisText'), color('sysMenBack'), max_w, key_x, icon, rapido)
+
+        txt = color(opciones.get('colorTexto', 'sysElmText'))
+        dis_txt = color(opciones.get('colorDisabled', 'sysDisText'))
+        back = color(opciones.get('FondoMenus', 'sysMenBack'))
+        selback = color(opciones.get('colorSelect', 'sysBoxSelBack'))
+
+        self.img_uns = self.crear(data, fuente, txt, back, max_w, key_x, icon, rapido)
+        self.img_sel = self.crear(data, fuente, txt, selback, max_w, key_x, icon, rapido)
+        self.img_des = self.crear(data, fuente, dis_txt, back, max_w, key_x, icon, rapido)
         self.image = self.img_uns
         self.w, self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(self.x, self.y))

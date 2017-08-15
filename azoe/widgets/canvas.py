@@ -1,4 +1,5 @@
 from pygame import Surface, mouse, mask, Rect
+from azoe.engine.colores import color
 from pygame.sprite import Group
 from . import BaseWidget
 
@@ -14,10 +15,10 @@ class Canvas(BaseWidget):
     tiles = None
 
     def __init__(self, parent, x, y, w, h, **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = (255, 255, 245)
-        if 'colorCuadro' not in opciones:
-            opciones['colorCuadro'] = (191, 191, 191)
+        if 'colorCanvasFondo' not in opciones:
+            opciones['colorCanvasFondo'] = (255, 255, 245)
+        if 'colorCanvasCuadro' not in opciones:
+            opciones['colorCanvasCuadro'] = (191, 191, 191)
         super().__init__(parent, **opciones)
         self.nombre = self.parent.nombre + '.Canvas'
         self.x, self.y = x, y
@@ -31,15 +32,15 @@ class Canvas(BaseWidget):
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
     def pintar_fondo_cuadriculado(self, imagen, c=32):
-        imagen.fill(self.opciones['colorFondo'])
+        imagen.fill(self.opciones['colorCanvasFondo'])
         for y in range(imagen.get_height() // c):
             for x in range(imagen.get_width() // c):
                 if y % 2 == 0:
                     if x % 2 == 0:
-                        imagen.fill(self.opciones['colorCuadro'], (x * c, y * c, c, c))
+                        imagen.fill(self.opciones['colorCanvasCuadro'], (x * c, y * c, c, c))
                 else:
                     if x % 2 != 0:
-                        imagen.fill(self.opciones['colorCuadro'], (x * c, y * c, c, c))
+                        imagen.fill(self.opciones['colorCanvasCuadro'], (x * c, y * c, c, c))
 
     def on_mouse_down(self, button):
         x, y = self.get_relative_mouse_position()

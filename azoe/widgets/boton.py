@@ -37,8 +37,8 @@ class Boton(BaseWidget):
             opciones['colorBordeLuz'] = 'sysElmLight'
         if 'colorSelect' not in opciones:
             opciones['colorSelect'] = Color(125, 255, 255)
-        if 'colorText' not in opciones:
-            opciones['colorText'] = 'sysElmText'
+        if 'colorTexto' not in opciones:
+            opciones['colorTexto'] = 'sysElmText'
         if 'colorFondo' not in opciones:
             opciones['colorFondo'] = 'sysElmFace'
         if 'colorDisabled' not in opciones:
@@ -76,7 +76,7 @@ class Boton(BaseWidget):
     def _crear_imagenes(self, scr):
         fuente = font.SysFont(self.opciones['fontType'], self.opciones['fontSize'])
         c_fondo = color(self.opciones['colorFondo'])
-        c_texto = color(self.opciones['colorText'])
+        c_texto = color(self.opciones['colorTexto'])
         c_seltext = color(self.opciones['colorSelect'])
         c_distext = color(self.opciones['colorDisabled'])
         border_light = color(self.opciones['colorBordeLuz'])
@@ -178,7 +178,7 @@ class BotonToggle(Boton):
     def _crear_imagenes(self, scr):
         fuente = font.SysFont(self.opciones['fontType'], self.opciones['fontSize'])
         c_fondo = color(self.opciones['colorFondo'])
-        # colorTexto = color(self.opciones['colorText'])
+        # colorTexto = color(self.opciones['colorTexto'])
         c_seltext = color(self.opciones['colorSelect'])
         c_toggled = 255, 0, 0
         c_non_toggled = 255, 255, 255
@@ -245,9 +245,9 @@ class BotonCerrar(Boton):
     def __init__(self, parent, x, y, w, h, nombre, cmd, **opciones):
         opciones.update({'w': w, 'h': h})
 
-        fg_uns = color('sysElmText')
-        fg_dis = color('sysDisText')
-        bg = color('sysElmFace')
+        fg_uns = color(opciones.get('colorTexto', 'sysElmText'))
+        fg_dis = color(opciones.get('colorDisabled', 'sysDisText'))
+        bg = color(opciones.get('colorFondo', 'sysElmFace'))
 
         img1 = Surface((11, 11))
         img1.fill(bg)

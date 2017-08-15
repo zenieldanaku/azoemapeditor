@@ -16,8 +16,8 @@ class Entry(BaseWidget):
     seleccion = None
 
     def __init__(self, parent, nombre, x, y, w, texto='', **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysBoxBack'
+        if 'colorFondoTexto' not in opciones:
+            opciones['colorFondoTexto'] = 'sysBoxBack'
         if 'colorTexto' not in opciones:
             opciones['colorTexto'] = 'sysElmText'
         if 'colorSelect' not in opciones:
@@ -50,7 +50,7 @@ class Entry(BaseWidget):
         self.h = self.fuente.get_height() + 4  # 21
         self.rect = Rect(self.x, self.y, self.w, self.h)
         self.erase_area = Rect(1, 1, self.w - 2, self.h - 2)
-        self.write_area = Rect(4, 2, self.w - 2, self.h - 4)
+        self.write_area = Rect(5, 2, self.w - 2, self.h - 4)
         self.image = Surface(self.rect.size)
         self.image.set_clip(self.erase_area)
         self.dx = x + 4
@@ -88,11 +88,11 @@ class Entry(BaseWidget):
         # self.insertar_cursor()
 
     def borrar_todo(self):
-        self.image.fill(color(self.opciones['colorFondo']), self.erase_area)
+        self.image.fill(color(self.opciones['colorFondoTexto']), self.erase_area)
 
     def imprimir(self, lista=False):
         c_texto = color(self.opciones['colorTexto'])
-        c_fondo = color(self.opciones['colorFondo'])
+        c_fondo = color(self.opciones['colorFondoTexto'])
         c_select = color(self.opciones['colorSelect'])
 
         if not lista:
@@ -116,11 +116,11 @@ class Entry(BaseWidget):
             if not self.cur_visible:
                 draw.line(self.image, color(self.opciones['colorTexto']), (x, 3), (x, 16), 1)
             else:
-                draw.line(self.image, color(self.opciones['colorFondo']), (x, 3), (x, 16), 1)
+                draw.line(self.image, color(self.opciones['colorFondoTexto']), (x, 3), (x, 16), 1)
         elif orden:
             draw.line(self.image, color(self.opciones['colorTexto']), (x, 3), (x, 16), 1)
         else:
-            draw.line(self.image, color(self.opciones['colorFondo']), (x, 3), (x, 16), 1)
+            draw.line(self.image, color(self.opciones['colorFondoTexto']), (x, 3), (x, 16), 1)
         self.dirty = 1
 
     def insertar_cursor(self):

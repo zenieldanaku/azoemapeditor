@@ -10,37 +10,39 @@ class BaseScroll(BaseWidget):
     BtnPos = None  # derecha, o abajo
     BtnNeg = None  # izquierda, o arriba
 
-    def __init__(self, parent, x, y, w, h):
-        super().__init__(parent)
+    def __init__(self, parent, x, y, w, h, **opciones):
+        super().__init__(parent, **opciones)
         self.x, self.y = x, y
         self.w, self.h = w, h
-        self.image = self._crear(self.w, self.h)
+        self.image = self._crear(self.w, self.h, **opciones)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
     @staticmethod
-    def _crear(w, h):
+    def _crear(w, h, **opciones):
         imagen = Surface((w, h))
-        imagen.fill(color('sysScrBack'))
+        imagen.fill(color(opciones.get('colorBarraScroll', 'sysScrBack')))
         return imagen
 
     def on_destruction(self):
         EventHandler.del_widgets(self.cursor, self.BtnPos, self.BtnNeg)
 
     def reubicar_en_ventana(self, dx=0, dy=0):
-        super().reubicar_en_ventana(dx, dy)
-        self.cursor.reubicar_en_ventana(dx, dy)
-        self.BtnPos.reubicar_en_ventana(dx, dy)
-        self.BtnNeg.reubicar_en_ventana(dx, dy)
+        # super().reubicar_en_ventana(dx, dy)
+        # self.cursor.reubicar_en_ventana(dx, dy)
+        # self.BtnPos.reubicar_en_ventana(dx, dy)
+        # self.BtnNeg.reubicar_en_ventana(dx, dy)
+        for obj in [super(), self.cursor, self.BtnNeg, self.BtnPos]:
+            obj.reubicar_en_ventana(dx, dy)
 
 
 class ScrollV(BaseScroll):
-    def __init__(self, parent, x, y, w=16):
-        super().__init__(parent, x, y + 12, w, parent.h - 12 * 2)
+    def __init__(self, parent, x, y, w=16, **opciones):
+        super().__init__(parent, x, y + 12, w, parent.h - 12 * 2, **opciones)
         self.nombre = self.parent.nombre + '.ScrollV'
         self.area = Rect(0, 0, self.w, self.h)
-        self.BtnPos = BotonVertical(self, self.rect.bottom, 'abajo')
-        self.BtnNeg = BotonVertical(self, self.y - 12, 'arriba')
-        self.cursor = CursorV(self, parent, self.x, self.y, 16)
+        self.BtnPos = BotonVertical(self, self.rect.bottom, 'abajo', **opciones)
+        self.BtnNeg = BotonVertical(self, self.y - 12, 'arriba', **opciones)
+        self.cursor = CursorV(self, parent, self.x, self.y, 16, **opciones)
 
     def actualizar_tamanio(self, doc_h):
         win_h = 480
@@ -56,13 +58,13 @@ class ScrollV(BaseScroll):
 
 
 class ScrollH(BaseScroll):
-    def __init__(self, parent, x, y, h=16):
-        super().__init__(parent, x + 12, y, parent.w - 12 * 2, h)
+    def __init__(self, parent, x, y, h=16, **opciones):
+        super().__init__(parent, x + 12, y, parent.w - 12 * 2, h, **opciones)
         self.nombre = self.parent.nombre + '.ScrollH'
         self.area = Rect(0, 0, self.w, self.h)
-        self.BtnPos = BotonHorizontal(self, self.rect.right, 'derecha')
-        self.BtnNeg = BotonHorizontal(self, self.x - 12, 'izquierda')
-        self.cursor = CursorH(self, parent, self.x, self.y, 16)
+        self.BtnPos = BotonHorizontal(self, self.rect.right, 'derecha', **opciones)
+        self.BtnNeg = BotonHorizontal(self, self.x - 12, 'izquierda', **opciones)
+        self.cursor = CursorH(self, parent, self.x, self.y, 16, **opciones)
 
     def actualizar_tamanio(self, doc_w):
         win_w = 480
@@ -85,8 +87,8 @@ class BaseScrollCursor(BaseWidget):
     image = None
     px, py = 0, 0
 
-    def __init__(self, parent, x, y, w, h):
-        super().__init__(parent)
+    def __init__(self, parent, x, y, w, h, **opciones):
+        super().__init__(parent, **opciones)
         self.x, self.y = x, y
         self.w, self.h = w, h
         self.crear(w, h)
@@ -96,8 +98,10 @@ class BaseScrollCursor(BaseWidget):
     def _agregar_barras(self, *args):
         pass
 
-    def crear(self, w, h):
-        cf, cl, cs = color('sysElmFace'), color('sysElmLight'), color('sysElmShadow')
+    def crear(self, w, h, **opciones):
+        cf = color(opciones.get('colorFondo', 'sysElmFace'))
+        cl = color(opciones.get('colorBordeLuz', 'sysElmLight'))
+        cs = color(opciones.get('colorBordeSombra', 'sysElmShadow'))
         self.image = self._biselar(self._agregar_barras(self._crear(w, h, cf), cl, cs), cl, cs)
         self.dirty = 1
 
@@ -138,8 +142,8 @@ class BaseScrollCursor(BaseWidget):
 
 
 class CursorH(BaseScrollCursor):
-    def __init__(self, parent, scrollable, x, y, w, h=16):
-        super().__init__(parent, x, y, w, h)
+    def __init__(self, parent, scrollable, x, y, w, h=16, **opciones):
+        super().__init__(parent, x, y, w, h, **opciones)
         self.nombre = parent.nombre + '.CursorH'
         self.scrollable = scrollable
         self.rel_rect = Rect((0, 0), (self.w, 2))
@@ -189,8 +193,8 @@ class CursorH(BaseScrollCursor):
 
 
 class CursorV(BaseScrollCursor):
-    def __init__(self, parent, scrollable, x, y, h, w=16):
-        super().__init__(parent, x, y, w, h)
+    def __init__(self, parent, scrollable, x, y, h, w=16, **opciones):
+        super().__init__(parent, x, y, w, h, **opciones)
         self.nombre = parent.nombre + '.CursorV'
         self.scrollable = scrollable
         self.rel_rect = Rect((0, 0), (2, self.h))
@@ -246,20 +250,20 @@ class BaseScrollBoton(BaseWidget):
     pressed = False
     w, h = 0, 0
 
-    def __init__(self, parent, x, y, orientacion):
-        super().__init__(parent)
+    def __init__(self, parent, x, y, orientacion, **opciones):
+        super().__init__(parent, **opciones)
         self.pressed = False
         self.orientacion = orientacion
         self.x, self.y = x, y
-        luz = color('sysElmLight')
-        sombra = color('sysElmShadow')
-        self.img_pre = self._biselar(self._crear(self.w, self.h, self.orientacion), sombra, luz)
-        self.img_uns = self._biselar(self._crear(self.w, self.h, self.orientacion), luz, sombra)
+        luz = color(self.opciones.get('colorBordeLuz', 'sysElmLight'))
+        sombra = color(self.opciones.get('colorBordeSombra', 'sysElmShadow'))
+        self.img_pre = self._biselar(self._crear(self.w, self.h, self.orientacion, **opciones), sombra, luz)
+        self.img_uns = self._biselar(self._crear(self.w, self.h, self.orientacion, **opciones), luz, sombra)
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.nombre = self.parent.nombre + '.Btn.' + self.orientacion
 
-    def _crear(self, *args):
+    def _crear(self, *args, **kwargs):
         pass
 
     def deselect(self):
@@ -286,15 +290,15 @@ class BaseScrollBoton(BaseWidget):
 
 
 class BotonVertical(BaseScrollBoton):
-    def __init__(self, parent, y, orientacion):
+    def __init__(self, parent, y, orientacion, **opciones):
         self.w, self.h = parent.w, 12
-        super().__init__(parent, parent.x, y, orientacion)
+        super().__init__(parent, parent.x, y, orientacion, **opciones)
         EventHandler.add_widgets(self)
 
     @staticmethod
-    def _crear(w, h, orientacion):
+    def _crear(w, h, orientacion, **opciones):
         imagen = Surface((w, h))
-        imagen.fill(color('sysElmFace'))
+        imagen.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         points = []
 
         if orientacion == 'arriba':
@@ -302,7 +306,7 @@ class BotonVertical(BaseScrollBoton):
         elif orientacion == 'abajo':
             points = [[3, 4], [w // 2 - 1, h - 4], [w - 5, 4]]
 
-        draw.polygon(imagen, color('sysScrArrow'), points)
+        draw.polygon(imagen, color(opciones.get('colorFlecha', 'sysScrArrow')), points)
         return imagen
 
     def press(self):
@@ -315,15 +319,15 @@ class BotonVertical(BaseScrollBoton):
 
 
 class BotonHorizontal(BaseScrollBoton):
-    def __init__(self, parent, x, orientacion):
+    def __init__(self, parent, x, orientacion, **opciones):
         self.w, self.h = 12, parent.h
-        super().__init__(parent, x, parent.y, orientacion)
+        super().__init__(parent, x, parent.y, orientacion, **opciones)
         EventHandler.add_widgets(self)
 
     @staticmethod
-    def _crear(w, h, orientacion):
+    def _crear(w, h, orientacion, **opciones):
         imagen = Surface((w, h))
-        imagen.fill(color('sysElmFace'))
+        imagen.fill(color(opciones.get('colorFondo', 'sysElmFace')))
         points = []
 
         if orientacion == 'derecha':
@@ -331,7 +335,7 @@ class BotonHorizontal(BaseScrollBoton):
         elif orientacion == 'izquierda':
             points = [[w - 5, 3], [3, h // 2 - 1], [w - 5, h - 5]]
 
-        draw.polygon(imagen, color('sysScrArrow'), points)
+        draw.polygon(imagen, color(opciones.get('colorFlecha', 'sysScrArrow')), points)
         return imagen
 
     def press(self):

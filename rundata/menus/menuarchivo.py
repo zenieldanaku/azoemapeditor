@@ -4,33 +4,33 @@ from .menumapa import CuadroMapa
 
 
 class MenuArchivo(Menu):
-    def __init__(self, parent, x, y):
+    def __init__(self, parent, x, y, **opciones):
         n, w, c, s, k, i = 'nom', 'win', 'cmd', 'csc', 'key', 'icon'
         incons = Sys.iconos
         cascadas = {
             'exportar': [
-                {n: 'Colisiones', w: lambda: Fs(Sys.guardar_mapa_de_colisiones, Sys.fdExport, ft=['*.png'], )},
-                {n: 'Mapa', w: lambda: Fs(Sys.exportar_mapa, Sys.fdExport, ft=['*.json'])}
+                {n: 'Colisiones', w: lambda: Fs(Sys.save_collition_map, Sys.fdExport, ft=['*.png'], **opciones)},
+                {n: 'Mapa', w: lambda: Fs(Sys.exportar_mapa, Sys.fdExport, ft=['*.json'], **opciones)}
             ],
         }
-        opciones = [
-            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), "icon": Sys.iconos['nuevo'], k: 'Ctrl+N'},
-            {n: 'Abrir', w: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['.json']), i: incons['abrir'],
+        items = [
+            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa', **opciones), "icon": Sys.iconos['nuevo'], k: 'Ctrl+N'},
+            {n: 'Abrir', w: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['.json'], **opciones), i: incons['abrir'],
              k: 'Ctrl+A'},
-            {n: 'Guardar', c: lambda: Sys.save_proyect(Sys.Guardado), i: Sys.iconos['guardar'], k: 'Ctrl+S'},
-            {n: 'Guardar como', c: Sys.save_proyect, k: 'Ctrl+Alt+S'},
+            {n: 'Guardar', c: lambda: Sys.save_proyect(Sys.Guardado, **opciones), i: Sys.iconos['guardar'], k: 'Ctrl+S'},
+            {n: 'Guardar como', c: lambda: Sys.save_proyect(**opciones), k: 'Ctrl+Alt+S'},
             {n: 'Exportar', s: cascadas['exportar']},
             {n: 'Cerrar', c: Sys.close_proyect, k: 'Ctrl+Q'},
             {n: 'Salir', c: Sys.salir, k: 'Esc'}]
 
-        super().__init__(parent, 'Archivo', opciones, x, y)
+        super().__init__(parent, 'Archivo', items, x, y, **opciones)
 
-    @staticmethod
-    def guardar():
-        if not Sys.Guardado:
-            Fs(Sys.save_proyect, Sys.fdProyectos, ft=['*.json'])
-        else:
-            Sys.save_proyect(Sys.Guardado)
+    # @staticmethod
+    # def guardar():
+    #     if not Sys.Guardado:
+    #         Fs(Sys.save_proyect, Sys.fdProyectos, ft=['*.json'], **opciones)
+    #     else:
+    #         Sys.save_proyect(Sys.Guardado)
 
     def update(self):
         nombres = ['Guardar', 'Guardar como', 'Cerrar', 'Exportar']

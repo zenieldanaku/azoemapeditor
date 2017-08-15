@@ -15,26 +15,26 @@ class Tree(Marco):
         super().__init__(x, y, w, h, False, **opciones)
         self.parent = parent
         self.items = LayeredDirty()
-        self.crear_lista(walk, actual)
+        self.crear_lista(walk, actual, **opciones)
         self.ItemActual = actual  # ruta
-        self.ScrollY = ScrollV(self, self.x + self.w, self.y)
+        self.ScrollY = ScrollV(self, self.x + self.w, self.y, **opciones)
         self.agregar(self.ScrollY)
         self.doc_h = h
 
     def scroll(self, dy):
         pass
 
-    def crear_lista(self, opciones, actual):
+    def crear_lista(self, items, actual, **opciones):
         h = 0
         parentesco = {}
-        for y in range(len(opciones)):
-            x = opciones[y]['x']
+        for y in range(len(items)):
+            x = items[y]['x']
             dx = self.x + (x * 16)
             dy = self.y + (y * h)
 
-            item = Item(self, y, dx, dy, opciones[y])
+            item = Item(self, y, dx, dy, items[y], **opciones)
 
-            root = opciones[y]['root']
+            root = items[y]['root']
             if root not in parentesco:
                 parentesco[root] = []
             parentesco[root].append(item)
@@ -50,17 +50,19 @@ class Tree(Marco):
                 for hijo in parentesco[padre.path]:
                     padre.hijos.add(hijo)
 
-    def mover(self, item, d):
-        idx = item.idx
+        self.items.get_sprite(0).cursor.set_status()
 
+    def mover(self, item, dy):
         h = 0
+        idx = item.idx
         for hijo in item.hijos:
-            dh, dy = hijo.get_h()
+            dh, idx = hijo.get_h()
             h += dh
-            idx += dy
 
-        for widget in self.items.sprites()[idx+1:]:
-            widget.mover(h * d)
+        widgets = self.items.sprites()
+        for widget in widgets[idx:]:
+            # print(widget)
+            widget.mover(h * dy)
 
     def reselect(self, opcion):
         for item in self.items:
@@ -89,20 +91,17 @@ class Item(BaseWidget):
         self.path = keyargs['path']
         self.hijos = LayeredDirty()
         self.visible = 0  # no es que sea invisible, es que no tiene imagen
-        self.opcion = _Opcion(self, self.nom_obj, keyargs['path'], x + 16 + 3, y)
+        self.opcion = _Opcion(self, self.nom_obj, keyargs['path'], x + 16 + 3, y, **opciones)
         h = self.opcion.image.get_height()
-        self.cursor = _Cursor(self, x, y, 16, h - 2, keyargs['empty'])
+        self.cursor = _Cursor(self, x, y, 16, h - 2, keyargs['empty'], **opciones)
         w = self.cursor.rect.w + 3 + self.opcion.rect.w
         self.rect = Rect(x, y, w, h)
         self.w, self.h = self.rect.size
         if self.rect.bottom < self.parent.rect.bottom:
-            EventHandler.add_widget(self.opcion)
-            EventHandler.add_widget(self.cursor)
+            EventHandler.add_widgets(self.opcion, self.cursor)
 
     def on_destruction(self):
-        EventHandler.del_widget(self.opcion.tooltip)
-        EventHandler.del_widget(self.opcion)
-        EventHandler.del_widget(self.cursor)
+        EventHandler.del_widgets(self.opcion, self.cursor)  # ,self.opcion.tooltip)
 
     def reubicar_en_ventana(self, dx=0, dy=0):
         super().reubicar_en_ventana(dx, dy)
@@ -110,17 +109,19 @@ class Item(BaseWidget):
         self.cursor.reubicar_en_ventana(dx, dy)
 
     def collapse_children(self):
-        for hijo in self.hijos:
-            hijo.hide()
-            hijo.collapse_children()
-        self.folded = True
+        if len(self.hijos):
+            for hijo in self.hijos:
+                hijo.hide()
+                if hijo.cursor.open and not hijo.cursor.vacio:
+                    hijo.collapse_children()
 
     def expand_children(self):
-        for hijo in self.hijos:
-            hijo.show()
-            if hijo.cursor.open:
-                hijo.expand_children()
-        self.folded = False
+        if len(self.hijos):
+            for hijo in self.hijos:
+                hijo.show()
+                if hijo.cursor.open and not hijo.cursor.vacio:
+                    hijo.expand_children()
+                    # print(self.nom_obj,self.folded)
 
     def hide(self):
         self.opcion.visible = 0
@@ -140,26 +141,25 @@ class Item(BaseWidget):
 
     def get_h(self):
         h = self.h
-        y = 0
-        # if not self.folded:
-        for hijo in self.hijos:
-            dh, y = hijo.get_h()
-            y = 1
-            h += dh
+        idx = self.idx
+        if len(self.hijos) and not self.folded:
+            for hijo in self.hijos:
+                dh, idx = hijo.get_h()
+                h += dh
 
-        return h, y
+        return h, idx
 
 
 class _Opcion(BaseOpcion):
     path = ''
     selected = False
 
-    def __init__(self, parent, nombre, path, x, y, w=0):
-        super().__init__(parent, nombre, x, y, w)
+    def __init__(self, parent, nombre, path, x, y, w=0, **opciones):
+        super().__init__(parent, nombre, x, y, w, **opciones)
         # self.layer = self.parent.layer
         self.texto = nombre
         self.path = path
-        self.tooltip = ToolTip(self.parent, path, x, y)
+        # self.tooltip = ToolTip(self.parent, path, x, y, **opciones)
         self.nombre = self.parent.nombre + '.Opcion'
 
     def select(self):
@@ -181,11 +181,11 @@ class _Opcion(BaseOpcion):
         super().on_focus_out()
         self.deselect()
 
-    def update(self):
-        if self.hasMouseOver:
-            self.tooltip.show()
-        else:
-            self.tooltip.hide()
+    # def update(self):
+    #     if self.hasMouseOver:
+    #         self.tooltip.show()
+    #     else:
+    #         self.tooltip.hide()
 
 
 class _Cursor(BaseWidget):
@@ -199,15 +199,15 @@ class _Cursor(BaseWidget):
         self.x, self.y = x, y
         self.w, self.h = w, h
         self.vacio = vacio
-        self.img_cld = self._crear(self.w, self.h, False)
-        self.img_opn = self._crear(self.w, self.h, True)
+        self.img_cld = self._crear(self.w, self.h, False, **opciones)
+        self.img_opn = self._crear(self.w, self.h, True, **opciones)
         self.set_status()
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
     @staticmethod
-    def _crear(w, h, closed):
+    def _crear(w, h, closed, **opciones):
         imagen = Surface((w, h))
-        imagen.fill(color('sysMenBack'))
+        imagen.fill(color(opciones.get('FondoMenus', 'sysMenBack')))
         rect = imagen.get_rect()
         if closed:
             draw.line(imagen, (0, 0, 0), (5, rect.h // 2), (rect.w - 4, rect.h // 2), 2)
@@ -222,13 +222,14 @@ class _Cursor(BaseWidget):
             if not self.vacio:
                 self.open = not self.open
 
-            if self.open:
-                dy = +1
-            else:
-                dy = -1
+                if self.open:
+                    dy = +1
+                else:
+                    self.parent.folded = False
+                    dy = -1
 
-            self.set_status()
-            self.parent.parent.mover(self.parent, dy)
+                self.set_status()
+                self.parent.parent.mover(self.parent, dy)
 
     def set_status(self):
         if self.open:

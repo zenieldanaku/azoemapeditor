@@ -13,14 +13,14 @@ class DataGrid(BaseWidget):
             fils = n_fil
             cols = n_col
 
-        self.celdas = self._crear(fils, cols, cel_w, cel_h, sep)
+        self.celdas = self._crear(fils=fils, cols=cols, celw=cel_w, celh=cel_h, sep=sep)
         for x, y in self.celdas:
             e = self.celdas[x, y]
             EventHandler.add_widgets(e)
 
         self.h = cel_h * fils + sep * (fils - 1)
 
-    def _crear(self, fils, cols, celw, celh, sep):
+    def _crear(self, fils=None, cols=None, celw=None, celh=None, sep=None):
         celdas = {}
         sep_y = -sep
         for oy in range(fils):
@@ -32,7 +32,7 @@ class DataGrid(BaseWidget):
                 dx = celw * ox + sep_x
                 dy = celh * oy + sep_y
 
-                celdas[ox, oy] = Entry(self, n, self.x + dx, self.y + dy, celw)
+                celdas[ox, oy] = Entry(self, n, self.x + dx, self.y + dy, celw, **self.opciones)
 
         return celdas
 

@@ -4,12 +4,12 @@ from azoe.engine import EventHandler
 
 
 class MenuMapa(Menu):
-    def __init__(self, parent, x, y):
+    def __init__(self, parent, x, y, **opciones):
         cascadas = {'imagen': [
             {'nom': 'Fondo', 'icon': Sys.iconos['fondo'], 'win': lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets)}]}
-        opciones = [{'nom': 'Imagen', 'csc': cascadas['imagen']},
-                    {'nom': 'Ajustes', 'win': lambda: CuadroMapa('Ajustar Mapa')}]
-        super().__init__(parent, 'Mapa', opciones, x, y)
+        lista = [{'nom': 'Imagen', 'csc': cascadas['imagen']},
+                 {'nom': 'Ajustes', 'win': lambda: CuadroMapa('Ajustar Mapa', **opciones)}]
+        super().__init__(parent, 'Mapa', lista, x, y, **opciones)
 
     def update(self):
         nombres = ['Ajustes', 'Fondo']
@@ -27,15 +27,15 @@ class CuadroMapa(SubVentana):
     entrys = []
     # layer = 8
 
-    def __init__(self, nombre):
+    def __init__(self, nombre, **opciones):
         self.nombre = 'Nuevo Mapa'
-        super().__init__(11 * C, 5 * C + 2, nombre)
+        super().__init__(11 * C, 5 * C + 2, nombre, **opciones)
         x, y, w, h = self.x, self.y, self.w, self.h
-        ops = {'fontType': 'Tahoma', 'fontSize': 12}
+        opciones.update({'fontType': 'Tahoma', 'fontSize': 12})
         dx, dy, dw = 210, 23, 214
 
-        self.btnAceptar = BotonAceptarCancelar(self, x + w - 142, y + h - 26, self.aceptar)
-        self.btnCancelar = BotonAceptarCancelar(self, x + w - 72, y + h - 26)
+        self.btnAceptar = BotonAceptarCancelar(self, x + w - 142, y + h - 26, self.aceptar, **opciones)
+        self.btnCancelar = BotonAceptarCancelar(self, x + w - 72, y + h - 26, **opciones)
         items = {}
         lista = [['Fondo', 'Carpeta de imágenes fondo:', 'maps/fondos/'],
                  ['Colisiones', 'Carpeta de mapas de colisiones:', 'maps/colisiones/'],
@@ -53,14 +53,12 @@ class CuadroMapa(SubVentana):
             }
 
         for nombre in items:
-            label = Label(self, *items[nombre]['label'], **ops)
-            entry = Entry(self, *items[nombre]['entry'])
+            label = Label(self, *items[nombre]['label'], **opciones)
+            entry = Entry(self, *items[nombre]['entry'], **opciones)
             self.labels.append(label)
             self.entrys.append(entry)
-            self.agregar(label)
-            self.agregar(entry)
-        self.agregar(self.btnAceptar)
-        self.agregar(self.btnCancelar)
+            self.agregar(label, entry)
+        self.agregar(self.btnAceptar, self.btnCancelar)
 
     def aceptar(self):
         data = {}

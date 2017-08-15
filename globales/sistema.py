@@ -32,14 +32,16 @@ class Sistema:
     DiagBoxes_repeat = {}
 
     @classmethod
-    def init(cls):
+    def init(cls, **opciones):
         cls.iconos = cls.cargar_iconos()
         cls.capa_actual = LAYER_FONDO
         cls.Portapapeles = Portapapeles()
         from rundata.menus.menumapa import CuadroMapa
+        from azoe.widgets import FileOpenDialog as Fo
         cls.key_bindings = {
             'Ctrl+Q': cls.close_proyect,
-            'Ctrl+N': lambda: CuadroMapa('Nuevo Mapa'),
+            'Ctrl+A': lambda: Fo(cls.open_proyect, cls.fdProyectos, ft=['.json'], **opciones),
+            'Ctrl+N': lambda: CuadroMapa('Nuevo Mapa', **opciones),
             'Ctrl+S': cls.save_proyect,
             'Ctrl+X': cls.cortar,
             'Ctrl+V': cls.pegar,
@@ -52,7 +54,7 @@ class Sistema:
         nombres += 'pegar_dis,grilla_dis,mob,prop,borrar,ver_cls,ver_fondo,ver_dis,mob_dis,prop_dis,borrar_dis,'
         nombres += 'fondo,fondo_dis'
         nombres = nombres.split(',')
-        ruta = getcwd() + '/iconos.png'
+        ruta = getcwd() + '/config/iconos.png'
         return Resources.cargar_iconos(nombres, ruta, 19, 17)
 
     @classmethod
@@ -67,7 +69,7 @@ class Sistema:
             cls.estado = 'No se ha selecionado una imagen válida'
 
     @classmethod
-    def guardar_mapa_de_colisiones(cls, ruta):
+    def save_collition_map(cls, ruta):
         imagen = EventHandler.get_widget('Grilla.Canvas').render()
         Resources.guardar_imagen(imagen, ruta)
         cls.estado = 'Imagen ' + ruta + ' guardada exitosamente'
@@ -134,10 +136,10 @@ class Sistema:
         cls.habilitar_todo(True)
 
     @classmethod
-    def save_proyect(cls, ruta=None):
+    def save_proyect(cls, ruta=None, **opciones):
         from azoe.widgets import FileSaveDialog as Fs
         if ruta is None:
-            Fs(cls.save_proyect, cls.fdProyectos, ft=['*.json'])
+            Fs(cls.save_proyect, cls.fdProyectos, ft=['*.json'], **opciones)
         else:
             data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta, data, False)

@@ -17,7 +17,7 @@ class DropDownList(BaseWidget):
         self.x, self.y = x, y
         self.w, self.h = w, 21
         self.entry = Entry(self, nombre, self.x, self.y, w - 18, **opciones)
-        self.flecha = _Flecha(self, 18)
+        self.flecha = _Flecha(self, 18, **opciones)
 
         self.rect = Rect(self.x, self.y, self.w, self.h)
         self.lista_de_opciones = LayeredDirty(*self.crear_lista(self.lista))
@@ -27,20 +27,20 @@ class DropDownList(BaseWidget):
         EventHandler.add_widgets(self.entry, self.flecha)
         self.visible = 0
 
-    def crear_lista(self, opciones):
+    def crear_lista(self, items):
         lista = []
 
         h = 0
-        for n in range(len(opciones)):
-            nom = opciones[n]
+        for n in range(len(items)):
+            nom = items[n]
             dy = self.h + (n * h) - 19
-            opcion = _Opcion(self, nom, self.x + 4, self.y + dy, self.w - 23)
+            opcion = _Opcion(self, nom, self.x + 4, self.y + dy, self.w - 23, **self.opciones)
             # opcion.layer = self.layer + 50
             h = opcion.image.get_height() - 1
 
             lista.append(opcion)
-        if len(opciones) != 0:
-            self.set_text(opciones[0])
+        if len(items) != 0:
+            self.set_text(items[0])
         return lista
 
     def reubicar_en_ventana(self, dx=0, dy=0):
@@ -83,8 +83,7 @@ class DropDownList(BaseWidget):
         self.entry.borrar_todo()
 
     def on_destruction(self):
-        EventHandler.del_widgets(self.entry)
-        EventHandler.del_widgets(self.flecha)
+        EventHandler.del_widgets(self.entry, self.flecha)
         self.hide_items()
 
     def show_items(self):
@@ -117,8 +116,11 @@ class _Flecha(BaseWidget):
         self.nombre = parent.nombre + '.flecha'
         self.w, self.h = w, self.parent.h
         self.x, self.y = self.parent.x + self.parent.w - self.w, self.parent.y
-        cf, cb = color('sysScrArrow'), color('sysElmFace')  # cFlecha,cBackground
-        cl, cs = color('sysElmLight'), color('sysElmShadow')  # cLuz,cSombra
+        cf = color(opciones.get('colorFlecha', 'sysScrArrow'))  # cFlecha
+        cb = color(opciones.get('colorFondo', 'sysElmFace'))  # cBackground
+        cl = color(opciones.get('colorBordeLuz', 'sysElmLight'))  # cLuz
+        cs = color(opciones.get('colorBordeSombra', 'sysElmShadow'))  # ,cSombra
+
         self.img_pre = self._biselar(self._crear(self.w, self.h, cf, cb), cs, cl)
         self.img_uns = self._biselar(self._crear(self.w, self.h, cf, cb), cl, cs)
         self.image = self.img_uns
@@ -150,8 +152,8 @@ class _Flecha(BaseWidget):
 class _Opcion(BaseOpcion):
     command = None
 
-    def __init__(self, parent, nombre, x, y, w=0):
-        super().__init__(parent, nombre, x, y, w)
+    def __init__(self, parent, nombre, x, y, w=0, **opciones):
+        super().__init__(parent, nombre, x, y, w, **opciones)
         self.texto = nombre
 
     def set_text(self, texto):

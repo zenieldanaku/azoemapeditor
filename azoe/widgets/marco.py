@@ -21,8 +21,8 @@ class Marco(BaseWidget):
 
         EventHandler.add_widgets(self)
         op = self.opciones
-        luz = 'colorLuz', 'sysElmLight'
-        sombra = 'colorSombra', 'sysElmShadow'
+        luz = 'colorBordeLuz', 'sysElmLight'
+        sombra = 'colorBordeSombra', 'sysElmShadow'
         if borde:
             self.image = self._biselar(self.image, color(op.get(*luz)), color(op.get(*sombra)))
 

@@ -1,4 +1,5 @@
 from azoe.libs.textrect import render_textrect
+from azoe.engine.colores import color
 from pygame import Rect, font, mouse
 from . import Marco, BotonCerrar
 from globales import ANCHO, ALTO
@@ -9,20 +10,26 @@ class SubVentana(Marco):
     pressedTitle = False
 
     def __init__(self, w, h, nombre, titular=True, **opciones):
+        if 'fontType' not in opciones:
+            opciones['fontType'] = 'verdana'
+        if 'fontSize' not in opciones:
+            opciones['fontSize'] = 12
         _r = Rect(0, 0, w, h)
         _r.center = Rect(0, 0, ANCHO, ALTO).center
         x, y = _r.topleft
         super().__init__(x, y, w, h, **opciones)
         self.px, self.py = self.rect.topleft
         if titular:
-            self.titular(nombre)
-        self.btnCerrar = BotonCerrar(self, x + w - 18, y + 3, 13, 15, 'Cerrar', self.cerrar)
+            self.titular(nombre, **opciones)
+        self.btnCerrar = BotonCerrar(self, x + w - 18, y + 3, 13, 15, 'Cerrar', self.cerrar, **opciones)
         self.agregar(self.btnCerrar)
 
-    def titular(self, texto):
-        fuente = font.SysFont('verdana', 12)
+    def titular(self, texto, **opciones):
+        c_text = color(opciones.get('colorFondoTexto', 'sysBoxBack'))
+        c_bg = color(opciones.get('TextoMenus', 'sysMenText'))
+        fuente = font.SysFont(opciones['fontType'], opciones['fontSize'])
         rect = Rect(2, 2, self.w - 6, fuente.get_height() + 1)
-        render = render_textrect(texto, fuente, rect, (255, 255, 255), (0, 0, 0))
+        render = render_textrect(texto, fuente, rect, c_text, c_bg)
         self.image.blit(render, rect)
 
     def on_mouse_over(self):

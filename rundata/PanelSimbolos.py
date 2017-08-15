@@ -19,12 +19,12 @@ class PanelSimbolos(Marco):
         self.nombre = 'PanelSimbolos'
         super().__init__(21 * C, 19, 4 * C + 8, 16 * C - 1, **opciones)
         self.simbolos = LayeredDirty()
-        self.Items = DropDownList(self, 'Items', self.x + 3, self.y + 3 * C, self.w - 6)
-        self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C)
+        self.Items = DropDownList(self, 'Items', self.x + 3, self.y + 3 * C, self.w - 6, **opciones)
+        self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C, **opciones)
         n, s, t, c, d, i = 'nom', 'scr', 'tipo', 'cmd', 'des', Sys.iconos  # aliases
         elementos = [
-            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), s: i['nuevo'], d: "Crear un mapa nuevo"},
-            {n: 'Abrir', c: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['*.json']),
+            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa', **opciones), s: i['nuevo'], d: "Crear un mapa nuevo"},
+            {n: 'Abrir', c: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['*.json'], **opciones),
              s: i['abrir'], d: "Abrir un mapa existente"},
             {n: 'Guardar', c: self.guardar, s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
             {n: 'barra'},
@@ -32,11 +32,11 @@ class PanelSimbolos(Marco):
             {n: 'Copiar', c: Sys.copiar, s: [i['copiar'], i['copiar_dis']], d: "Copiar"},
             {n: 'Pegar', c: Sys.pegar, s: [i['pegar'], i['pegar_dis']], d: "Pegar"},
             {n: 'barra'},
-            {n: 'SetFondo', c: lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets, ft=['.png']),
+            {n: 'SetFondo', c: lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets, ft=['.png'], **opciones),
              s: [i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
-            {n: 'addMob', c: lambda: Fo(self.add_mob, Sys.fdAssets, ft=['.png']),
+            {n: 'addMob', c: lambda: Fo(self.add_mob, Sys.fdAssets, ft=['.png'], **opciones),
              s: [i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
-            {n: 'addProp', c: lambda: Fo(self.add_props, Sys.fdAssets, ft=['.png']),
+            {n: 'addProp', c: lambda: Fo(self.add_props, Sys.fdAssets, ft=['.png'], **opciones),
              s: [i['prop'], i['prop_dis']], d: "Cargar símbolo de prop"},
 
             {n: 'delSim', c: self.PrevArea.eliminar_simbolo_actual, s: [i['borrar'], i['borrar_dis']],
@@ -46,7 +46,7 @@ class PanelSimbolos(Marco):
         y = 19 + 4
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = Boton(self, x + 5, y, e['nom'], e['cmd'], e['scr'], e['des'])
+                boton = Boton(self, x + 5, y, e['nom'], e['cmd'], e['scr'], e['des'], **opciones)
                 x = boton.rect.right - 2
                 self.botones[e['nom']] = boton
                 self.agregar(boton)
@@ -61,10 +61,9 @@ class PanelSimbolos(Marco):
         simbolo.renombrar(self.Items.get_item_actual())
         self.PrevArea.simbolo_actual = simbolo.get_real_name()
 
-    @staticmethod
-    def guardar():
+    def guardar(self):
         if not Sys.Guardado:
-            Fs(Sys.save_proyect, fd=Sys.fdProyectos, ft=['.json'])
+            Fs(Sys.save_proyect, fd=Sys.fdProyectos, ft=['.json'], **self.opciones)
         else:
             Sys.save_proyect(Sys.Guardado)
 
@@ -114,14 +113,14 @@ class PreviewArea(Marco):
 
         self.nombre = parent.nombre + '.AreaPrev'
         super().__init__(x, y, w, h, False, parent, **opciones)
-        luz = color('sysElmLight')
-        sombra = color('sysElmShadow')
-        grilla = self.opciones['colorGrilla']
+        luz = color(opciones.get('colorBordeLuz', 'sysElmLight'))
+        sombra = color(opciones.get('colorBordeSombra', 'sysElmShadow'))
+        grilla = color(opciones.get('colorGrilla'))
         self.img_pos = self._dibujar_grilla(self._biselar(self.image, sombra, luz), grilla)
         self.img_neg = self._dibujar_grilla(self._biselar(Surface((w, h)), sombra, luz), grilla)
         self.image = self.img_pos
 
-        self.area = Rect(self.x + 2, self.y + 2, self.w - 4, self.h - 18)
+        self.area = Rect(self.x + 2, self.y + 2, self.w, self.h)
         self.simbolos = LayeredDirty()
 
     @staticmethod
@@ -172,7 +171,7 @@ class PreviewArea(Marco):
                     simbolo.visible = True
                     self.parent.Items.set_text(self.simbolo_actual)
 
-        if len(self.simbolos) != 0:
+        if len(self.simbolos):
             self.parent.botones['delSim'].ser_habilitado()
         else:
             self.parent.botones['delSim'].ser_deshabilitado()

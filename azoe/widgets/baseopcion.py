@@ -8,8 +8,12 @@ class BaseOpcion(BaseWidget):
         super().__init__(parent, **opciones)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + '.Opcion:' + nombre
-        self.img_des = self.crear(nombre, color('sysElmText'), color('sysMenBack'), w)
-        self.img_sel = self.crear(nombre, color('sysElmText'), color('sysBoxSelBack'), w)
+        txt = color(opciones.get('colorTexto', 'sysElmText'))
+        fnd = color(opciones.get('FondoMenus', 'sysMenBack'))
+        sel = color(opciones.get('colorSelect', 'sysBoxSelBack'))
+
+        self.img_des = self.crear(nombre, txt, fnd, w)
+        self.img_sel = self.crear(nombre, txt, sel, w)
         self.image = self.img_des
         self.w, self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
@@ -22,10 +26,10 @@ class BaseOpcion(BaseWidget):
 
         fuente = font.SysFont(self.opciones['fontType'], self.opciones['fontSize'])
         if w == 0:
-
             w, h = fuente.size(nombre)
         else:
             h = fuente.get_height()
+
         rect = Rect(0, 0, w, h)
         render = fuente.render(nombre, True, fgcolor, bgcolor)
         image = Surface(rect.size)
@@ -35,9 +39,13 @@ class BaseOpcion(BaseWidget):
         return image
 
     def set_text(self, text):
+        txt = color(self.opciones.get('colorTexto', 'sysElmText'))
+        fnd = color(self.opciones.get('FondoMenus', 'sysMenBack'))
+        sel = color(self.opciones.get('colorSelect', 'sysBoxSelBack'))
+
         self.nombre = self.parent.nombre + '.Opcion.' + text
-        self.img_des = self.crear(text, color('sysElmText'), color('sysMenBack'), self.w)
-        self.img_sel = self.crear(text, color('sysElmText'), color('sysBoxSelBack'), self.w)
+        self.img_des = self.crear(text, txt, fnd, self.w)
+        self.img_sel = self.crear(text, txt, sel, self.w)
         self.image = self.img_des
         self.dirty = 1
         self.w, self.h = self.image.get_size()

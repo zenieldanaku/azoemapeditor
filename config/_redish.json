@@ -1,0 +1,18 @@
+{
+  "colorFondo": [255,100,100],
+  "colorBordeSombra": [150,0,0],
+  "colorBordeLuz": [250,0,0],
+  "colorTexto": [200,0,0],
+  "colorDisabled": [255,125,125],
+  "colorFondoTexto": [255,225,225],
+  "sysBoxBorder": [255,0,0],
+  "sysBoxText": [255,0,0],
+  "colorSelect": [230,0,0],
+  "sysBoxSelText": [255,0,0],
+  "FondoMenus": [255,200,200],
+  "TextoMenus": [150,0,0],
+  "colorBarraScroll": [175,0,0],
+  "colorFlecha": [255,125,132],
+  "colorCanvasFondo":[255, 245, 245],
+  "colorCanvasCuadro":[255, 191, 191]
+}
