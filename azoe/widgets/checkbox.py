@@ -5,8 +5,8 @@ from .basewidget import BaseWidget
 class Checkbox(BaseWidget):
     state = False
 
-    def __init__(self, parent, initial_state, x, y, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, initial_state, x, y):
+        super().__init__(parent)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + ".checkbox"
         self.img_true = self._crear(True)

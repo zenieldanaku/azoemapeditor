@@ -15,21 +15,11 @@ class Entry(BaseWidget):
     sel_start, sel_end = 0, 0
     seleccion = None
 
-    def __init__(self, parent, nombre, x, y, w, texto='', **opciones):
-        if 'colorFondoTexto' not in opciones:
-            opciones['colorFondoTexto'] = 'sysBoxBack'
-        if 'colorTexto' not in opciones:
-            opciones['colorTexto'] = 'sysElmText'
-        if 'colorSelect' not in opciones:
-            opciones['colorSelect'] = 'sysBoxSelBack'
-        if 'fontType' not in opciones:
-            opciones['fontType'] = 'courier new'
-        if 'fontSize' not in opciones:
-            opciones['fontSize'] = 14
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, nombre, x, y, w, texto=''):
+        super().__init__(parent)
         self._nombre = nombre
         self.nombre = self.parent.nombre + '.Entry.' + self._nombre
-        self.fuente = font.SysFont(opciones['fontType'], opciones['fontSize'])
+        self.fuente = font.SysFont('courier new', 14)
         self.x, self.y, self.w = x, y, w
         self.cursor = ("        ",
                        "ooo ooo ",
@@ -88,12 +78,12 @@ class Entry(BaseWidget):
         # self.insertar_cursor()
 
     def borrar_todo(self):
-        self.image.fill(color(self.opciones['colorFondoTexto']), self.erase_area)
+        self.image.fill(color('sysBoxBack'), self.erase_area)
 
     def imprimir(self, lista=False):
-        c_texto = color(self.opciones['colorTexto'])
-        c_fondo = color(self.opciones['colorFondoTexto'])
-        c_select = color(self.opciones['colorSelect'])
+        c_texto = color('sysElmText')
+        c_fondo = color('sysBoxBack')
+        c_select = color('sysBoxSelBack')
 
         if not lista:
             txt = ''.join(self.texto)
@@ -114,13 +104,13 @@ class Entry(BaseWidget):
         x = self.cur_x
         if orden is None:
             if not self.cur_visible:
-                draw.line(self.image, color(self.opciones['colorTexto']), (x, 3), (x, 16), 1)
+                draw.line(self.image, color('sysElmText'), (x, 3), (x, 16), 1)
             else:
-                draw.line(self.image, color(self.opciones['colorFondoTexto']), (x, 3), (x, 16), 1)
+                draw.line(self.image, color('sysBoxBack'), (x, 3), (x, 16), 1)
         elif orden:
-            draw.line(self.image, color(self.opciones['colorTexto']), (x, 3), (x, 16), 1)
+            draw.line(self.image, color('sysElmText'), (x, 3), (x, 16), 1)
         else:
-            draw.line(self.image, color(self.opciones['colorFondoTexto']), (x, 3), (x, 16), 1)
+            draw.line(self.image, color('sysBoxBack'), (x, 3), (x, 16), 1)
         self.dirty = 1
 
     def insertar_cursor(self):

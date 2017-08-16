@@ -9,8 +9,8 @@ class SimboloCNVS(SimboloBase):
     isMoving = False
     dx, dy = 0, 0
 
-    def __init__(self, parent, data, **opciones):
-        super().__init__(parent, data, **opciones)
+    def __init__(self, parent, data):
+        super().__init__(parent, data)
 
         self.grupo = self.data['grupo']
         self.tipo = self.data['tipo']

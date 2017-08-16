@@ -47,8 +47,8 @@ class MetaSimbolo(SimboloBase):
 class SimboloSimple(MetaSimbolo):
     copiar = False
 
-    def __init__(self, parent, data, **opciones):
-        super().__init__(parent, data, **opciones)
+    def __init__(self, parent, data):
+        super().__init__(parent, data)
         self.img_pos = self._imagen.copy()
         self.img_neg = self._crear_transparencia(self._imagen.copy())
         self.image = self.img_pos
@@ -59,12 +59,12 @@ class SimboloMultiple(MetaSimbolo):
     rot_idxs = {}
     curr_rot = 0
 
-    def __init__(self, parent, data, **opciones):
+    def __init__(self, parent, data):
         self.imgs_pos = self.cargar_anims(data['imagenes'], ['S', 'I', 'D'])
         self.imgs_neg = self.cargar_anims(data['imagenes'], ['S', 'I', 'D'], True)
         data['image'] = self.imgs_pos['Sabajo']
         self.curr_rot = 0
-        super().__init__(parent, data, **opciones)
+        super().__init__(parent, data)
         self.img_pos = self.imgs_pos['Sabajo']
         self.img_neg = self.imgs_neg['Sabajo']
         self.image = self.img_pos

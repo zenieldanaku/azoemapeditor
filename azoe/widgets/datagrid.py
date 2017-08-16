@@ -3,8 +3,8 @@ from . import BaseWidget, Entry
 
 
 class DataGrid(BaseWidget):
-    def __init__(self, parent, nombre, x, y, n_col=3, n_fil=5, cel_w=0, cel_h=21, sep=0, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, nombre, x, y, n_col=3, n_fil=5, cel_w=0, cel_h=21, sep=0):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.DataGrid.' + nombre
         self.x, self.y = x, y
 
@@ -32,17 +32,17 @@ class DataGrid(BaseWidget):
                 dx = celw * ox + sep_x
                 dy = celh * oy + sep_y
 
-                celdas[ox, oy] = Entry(self, n, self.x + dx, self.y + dy, celw, **self.opciones)
+                celdas[ox, oy] = Entry(self, n, self.x + dx, self.y + dy, celw)
 
         return celdas
 
     def rellenar(self, datos):
-        try:
+        # try:
             for y in range(len(datos)):
                 for x in range(len(datos[y])):
                     self.celdas[x, y].set_text(datos[y][x])
-        except:
-            pass
+        # except:
+        #     pass
 
     def scroll(self, dy):
         pass

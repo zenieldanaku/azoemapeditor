@@ -16,22 +16,22 @@ class Grilla(Marco):
 
     # layer = 1
 
-    def __init__(self, **opciones):
+    def __init__(self):
         self.nombre = 'Grilla'
-        super().__init__(0, 19, 20 * C + 15, 15 * C + 16, False, **opciones)
+        super().__init__(0, 19, 20 * C + 15, 15 * C + 16, False)
 
-        self.canvas = SpecialCanvas(self, self.x + 16, self.y + 16, 20 * C, 15 * C, **opciones)
-        self.canvas.ScrollX = ScrollH(self.canvas, self.x + 16, self.y + self.h, **opciones)
-        self.canvas.ScrollY = ScrollV(self.canvas, self.x + self.w, self.y + 16, **opciones)
-        self.canvas.Grilla = SubGrilla(self, self.x + 16, self.y + 16, 20 * C, 15 * C, **opciones)
+        self.canvas = SpecialCanvas(self, self.x + 16, self.y + 16, 20 * C, 15 * C)
+        self.canvas.ScrollX = ScrollH(self.canvas, self.x + 16, self.y + self.h)
+        self.canvas.ScrollY = ScrollV(self.canvas, self.x + self.w, self.y + 16)
+        self.canvas.Grilla = SubGrilla(self, self.x + 16, self.y + 16, 20 * C, 15 * C)
 
         i = Sistema.iconos  # alias
         t = [[i['ver_fondo'], i['ver_cls'], i['ver_dis']], "Alterna entre el mapa de colisiones y la imagen de fondo"]
         c = [[i['grilla'], i['grilla_tog'], i['grilla_dis']], "Muestra u oculta la grilla"]
 
-        self.VerCapa = BotonToggle(self, 24 * C + 6, 23, 'VerCapa', self.cmd_ver_capa, [*t[0]], t[1], **opciones)
-        self.VerGr = BotonToggle(self, 24 * C + 6, C + 23, 'VerGr', self.cmd_ver_grilla, [*c[0]], c[1], **opciones)
-        self.CerrarMapa = BotonCerrar(self, self.w + 1, self.y, 15, 15, 'CerrarMapa', Sistema.close_proyect, **opciones)
+        self.VerCapa = BotonToggle(self, 24 * C + 6, 23, 'VerCapa', self.cmd_ver_capa, t[0], tip=t[1])
+        self.VerGr = BotonToggle(self, 24 * C + 6, C + 23, 'VerGr', self.cmd_ver_grilla, c[0], tip=c[1])
+        self.CerrarMapa = BotonCerrar(self, self.w + 1, self.y, 15, 15, 'CerrarMapa', Sistema.close_proyect)
         self.canvas.ReglaX = ReglaH(self.canvas, self.x + 15, self.y)
         self.canvas.ReglaY = ReglaV(self.canvas, self.x, self.y + 15)
         self.canvas.HandlerRegla = HandlerRegla(self.canvas, self.x, self.y)
@@ -92,8 +92,8 @@ class SubGrilla(BaseWidget):
     focusable = False
     clip = Rect(0, 0, 0, 0)
 
-    def __init__(self, parent, x, y, w, h, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y, w, h):
+        super().__init__(parent)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + '._grilla'
         self.image = Surface((w, h), SRCALPHA)

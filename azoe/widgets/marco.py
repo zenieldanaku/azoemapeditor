@@ -10,21 +10,18 @@ class Marco(BaseWidget):
     doc_w = None
     doc_h = None
 
-    def __init__(self, x, y, w, h, borde=True, parent=None, **opciones):
+    def __init__(self, x, y, w, h, borde=True, parent=None):
         self.contenido = LayeredDirty()
-        super().__init__(parent, **opciones)
+        super().__init__(parent)
         self.w, self.h = w, h
         self.x, self.y = x, y
         self.image = Surface((self.w, self.h))
-        self.image.fill(color(opciones.get('colorFondo', 'sysElmFace')))
+        self.image.fill(color('sysElmFace'))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
         EventHandler.add_widgets(self)
-        op = self.opciones
-        luz = 'colorBordeLuz', 'sysElmLight'
-        sombra = 'colorBordeSombra', 'sysElmShadow'
         if borde:
-            self.image = self._biselar(self.image, color(op.get(*luz)), color(op.get(*sombra)))
+            self.image = self._biselar(self.image, color('sysElmLight'), color('sysElmShadow'))
 
     def reubicar_en_ventana(self, dx=0, dy=0):
         for widget in self.contenido:

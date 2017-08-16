@@ -16,8 +16,8 @@ class BaseRegla(BaseWidget):
     newLine = False
     tip = 'Haga clic y arrastre para generar una guía' + ' '  # el espacio es intencional
 
-    def __init__(self, parent, x, y, w, h, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y, w, h):
+        super().__init__(parent)
         self.clip = Rect(0, 0, w, h)
         self.x, self.y = x, y
         self.w, self.h = w, h
@@ -66,8 +66,8 @@ class BaseRegla(BaseWidget):
 
 class ReglaH(BaseRegla):
 
-    def __init__(self, parent, x, y, **opciones):
-        super().__init__(parent, x, y, parent.w, 16, **opciones)
+    def __init__(self, parent, x, y):
+        super().__init__(parent, x, y, parent.w, 16)
         self.nombre = self.parent.nombre + '.ReglaH'
         self.image = Surface((parent.w, 16))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
@@ -116,8 +116,8 @@ class ReglaH(BaseRegla):
 
 class ReglaV(BaseRegla):
 
-    def __init__(self, parent, x, y, **opciones):
-        super().__init__(parent, x, y, 16, parent.h, **opciones)
+    def __init__(self, parent, x, y):
+        super().__init__(parent, x, y, 16, parent.h)
         self.nombre = self.parent.nombre + '.ReglaV'
         self.image = Surface((16, parent.h))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))

@@ -23,8 +23,8 @@ class SpecialCanvas(Canvas):
     guias = None
     fondo_rect = Rect(0, 0, 0, 0)
 
-    def __init__(self, parent, x, y, w, h, **opciones):
-        super().__init__(parent, x, y, w, h, **opciones)
+    def __init__(self, parent, x, y, w, h):
+        super().__init__(parent, x, y, w, h)
         self.capas = LayeredDirty()
         self.tiles = LayeredDirty()
         self.guias = []

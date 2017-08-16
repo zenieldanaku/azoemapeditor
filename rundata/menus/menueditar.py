@@ -5,7 +5,7 @@ from azoe.widgets import Menu
 
 
 class MenuEditar(Menu):
-    def __init__(self, parent, x, y, **opciones):
+    def __init__(self, parent, x, y):
         items = [
             {"nom": 'Deshacer', 'cmd': lambda: print('deshacer'), 'key': 'Ctrl+Z'},
             {"nom": 'Rehacer', 'cmd': lambda: print('rehacer'), 'key': 'Ctrl+Alt+Z'},
@@ -14,11 +14,11 @@ class MenuEditar(Menu):
             {"nom": 'Copiar', "cmd": Sys.copiar, "icon": Sys.iconos['copiar'], 'key': 'Ctrl+C'},
             {"nom": 'Pegar', "cmd": Sys.pegar, "icon": Sys.iconos['pegar'], 'key': 'Ctrl+V'},
             {"nom": 'barra'},
-            {"nom": 'Entradas', "win": lambda: CuadroEntrada(**opciones)},
-            {"nom": 'Simbolo', 'win': lambda: EditarSimbolo(**opciones)},
+            {"nom": 'Entradas', "win": lambda: CuadroEntrada()},
+            {"nom": 'Simbolo', 'win': lambda: EditarSimbolo()},
             {'nom': 'Preferencias', 'win': lambda: print('preferencias'), 'key': 'Ctrl+P'}
         ]
-        super().__init__(parent, 'Editar', items, x, y, **opciones)
+        super().__init__(parent, 'Editar', items, x, y)
 
         self.referencias['Rehacer'].ser_deshabilitado()
 

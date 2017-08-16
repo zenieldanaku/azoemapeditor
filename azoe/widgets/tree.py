@@ -8,23 +8,21 @@ class Tree(Marco):
     ItemActual = ''
     items = None
 
-    def __init__(self, parent, x, y, w, h, walk, actual, **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysMenBack'
+    def __init__(self, parent, x, y, w, h, walk, actual):
         self.nombre = parent.nombre + '.Tree'
-        super().__init__(x, y, w, h, False, **opciones)
+        super().__init__(x, y, w, h, False)
         self.parent = parent
         self.items = LayeredDirty()
-        self.crear_lista(walk, actual, **opciones)
+        self.crear_lista(walk, actual)
         self.ItemActual = actual  # ruta
-        self.ScrollY = ScrollV(self, self.x + self.w, self.y, **opciones)
+        self.ScrollY = ScrollV(self, self.x + self.w, self.y)
         self.agregar(self.ScrollY)
         self.doc_h = h
 
     def scroll(self, dy):
         pass
 
-    def crear_lista(self, items, actual, **opciones):
+    def crear_lista(self, items, actual):
         h = 0
         parentesco = {}
         for y in range(len(items)):
@@ -32,7 +30,7 @@ class Tree(Marco):
             dx = self.x + (x * 16)
             dy = self.y + (y * h)
 
-            item = Item(self, y, dx, dy, items[y], **opciones)
+            item = Item(self, y, dx, dy, items[y])
 
             root = items[y]['root']
             if root not in parentesco:
@@ -81,8 +79,8 @@ class Item(BaseWidget):
     hijos = None
     folded = False
 
-    def __init__(self, parent, idx, x, y, keyargs, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, idx, x, y, keyargs):
+        super().__init__(parent)
         self.x, self.y = x, y
         self.idx = idx
         self.nombre = self.parent.nombre + '.Item:' + keyargs['path']
@@ -91,9 +89,9 @@ class Item(BaseWidget):
         self.path = keyargs['path']
         self.hijos = LayeredDirty()
         self.visible = 0  # no es que sea invisible, es que no tiene imagen
-        self.opcion = _Opcion(self, self.nom_obj, keyargs['path'], x + 16 + 3, y, **opciones)
+        self.opcion = _Opcion(self, self.nom_obj, keyargs['path'], x + 16 + 3, y)
         h = self.opcion.image.get_height()
-        self.cursor = _Cursor(self, x, y, 16, h - 2, keyargs['empty'], **opciones)
+        self.cursor = _Cursor(self, x, y, 16, h - 2, keyargs['empty'])
         w = self.cursor.rect.w + 3 + self.opcion.rect.w
         self.rect = Rect(x, y, w, h)
         self.w, self.h = self.rect.size
@@ -154,12 +152,12 @@ class _Opcion(BaseOpcion):
     path = ''
     selected = False
 
-    def __init__(self, parent, nombre, path, x, y, w=0, **opciones):
-        super().__init__(parent, nombre, x, y, w, **opciones)
+    def __init__(self, parent, nombre, path, x, y, w=0):
+        super().__init__(parent, nombre, x, y, w)
         # self.layer = self.parent.layer
         self.texto = nombre
         self.path = path
-        # self.tooltip = ToolTip(self.parent, path, x, y, **opciones)
+        self.tooltip = ToolTip(self.parent, path, x, y)
         self.nombre = self.parent.nombre + '.Opcion'
 
     def select(self):
@@ -181,33 +179,33 @@ class _Opcion(BaseOpcion):
         super().on_focus_out()
         self.deselect()
 
-    # def update(self):
-    #     if self.hasMouseOver:
-    #         self.tooltip.show()
-    #     else:
-    #         self.tooltip.hide()
+    def update(self):
+        if self.hasMouseOver:
+            self.tooltip.show()
+        else:
+            self.tooltip.hide()
 
 
 class _Cursor(BaseWidget):
     image = None
     open = True
 
-    def __init__(self, parent, x, y, w, h, vacio, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y, w, h, vacio):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.Cursor'
         # self.layer = self.parent.layer  # overwrite
         self.x, self.y = x, y
         self.w, self.h = w, h
         self.vacio = vacio
-        self.img_cld = self._crear(self.w, self.h, False, **opciones)
-        self.img_opn = self._crear(self.w, self.h, True, **opciones)
+        self.img_cld = self._crear(self.w, self.h, False)
+        self.img_opn = self._crear(self.w, self.h, True)
         self.set_status()
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
     @staticmethod
-    def _crear(w, h, closed, **opciones):
+    def _crear(w, h, closed):
         imagen = Surface((w, h))
-        imagen.fill(color(opciones.get('FondoMenus', 'sysMenBack')))
+        imagen.fill(color('sysMenBack'))
         rect = imagen.get_rect()
         if closed:
             draw.line(imagen, (0, 0, 0), (5, rect.h // 2), (rect.w - 4, rect.h // 2), 2)

@@ -12,14 +12,14 @@ class Menu(BaseWidget):
     nombre = ''
     referencias = None
 
-    def __init__(self, parent, nombre, items, x, y, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, nombre, items, x, y):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.Menu.' + nombre
         self.fuente = font.SysFont('tahoma', 12)
         self.referencias = {}
-        self.boton = BotonMenu(self, nombre, x, y, **opciones)
+        self.boton = BotonMenu(self, nombre, x, y)
         h = self.boton.rect.h
-        self.cascada = Cascada(self, nombre, items, x, h + 1, **opciones)
+        self.cascada = Cascada(self, nombre, items, x, h + 1)
 
     def show_menu(self):
         self.cascada.show_menu()
@@ -32,10 +32,10 @@ class Menu(BaseWidget):
         # hacer esto con recursion,
         # de manera que cierre cualquier
         # cantidad de cascadas abiertas.
-        for opcion in self.cascada.opciones:
-            if isinstance(opcion.command, Cascada):
-                if opcion.command.mostrar:
-                    opcion.command.hide_menu()
+        # for opcion in self.cascada.componentes:
+        #     if isinstance(opcion.command, Cascada):
+        #         if opcion.command.mostrar:
+        #             opcion.command.hide_menu()
 
         if self.cascada.mostrar:
             self.cascada.hide_menu()
@@ -45,19 +45,11 @@ class BotonMenu(BaseWidget):
     nombre = ''
     menu = None
 
-    def __init__(self, parent, nombre, x, y, **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysMenBack'
-        if 'colorTexto' not in opciones:
-            opciones['colorTexto'] = 'sysMenText'
-        if 'colorBgSel' not in opciones:
-            opciones['colorBgSel'] = 'sysBoxSelBack'
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, nombre, x, y):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.Boton'
-        self.img_des = self.crear_boton(nombre, parent.fuente, color(self.opciones['colorTexto']),
-                                        color(self.opciones['colorFondo']))
-        self.img_sel = self.crear_boton(nombre, parent.fuente, color(self.opciones['colorTexto']),
-                                        color(self.opciones['colorBgSel']))
+        self.img_des = self.crear_boton(nombre, parent.fuente, color('sysMenText'), color('sysMenBack'))
+        self.img_sel = self.crear_boton(nombre, parent.fuente, color('sysMenText'), color('sysBoxSelBack'))
         self.image = self.img_des
         self.w, self.h = self.image.get_size()
         self.rect = self.image.get_rect(topleft=(x, y))
@@ -86,11 +78,11 @@ class BotonMenu(BaseWidget):
 
 
 class Cascada(BaseWidget):
-    items = None
+    opciones = None
     parent = None
     mostrar = False
 
-    def __init__(self, parent, nombre, items, x, y, **opciones):
+    def __init__(self, parent, nombre, items, x, y):
         super().__init__()
         self.visible = False
         self.componentes = LayeredDirty()
@@ -128,25 +120,25 @@ class Cascada(BaseWidget):
         for n in range(len(items)):
             _nom = items[n]['nom']
             if _nom != 'barra':
-                opcion = OpcionCascada(self, items[n], 1, n * h + ajuste + 1, self.w, key_x, **opciones)
+                opcion = OpcionCascada(self, items[n], 1, n * h + ajuste + 1, self.w, key_x)
                 _h = opcion.rect.bottom
                 if 'csc' in items[n]:
                     x = self.x + self.w - 3
                     y = (n + 1) * h + ajuste - 1
-                    opcion.command = Cascada(self, _nom, items[n]['csc'], x, y, **opciones)
+                    opcion.command = Cascada(self, _nom, items[n]['csc'], x, y)
                 elif 'win' in items[n]:
                     opcion.command = items[n]['win']
                 else:
                     opcion.command = items[n]['cmd']
                 self.add_to_references(_nom, opcion)
             else:
-                opcion = BaseWidget(**opciones)
+                opcion = BaseWidget()
                 opcion.image = self._linea_horizontal(self.w - 1)
                 opcion.rect = opcion.image.get_rect(topleft=(3, _h + 4))
                 ajuste -= 10
             self.componentes.add(opcion)
         self.image = Surface((self.w + 5, self.h + ajuste))
-        self.image.fill(color(opciones.get('FondoMenus', 'sysMenBack')), (1, 1, self.w + 3, self.h + ajuste - 2))
+        self.image.fill(color('sysMenBack'), (1, 1, self.w + 3, self.h + ajuste - 2))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         # EventHandler.add_widget(self)
 
@@ -246,24 +238,17 @@ class OpcionCascada(BaseWidget):
     command = None
     setFocus_onIn = True
 
-    def __init__(self, parent, data, x, y, max_w, key_x, **opciones):
-        super().__init__(parent, **opciones)
-        if 'Fuente' not in self.opciones:
-            self.opciones['fontType'] = 'Tahoma'
-        if 'fontSize' not in self.opciones:
-            self.opciones['fontSize'] = 11
-        fuente = font.SysFont(self.opciones['fontType'], self.opciones['fontSize'])
+    def __init__(self, parent, data, x, y, max_w, key_x):
+        super().__init__(parent)
+        fuente = font.SysFont('Tahoma', 11)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + '.OpcionCascada.' + data['nom']
         icon = data.get('icon', False)
         rapido = data.get('key', False)
         self.KeyCombination = rapido
 
-        txt = color(opciones.get('colorTexto', 'sysElmText'))
-        dis_txt = color(opciones.get('colorDisabled', 'sysDisText'))
-        back = color(opciones.get('FondoMenus', 'sysMenBack'))
-        selback = color(opciones.get('colorSelect', 'sysBoxSelBack'))
-
+        txt, dis_txt = color('sysElmText'), color('sysDisText')
+        back, selback = color('sysMenBack'), color('sysBoxSelBack')
         self.img_uns = self.crear(data, fuente, txt, back, max_w, key_x, icon, rapido)
         self.img_sel = self.crear(data, fuente, txt, selback, max_w, key_x, icon, rapido)
         self.img_des = self.crear(data, fuente, dis_txt, back, max_w, key_x, icon, rapido)

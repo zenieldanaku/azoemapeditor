@@ -32,7 +32,7 @@ class Sistema:
     DiagBoxes_repeat = {}
 
     @classmethod
-    def init(cls, **opciones):
+    def init(cls):
         cls.iconos = cls.cargar_iconos()
         cls.capa_actual = LAYER_FONDO
         cls.Portapapeles = Portapapeles()
@@ -40,8 +40,8 @@ class Sistema:
         from azoe.widgets import FileOpenDialog as Fo
         cls.key_bindings = {
             'Ctrl+Q': cls.close_proyect,
-            'Ctrl+A': lambda: Fo(cls.open_proyect, cls.fdProyectos, ft=['.json'], **opciones),
-            'Ctrl+N': lambda: CuadroMapa('Nuevo Mapa', **opciones),
+            'Ctrl+A': lambda: Fo(cls.open_proyect, cls.fdProyectos, ft=['.json']),
+            'Ctrl+N': lambda: CuadroMapa('Nuevo Mapa'),
             'Ctrl+S': cls.save_proyect,
             'Ctrl+X': cls.cortar,
             'Ctrl+V': cls.pegar,
@@ -136,10 +136,10 @@ class Sistema:
         cls.habilitar_todo(True)
 
     @classmethod
-    def save_proyect(cls, ruta=None, **opciones):
+    def save_proyect(cls, ruta=None):
         from azoe.widgets import FileSaveDialog as Fs
         if ruta is None:
-            Fs(cls.save_proyect, cls.fdProyectos, ft=['*.json'], **opciones)
+            Fs(cls.save_proyect, cls.fdProyectos, ft=['*.json'])
         else:
             data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta, data, False)

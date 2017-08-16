@@ -13,8 +13,8 @@ class HandlerRegla(BaseWidget):
     lineaY = None
     newLine = False
 
-    def __init__(self, parent, x, y, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y):
+        super().__init__(parent)
         self.x, self.y = x, y
         self.nombre = self.parent.nombre + '.HandlerRegla'
         self.image = self._crear()

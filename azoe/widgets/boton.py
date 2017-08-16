@@ -1,5 +1,5 @@
 from azoe.engine import color
-from pygame import font, Rect, draw, Surface, Color
+from pygame import font, Rect, draw, Surface
 from azoe.libs.textrect import render_textrect
 from . import BaseWidget, ToolTip
 
@@ -12,11 +12,10 @@ class Boton(BaseWidget):
     img_dis = None
     img_pre = None
 
-    def __init__(self, parent, x, y, nombre, cmd, scr, tip=None, **opciones):
-        opciones = self._opciones_por_default(opciones)
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y, nombre, cmd, scr, w=28, h=25, tip=None, fuente=None):
+        super().__init__(parent)
         self.x, self.y = x, y
-        self.w, self.h = self.opciones['w'], self.opciones['h']
+        self.w, self.h = w, h
         self.nombre = self.parent.nombre + '.Boton.' + nombre
         self.comando = cmd
         if tip is not None:
@@ -24,39 +23,16 @@ class Boton(BaseWidget):
         else:
             self.tooltip = None
 
-        self._crear_imagenes(scr)
+        if fuente is None:
+            fuente = font.SysFont('Verdana', 16)
+        self._crear_imagenes(scr, fuente)
 
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
     @staticmethod
-    def _opciones_por_default(opciones):
-        if 'colorBordeSombra' not in opciones:
-            opciones['colorBordeSombra'] = 'sysElmShadow'
-        if 'colorBordeLuz' not in opciones:
-            opciones['colorBordeLuz'] = 'sysElmLight'
-        if 'colorSelect' not in opciones:
-            opciones['colorSelect'] = Color(125, 255, 255)
-        if 'colorTexto' not in opciones:
-            opciones['colorTexto'] = 'sysElmText'
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysElmFace'
-        if 'colorDisabled' not in opciones:
-            opciones['colorDisabled'] = 'sysDisText'
-        if 'w' not in opciones:
-            opciones['w'] = 28
-        if 'h' not in opciones:
-            opciones['h'] = 25
-        if 'fontType' not in opciones:
-            opciones['fontType'] = 'Verdana'
-        if 'fontSize' not in opciones:
-            opciones['fontSize'] = 16
-
-        return opciones
-
-    @staticmethod
     def _crear(scr, color_texto, color_fondo, w, h, fuente):
-        _rect = Rect(0, 0, w, h)
+        _rect = Rect((0, 0), (w, h))
         render = None
         if type(scr) == Surface:
             img_rect = scr.get_rect(center=_rect.center)
@@ -73,14 +49,13 @@ class Boton(BaseWidget):
 
         return render
 
-    def _crear_imagenes(self, scr):
-        fuente = font.SysFont(self.opciones['fontType'], self.opciones['fontSize'])
-        c_fondo = color(self.opciones['colorFondo'])
-        c_texto = color(self.opciones['colorTexto'])
-        c_seltext = color(self.opciones['colorSelect'])
-        c_distext = color(self.opciones['colorDisabled'])
-        border_light = color(self.opciones['colorBordeLuz'])
-        border_shadow = color(self.opciones['colorBordeSombra'])
+    def _crear_imagenes(self, scr, fuente):
+        c_fondo = color('sysElmFace')
+        c_texto = color('sysElmText')
+        c_seltext = color((125, 255, 255))
+        c_distext = color('sysDisText')
+        border_light = color('sysElmLight')
+        border_shadow = color('sysElmShadow')
 
         if type(scr) != list:  # suponemos string
             scr = [scr, scr]  # porque si no, serian dos imagenes.
@@ -175,16 +150,15 @@ class BotonToggle(Boton):
         super().on_mouse_down(button)
         self.toggle()
 
-    def _crear_imagenes(self, scr):
-        fuente = font.SysFont(self.opciones['fontType'], self.opciones['fontSize'])
-        c_fondo = color(self.opciones['colorFondo'])
-        # colorTexto = color(self.opciones['colorTexto'])
-        c_seltext = color(self.opciones['colorSelect'])
+    def _crear_imagenes(self, scr, fuente):
+
+        c_fondo = color('sysElmFace')
+        c_seltext = color((125, 255, 255))
+        c_distext = color('sysDisText')
+        border_light = color('sysElmLight')
+        border_shadow = color('sysElmShadow')
         c_toggled = 255, 0, 0
         c_non_toggled = 255, 255, 255
-        c_distext = color(self.opciones['colorDisabled'])
-        border_light = color(self.opciones['colorBordeLuz'])
-        border_shadow = color(self.opciones['colorBordeSombra'])
 
         if type(scr) != list:  # suponemos string
             scr = [scr, scr, scr]  # porque si no, serian dos imagenes.
@@ -220,8 +194,8 @@ class BotonToggle(Boton):
 
 
 class BotonAceptarCancelar(Boton):
-    def __init__(self, parent, x, y, cmd=None, scr='', **opciones):
-        opciones.update({'fontType': 'Tahoma', 'fontSize': 14, 'w': 68, 'h': 20})
+    def __init__(self, parent, x, y, cmd=None, scr=''):
+        fuente = font.SysFont('Tahoma', 14)
 
         if cmd is None:
             if hasattr(parent, 'cerrar'):
@@ -238,16 +212,15 @@ class BotonAceptarCancelar(Boton):
             elif type(scr) is str:
                 nombre = scr.title()
 
-        super().__init__(parent, x, y, nombre, cmd, scr, **opciones)
+        super().__init__(parent, x, y, nombre, cmd, scr, w=68, h=20, fuente=fuente)
 
 
 class BotonCerrar(Boton):
-    def __init__(self, parent, x, y, w, h, nombre, cmd, **opciones):
-        opciones.update({'w': w, 'h': h})
+    def __init__(self, parent, x, y, w, h, nombre, cmd):
 
-        fg_uns = color(opciones.get('colorTexto', 'sysElmText'))
-        fg_dis = color(opciones.get('colorDisabled', 'sysDisText'))
-        bg = color(opciones.get('colorFondo', 'sysElmFace'))
+        fg_uns = color('sysElmText')
+        fg_dis = color('sysDisText')
+        bg = color('sysElmFace')
 
         img1 = Surface((11, 11))
         img1.fill(bg)
@@ -261,4 +234,4 @@ class BotonCerrar(Boton):
         draw.aaline(img1, fg_uns, [1, 2], [9, 8])  # \
         draw.aaline(img1, fg_uns, [1, 8], [9, 2])  # /
 
-        super().__init__(parent, x, y, nombre, cmd, [img1, img2], **opciones)
+        super().__init__(parent, x, y, nombre, cmd, [img1, img2], w=w, h=h)

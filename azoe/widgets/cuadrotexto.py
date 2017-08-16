@@ -11,20 +11,10 @@ class CuadroTexto(BaseWidget):
     seleccion = None
     setFocus_onIn = True
 
-    def __init__(self, parent, x, y, w, h, **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysBoxBack'
-        if 'colorTexto' not in opciones:
-            opciones['colorTexto'] = 'sysElmText'
-        if 'colorSelect' not in opciones:
-            opciones['colorSelect'] = 'sysBoxSelBack'
-        if 'fontType' not in opciones:
-            opciones['fontType'] = 'courier new'
-        if 'fontSize' not in opciones:
-            opciones['fontSize'] = 14
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y, w, h):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.CuadroTexto'
-        self.fuente = font.SysFont(opciones['fontType'], opciones['fontSize'])
+        self.fuente = font.SysFont('courier new', 14)
         self.x, self.y, self.w, self.h = x, y, w, h
         self.cursor = ("        ",
                        "ooo ooo ",
@@ -44,7 +34,7 @@ class CuadroTexto(BaseWidget):
                        "ooo ooo ")
         self.rect = Rect(self.x, self.y, self.w, self.h)
         self.image = Surface(self.rect.size)
-        self.image.fill(color(self.opciones['colorFondo']))
+        self.image.fill(color('sysBoxBack'))
         draw.rect(self.image, (0, 0, 0), (0, 0, self.w, self.h), 1)
 
     def ingresar_caracter(self, char):
@@ -80,9 +70,9 @@ class CuadroTexto(BaseWidget):
     def update(self):
         texto = ''.join(self.texto)
         # h = self.fuente.get_height()
-        fg = color(self.opciones['colorTexto'])
-        bg = color(self.opciones['colorFondo'])
-        # sg = color(self.opciones['colorSelect'])
+        fg = color('sysElmText')
+        bg = color('sysBoxBack')
+        # sg = color('sysBoxSelBack')
         # seleccion = Rect(8*32,h,8*10,h)
 
         # string, font, rect, text_color, background_color

@@ -12,10 +12,7 @@ class CuadroPreferencias(SubVentana):
         self.btnAceptar = Boton(self, dx + dw - 150, dy + dh - 28, 'aceptar', self.aceptar, 'aceptar')
         self.btnCancelar = Boton(self, dx + dw - 80, dy + dh - 28, 'Cancelar', self.cerrar, 'Cancelar')
 
-        self.agregar(self.lblModFolder)
-        self.agregar(self.entryModFolder)
-        self.agregar(self.btnAceptar)
-        self.agregar(self.btnCancelar)
+        self.agregar(self.lblModFolder, self.entryModFolder, self.btnAceptar, self.btnCancelar)
 
     def aceptar(self):
         Sys.preferencias['ModFolder'] = self.entryModFolder.return_text()

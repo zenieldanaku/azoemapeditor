@@ -9,27 +9,21 @@ class SubVentana(Marco):
     x, y, w, h = 0, 0, 0, 0
     pressedTitle = False
 
-    def __init__(self, w, h, nombre, titular=True, **opciones):
-        if 'fontType' not in opciones:
-            opciones['fontType'] = 'verdana'
-        if 'fontSize' not in opciones:
-            opciones['fontSize'] = 12
+    def __init__(self, w, h, nombre, titular=True):
         _r = Rect(0, 0, w, h)
         _r.center = Rect(0, 0, ANCHO, ALTO).center
         x, y = _r.topleft
-        super().__init__(x, y, w, h, **opciones)
+        super().__init__(x, y, w, h)
         self.px, self.py = self.rect.topleft
         if titular:
-            self.titular(nombre, **opciones)
-        self.btnCerrar = BotonCerrar(self, x + w - 18, y + 3, 13, 15, 'Cerrar', self.cerrar, **opciones)
+            self.titular(nombre)
+        self.btnCerrar = BotonCerrar(self, x + w - 18, y + 3, 13, 15, 'Cerrar', self.cerrar)
         self.agregar(self.btnCerrar)
 
-    def titular(self, texto, **opciones):
-        c_text = color(opciones.get('colorFondoTexto', 'sysBoxBack'))
-        c_bg = color(opciones.get('TextoMenus', 'sysMenText'))
-        fuente = font.SysFont(opciones['fontType'], opciones['fontSize'])
+    def titular(self, texto):
+        fuente = font.SysFont('verdana', 12)
         rect = Rect(2, 2, self.w - 6, fuente.get_height() + 1)
-        render = render_textrect(texto, fuente, rect, c_text, c_bg)
+        render = render_textrect(texto, fuente, rect, color('sysBoxBack'), color('sysMenText'))
         self.image.blit(render, rect)
 
     def on_mouse_over(self):

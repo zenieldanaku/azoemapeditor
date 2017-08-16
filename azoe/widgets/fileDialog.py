@@ -16,11 +16,11 @@ class FileDiag(SubVentana):
     carpetaVieja = ''
     # layer = 10
 
-    def __init__(self, cmd, filetypes=None, permitirmultiple=False, carpeta_actual='', **opciones):
+    def __init__(self, cmd, filetypes=None, permitirmultiple=False, carpeta_actual=''):
         c = 32
         self.comando = cmd['cmd']
         self.nombre = 'FileDialog.' + cmd['scr']
-        super().__init__(16 * c, 10 * c + 18 + 22, cmd['scr'], **opciones)
+        super().__init__(16 * c, 10 * c + 18 + 22, cmd['scr'])
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
         self.ArchivosSeleccionados = []
@@ -30,32 +30,24 @@ class FileDiag(SubVentana):
         self.carpetaVieja = ''
 
         x, y, w, h = self.x, self.y, self.w, self.h  # abreviaturas de legibilidad
-        opciones.update({'fontType': 'Tahoma', 'fontSize': 13})
-        DDL = DropDownList
-        self.dir_base = Entry(self, 'IngrsarDireccion',  x + 2, y + 21, w-2, os.getcwd(), **opciones)
-        self.carpetas = ArbolCarpetas(self, x + 2, y + 43, w // 2 - 2, 8 * c, carpeta_actual, **opciones)
-        self.archivos = ListaDeArchivos(self, x + w // 2, y + 43, w // 2 - 2, 8 * c, self.SeleccionMultiple, **opciones)
-        self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 9 * c + 15, 11 * c + 16, '', **opciones)
-        self.accion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 16, self.do_cmd, cmd['scr'], **opciones)
-        self.tipos = DDL(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 352 + 16, lista=filetypes, **opciones)
-        self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 320 + 12, **opciones)
-        self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:', **opciones)
-        self.lblTipo = Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:", **opciones)
+        # opciones.update({'fontType': 'Tahoma', 'fontSize': 13})
+        self.dir_base = Entry(self, 'IngrsarDireccion',  x + 2, y + 21, w-2, os.getcwd())
+        self.carpetas = ArbolCarpetas(self, x + 2, y + 43, w // 2 - 2, 8 * c, carpeta_actual)
+        self.archivos = ListaDeArchivos(self, x + w // 2, y + 43, w // 2 - 2, 8 * c, self.SeleccionMultiple)
+        self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 9 * c + 15, 11 * c + 16, '')
+        self.accion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 16, self.do_cmd, cmd['scr'])
+        self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 352 + 16, lista=filetypes)
+        self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 320 + 12)
+        self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:')
+        self.lblTipo = Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:")
 
         self.tipoSeleccinado = self.tipos.ItemActual
         self.carpetaActual = self.carpetas.CarpetaSeleccionada
 
-        self.agregar(self.dir_base)
-        self.agregar(self.carpetas)
-        self.agregar(self.archivos)
-        self.agregar(self.entryNombre)
-        self.agregar(self.accion)
-        self.agregar(self.tipos)
-        self.agregar(self.BtnCancelar)
-        self.agregar(self.lblTipo)
-        self.agregar(self.lblNombre)
+        self.agregar(self.dir_base, self.carpetas, self.archivos, self.entryNombre, self.accion, self.tipos,
+                     self.BtnCancelar, self.lblTipo, self.lblNombre)
 
-    def titular(self, texto, **opciones):
+    def titular(self, texto):
         c_text = [255, 255, 255]
         c_bg = [0, 0, 0]
         fuente = font.SysFont('verdana', 12)
@@ -100,9 +92,9 @@ class FileDiag(SubVentana):
 
 
 class FileOpenDialog(FileDiag):
-    def __init__(self, cmd, fd, ft=None, **opciones):
+    def __init__(self, cmd, fd, ft=None):
         comando = {'scr': 'Abrir', 'cmd': cmd}
-        super().__init__(comando, filetypes=ft, permitirmultiple=True, carpeta_actual=fd, **opciones)
+        super().__init__(comando, filetypes=ft, permitirmultiple=True, carpeta_actual=fd)
 
     def do_cmd(self):
         if self.SeleccionMultiple:
@@ -115,9 +107,9 @@ class FileOpenDialog(FileDiag):
 
 
 class FileSaveDialog(FileDiag):
-    def __init__(self, cmd, fd, ft=None, **opciones):
+    def __init__(self, cmd, fd, ft=None):
         comando = {'scr': 'Guardar', 'cmd': cmd}
-        super().__init__(comando, filetypes=ft, permitirmultiple=False, carpeta_actual=fd, **opciones)
+        super().__init__(comando, filetypes=ft, permitirmultiple=False, carpeta_actual=fd)
 
     def do_cmd(self):
         if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
@@ -132,11 +124,11 @@ class ArbolCarpetas(Marco):
     CarpetaSeleccionada = ''
     arbol = None
 
-    def __init__(self, parent, x, y, w, h, carpeta_actual, **opciones):
-        super().__init__(x, y, w, h, False, parent, **opciones)
+    def __init__(self, parent, x, y, w, h, carpeta_actual):
+        super().__init__(x, y, w, h, False, parent)
         self.nombre = self.parent.nombre + '.ArbolDeCarpetas'
         walk = self._generar_arbol(os.getcwd())
-        self.arbol = Tree(self, self.x, self.y, self.w - 16, self.h, walk, carpeta_actual, **opciones)
+        self.arbol = Tree(self, self.x, self.y, self.w - 16, self.h, walk, carpeta_actual)
         self.agregar(self.arbol)
         self.CarpetaSeleccionada = self.arbol.ItemActual
 
@@ -186,12 +178,10 @@ class ListaDeArchivos(Marco):
     SeleccionMultiple = False
     UltimaSeleccion = ''
 
-    def __init__(self, parent, x, y, w, h, permitirmultiple=False, **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = 'sysMenBack'
+    def __init__(self, parent, x, y, w, h, permitirmultiple=False):
         self.nombre = parent.nombre + '.ListaDeArchivos'
-        super().__init__(x, y, w, h, False, parent, **opciones)
-        self.ScrollY = ScrollV(self, self.x + self.w - 16, self.y, **opciones)
+        super().__init__(x, y, w, h, False, parent)
+        self.ScrollY = ScrollV(self, self.x + self.w - 16, self.y)
         self.agregar(self.ScrollY)
         self.items = LayeredDirty()
         self.Seleccionados = []
@@ -220,7 +210,7 @@ class ListaDeArchivos(Marco):
                 lista.append([item, os.path.join(fold, item)])
         return lista
 
-    def crear_lista(self, items, ext, **opciones):
+    def crear_lista(self, items, ext):
         m = self.SeleccionMultiple
         lista = self._filtrar_extensiones(items, ext)
         h = 0
@@ -228,7 +218,7 @@ class ListaDeArchivos(Marco):
             nom = lista[n][0]
             ruta = lista[n][1]
             dy = self.y + (n * h)
-            opcion = _Opcion(self, nom, ruta, self.x, dy, self.w - 16, multi=m, **opciones)
+            opcion = _Opcion(self, nom, ruta, self.x, dy, self.w - 16, multi=m)
             h = opcion.image.get_height()
             self.items.add(opcion)
             if self.rect.contains(opcion.rect):
@@ -246,7 +236,7 @@ class ListaDeArchivos(Marco):
     def actualizar_lista(self, carpeta, tipo):
         self.borrar_lista()
         nuevalista = self._listar_archivos(carpeta)
-        self.crear_lista(nuevalista, tipo, **self.opciones)
+        self.crear_lista(nuevalista, tipo)
 
     def on_mouse_down(self, button):
         print(button)
@@ -266,8 +256,8 @@ class _Opcion(BaseOpcion):
     texto = ''
     MultipleSelection = False
 
-    def __init__(self, parent, nombre, ruta, x, y, w=0, multi=False, **opciones):
-        super().__init__(parent, nombre, x, y, w, **opciones)
+    def __init__(self, parent, nombre, ruta, x, y, w=0, multi=False):
+        super().__init__(parent, nombre, x, y, w)
         self.texto = nombre
         self.tooltip = ToolTip(self, ruta, x, y)
         self.MultipleSelection = multi

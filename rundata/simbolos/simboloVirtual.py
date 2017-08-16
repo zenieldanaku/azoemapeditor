@@ -8,7 +8,7 @@ from azoe.widgets import Alerta
 class SimboloVirtual(SimboloBase):
     copiar = False
 
-    def __init__(self, parent, imagen, pos, data, **opciones):
+    def __init__(self, parent, imagen, pos, data):
         x, y, z = pos
         rot = 0
         if 'rot' in data:
@@ -18,7 +18,7 @@ class SimboloVirtual(SimboloBase):
         data = {'nombre': 'Virtual',
                 'image': imagen, 'pos': [_rect.x, _rect.y, z, rot]}
 
-        super().__init__(parent, data, **opciones)
+        super().__init__(parent, data)
         self.image = self._crear_transparencia(self._imagen)
         if self.nombre not in EventHandler.widgets:
             EventHandler.add_widgets(self)
@@ -64,15 +64,12 @@ class NoColitionAlert(Alerta):
     @classmethod
     def repeat(cls, texto, accion_si, accion_no):
         if 'NoColition' in Sys.DiagBoxes_repeat:
-            print('aparece')
             if not Sys.DiagBoxes_repeat['NoColition']:
-                print('es false')
                 Sys.DiagBox = NoColitionAlert(texto, accion_si, accion_no)
             else:
-                print('es true')
                 return True
         else:
             Sys.DiagBox = NoColitionAlert(texto, accion_si, accion_no)
 
-    def __init__(self, texto, accion_si, accion_no, **opciones):
-        super().__init__('NoColition', texto, accion_si, accion_no, **opciones)
+    def __init__(self, texto, accion_si, accion_no):
+        super().__init__('NoColition', texto, accion_si, accion_no)

@@ -14,12 +14,8 @@ class Canvas(BaseWidget):
     SeleccionMultiple = False
     tiles = None
 
-    def __init__(self, parent, x, y, w, h, **opciones):
-        if 'colorCanvasFondo' not in opciones:
-            opciones['colorCanvasFondo'] = (255, 255, 245)
-        if 'colorCanvasCuadro' not in opciones:
-            opciones['colorCanvasCuadro'] = (191, 191, 191)
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, x, y, w, h):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.Canvas'
         self.x, self.y = x, y
         self.w, self.h = w, h
@@ -31,16 +27,17 @@ class Canvas(BaseWidget):
         self.pintar_fondo_cuadriculado(self.image)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
-    def pintar_fondo_cuadriculado(self, imagen, c=32):
-        imagen.fill(self.opciones['colorCanvasFondo'])
+    @staticmethod
+    def pintar_fondo_cuadriculado(imagen, c=32):
+        imagen.fill(color('sysCanvasBack'))
         for y in range(imagen.get_height() // c):
             for x in range(imagen.get_width() // c):
                 if y % 2 == 0:
                     if x % 2 == 0:
-                        imagen.fill(self.opciones['colorCanvasCuadro'], (x * c, y * c, c, c))
+                        imagen.fill(color('sysCanvasBlock'), (x * c, y * c, c, c))
                 else:
                     if x % 2 != 0:
-                        imagen.fill(self.opciones['colorCanvasCuadro'], (x * c, y * c, c, c))
+                        imagen.fill(color('sysCanvasBlock'), (x * c, y * c, c, c))
 
     def on_mouse_down(self, button):
         x, y = self.get_relative_mouse_position()

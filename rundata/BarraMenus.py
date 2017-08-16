@@ -7,14 +7,14 @@ class BarraMenus(Marco):
     menus = {}
     # layer = 1
 
-    def __init__(self, **opciones):
+    def __init__(self):
         self.nombre = 'Barra_Menus'
-        super().__init__(0, 0, display.get_surface().get_width(), 19, False, **opciones)
+        super().__init__(0, 0, display.get_surface().get_width(), 19, False)
 
         self.menus = {}
         prev = 0
         for menu in (MenuArchivo, MenuEditar, MenuMapa):
-            menu = menu(self, prev, 3, **opciones)
+            menu = menu(self, prev, 3)
             prev = menu.boton.rect.right
             self.menus[menu.nombre] = menu
 

@@ -7,8 +7,8 @@ class BaseLinea(BaseWidget):
     locked = False
     w, h = 0, 0
 
-    def __init__(self, parent, idx, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, idx):
+        super().__init__(parent)
         self.nombre = self.parent.nombre + '.LineaGuia'
         self.idx = idx
         self.x, self.y = self.parent.x, self.parent.y
@@ -43,9 +43,9 @@ class BaseLinea(BaseWidget):
 class LineaGuiaX(BaseLinea):
     lin = 'x'
 
-    def __init__(self, parent, idx, **opciones):
+    def __init__(self, parent, idx):
         self.w, self.h = parent.w, 1
-        super().__init__(parent, idx, **opciones)
+        super().__init__(parent, idx)
         self.nombre += '.W:' + str(self.idx)
         self.parent.guias.append(self)
 
@@ -62,9 +62,9 @@ class LineaGuiaX(BaseLinea):
 class LineaGuiaY(BaseLinea):
     lin = 'y'
 
-    def __init__(self, parent, idx, **opciones):
+    def __init__(self, parent, idx):
         self.w, self.h = 1, parent.h
-        super().__init__(parent, idx, **opciones)
+        super().__init__(parent, idx)
         self.nombre += '.H:' + str(self.idx)
         self.parent.guias.append(self)
 

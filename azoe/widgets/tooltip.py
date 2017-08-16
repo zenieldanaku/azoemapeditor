@@ -1,4 +1,4 @@
-from pygame import Surface, Color, font, display
+from pygame import Surface, font, display
 from azoe.engine import color  # , EventHandler
 from .basewidget import BaseWidget
 
@@ -7,14 +7,13 @@ class ToolTip(BaseWidget):
     focusable = False
     aparicion = -1
 
-    def __init__(self, parent, mensaje, x, y, **opciones):
-        opciones = self._opciones_por_default(opciones)
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, mensaje, x, y):
+        super().__init__(parent)
         self.x, self.y = x, y
         self.mensaje = mensaje
         self.nombre = self.parent.nombre + '.ToolTip'
         # self.layer = self.parent.layer
-        self.image = self._crear(mensaje, opciones)
+        self.image = self._crear(mensaje)
         self.image.set_alpha(0)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.w, self.h = self.rect.size
@@ -24,29 +23,16 @@ class ToolTip(BaseWidget):
         #     EventHandler.add_widget(self)
 
     @staticmethod
-    def _crear(texto, opciones):
-        fuente = font.SysFont(opciones['fontType'], opciones['fontSize'])
-        fg_color = opciones['colorText']
-        bg_color = opciones['colorFondo']
+    def _crear(texto):
+        fuente = font.SysFont("tahoma", 11)
+        fg_color = color('sysElmText')
+        bg_color = color('sysMenBack')
         w, h = fuente.size(texto)
         fondo = Surface((w + 4, h + 2))
         fondo.fill(bg_color, (1, 1, w + 2, h))
         render = fuente.render(texto, True, fg_color, bg_color)
         fondo.blit(render, (2, 1))
         return fondo
-
-    @staticmethod
-    def _opciones_por_default(opciones):
-        if 'Fuente' not in opciones:
-            opciones['fontType'] = "tahoma"  # Sys.fdLibs+"\\fonts_tahoma.ttf"
-        if 'fontSize' not in opciones:
-            opciones['fontSize'] = 11
-        if 'colorText' not in opciones:
-            opciones['colorText'] = color('sysElmText')
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = color('sysMenBack')  # color de sistema
-
-        return opciones
 
     def _ajustar(self, ancho):
         while True:

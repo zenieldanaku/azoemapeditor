@@ -11,8 +11,8 @@ class SimboloBase(BaseWidget):
     pressed = False
     context = None
 
-    def __init__(self, parent, data, **opciones):
-        super().__init__(parent, **opciones)
+    def __init__(self, parent, data):
+        super().__init__(parent)
 
         self.data = data
         if len(data['pos']) == 3:

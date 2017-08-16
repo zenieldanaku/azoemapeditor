@@ -25,11 +25,10 @@ class BaseWidget(DirtySprite):
     rect = None
     x, y = 0, 0
 
-    def __init__(self, parent=None, **opciones):
+    def __init__(self, parent=None):
         if parent is not None:
             self.parent = parent
             # self.layer = self.parent.layer + 1
-        self.opciones = opciones
         super().__init__()
 
     def on_focus_in(self):

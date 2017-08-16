@@ -12,19 +12,16 @@ class PanelSimbolos(Marco):
     simbolos = None
     botones = {}
 
-    def __init__(self, **opciones):
-        if 'colorFondo' not in opciones:
-            opciones['colorFondo'] = color('sysElmFace')
-
+    def __init__(self):
         self.nombre = 'PanelSimbolos'
-        super().__init__(21 * C, 19, 4 * C + 8, 16 * C - 1, **opciones)
+        super().__init__(21 * C, 19, 4 * C + 8, 16 * C - 1)
         self.simbolos = LayeredDirty()
-        self.Items = DropDownList(self, 'Items', self.x + 3, self.y + 3 * C, self.w - 6, **opciones)
-        self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C, **opciones)
+        self.Items = DropDownList(self, 'Items', self.x + 3, self.y + 3 * C, self.w - 6)
+        self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C)
         n, s, t, c, d, i = 'nom', 'scr', 'tipo', 'cmd', 'des', Sys.iconos  # aliases
         elementos = [
-            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa', **opciones), s: i['nuevo'], d: "Crear un mapa nuevo"},
-            {n: 'Abrir', c: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['*.json'], **opciones),
+            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), s: i['nuevo'], d: "Crear un mapa nuevo"},
+            {n: 'Abrir', c: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['*.json']),
              s: i['abrir'], d: "Abrir un mapa existente"},
             {n: 'Guardar', c: self.guardar, s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
             {n: 'barra'},
@@ -32,11 +29,11 @@ class PanelSimbolos(Marco):
             {n: 'Copiar', c: Sys.copiar, s: [i['copiar'], i['copiar_dis']], d: "Copiar"},
             {n: 'Pegar', c: Sys.pegar, s: [i['pegar'], i['pegar_dis']], d: "Pegar"},
             {n: 'barra'},
-            {n: 'SetFondo', c: lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets, ft=['.png'], **opciones),
+            {n: 'SetFondo', c: lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets, ft=['.png']),
              s: [i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
-            {n: 'addMob', c: lambda: Fo(self.add_mob, Sys.fdAssets, ft=['.png'], **opciones),
+            {n: 'addMob', c: lambda: Fo(self.add_mob, Sys.fdAssets, ft=['.png']),
              s: [i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
-            {n: 'addProp', c: lambda: Fo(self.add_props, Sys.fdAssets, ft=['.png'], **opciones),
+            {n: 'addProp', c: lambda: Fo(self.add_props, Sys.fdAssets, ft=['.png']),
              s: [i['prop'], i['prop_dis']], d: "Cargar símbolo de prop"},
 
             {n: 'delSim', c: self.PrevArea.eliminar_simbolo_actual, s: [i['borrar'], i['borrar_dis']],
@@ -46,7 +43,7 @@ class PanelSimbolos(Marco):
         y = 19 + 4
         for e in elementos:
             if e['nom'] != 'barra':
-                boton = Boton(self, x + 5, y, e['nom'], e['cmd'], e['scr'], e['des'], **opciones)
+                boton = Boton(self, x + 5, y, e['nom'], e['cmd'], e['scr'], tip=e['des'])
                 x = boton.rect.right - 2
                 self.botones[e['nom']] = boton
                 self.agregar(boton)
@@ -61,9 +58,10 @@ class PanelSimbolos(Marco):
         simbolo.renombrar(self.Items.get_item_actual())
         self.PrevArea.simbolo_actual = simbolo.get_real_name()
 
-    def guardar(self):
+    @staticmethod
+    def guardar():
         if not Sys.Guardado:
-            Fs(Sys.save_proyect, fd=Sys.fdProyectos, ft=['.json'], **self.opciones)
+            Fs(Sys.save_proyect, fd=Sys.fdProyectos, ft=['.json'])
         else:
             Sys.save_proyect(Sys.Guardado)
 
@@ -107,15 +105,12 @@ class PreviewArea(Marco):
     simbolos = None
     simbolo_actual = ''
 
-    def __init__(self, parent, x, y, w, h, **opciones):
-        if 'colorGrilla' not in opciones:
-            opciones['colorGrilla'] = (150, 200, 200)
-
+    def __init__(self, parent, x, y, w, h):
         self.nombre = parent.nombre + '.AreaPrev'
-        super().__init__(x, y, w, h, False, parent, **opciones)
-        luz = color(opciones.get('colorBordeLuz', 'sysElmLight'))
-        sombra = color(opciones.get('colorBordeSombra', 'sysElmShadow'))
-        grilla = color(opciones.get('colorGrilla'))
+        super().__init__(x, y, w, h, False, parent)
+        luz = color('sysElmLight')
+        sombra = color('sysElmShadow')
+        grilla = color((150, 200, 200))
         self.img_pos = self._dibujar_grilla(self._biselar(self.image, sombra, luz), grilla)
         self.img_neg = self._dibujar_grilla(self._biselar(Surface((w, h)), sombra, luz), grilla)
         self.image = self.img_pos
