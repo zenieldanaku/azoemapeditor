@@ -13,6 +13,6 @@
   "sysMenText": [150,0,0],
   "sysScrBack": [175,0,0],
   "sysScrArrow": [255,125,132],
-  "sysCanvasBack":[255, 245, 245],
-  "sysCanvasBlock":[255, 191, 191]
+  "CanvasBack":[255, 245, 245],
+  "CanvasBlock":[255, 191, 191]
 }

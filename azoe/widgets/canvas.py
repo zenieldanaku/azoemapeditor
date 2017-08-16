@@ -29,15 +29,24 @@ class Canvas(BaseWidget):
 
     @staticmethod
     def pintar_fondo_cuadriculado(imagen, c=32):
-        imagen.fill(color('sysCanvasBack'))
+        try:
+            color_fondo = color('CanvasBack')
+            color_bloque = color('CanvasBlock')
+
+        except ValueError:
+            # si no hay archivo de colores personalizados, usar color por default.
+            color_fondo = (255, 255, 245)
+            color_bloque = (191, 191, 191)
+
+        imagen.fill(color_fondo)
         for y in range(imagen.get_height() // c):
             for x in range(imagen.get_width() // c):
                 if y % 2 == 0:
                     if x % 2 == 0:
-                        imagen.fill(color('sysCanvasBlock'), (x * c, y * c, c, c))
+                        imagen.fill(color_bloque, (x * c, y * c, c, c))
                 else:
                     if x % 2 != 0:
-                        imagen.fill(color('sysCanvasBlock'), (x * c, y * c, c, c))
+                        imagen.fill(color_bloque, (x * c, y * c, c, c))
 
     def on_mouse_down(self, button):
         x, y = self.get_relative_mouse_position()

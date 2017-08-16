@@ -21,7 +21,7 @@ class PanelSimbolos(Marco):
         n, s, t, c, d, i = 'nom', 'scr', 'tipo', 'cmd', 'des', Sys.iconos  # aliases
         elementos = [
             {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), s: i['nuevo'], d: "Crear un mapa nuevo"},
-            {n: 'Abrir', c: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['*.json']),
+            {n: 'Abrir', c: lambda: Fo(Sys.open_project, Sys.fdProyectos, ft=['*.json']),
              s: i['abrir'], d: "Abrir un mapa existente"},
             {n: 'Guardar', c: self.guardar, s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
             {n: 'barra'},
@@ -61,9 +61,9 @@ class PanelSimbolos(Marco):
     @staticmethod
     def guardar():
         if not Sys.Guardado:
-            Fs(Sys.save_proyect, fd=Sys.fdProyectos, ft=['.json'])
+            Fs(Sys.save_project, fd=Sys.fdProyectos, ft=['.json'])
         else:
-            Sys.save_proyect(Sys.Guardado)
+            Sys.save_project(Sys.Guardado)
 
     def add_mob(self, ruta):
         sprite = Resources.split_spritesheet(ruta)

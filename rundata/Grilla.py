@@ -31,7 +31,7 @@ class Grilla(Marco):
 
         self.VerCapa = BotonToggle(self, 24 * C + 6, 23, 'VerCapa', self.cmd_ver_capa, t[0], tip=t[1])
         self.VerGr = BotonToggle(self, 24 * C + 6, C + 23, 'VerGr', self.cmd_ver_grilla, c[0], tip=c[1])
-        self.CerrarMapa = BotonCerrar(self, self.w + 1, self.y, 15, 15, 'CerrarMapa', Sistema.close_proyect)
+        self.CerrarMapa = BotonCerrar(self, self.w + 1, self.y, 15, 15, 'CerrarMapa', Sistema.close_project)
         self.canvas.ReglaX = ReglaH(self.canvas, self.x + 15, self.y)
         self.canvas.ReglaY = ReglaV(self.canvas, self.x, self.y + 15)
         self.canvas.HandlerRegla = HandlerRegla(self.canvas, self.x, self.y)

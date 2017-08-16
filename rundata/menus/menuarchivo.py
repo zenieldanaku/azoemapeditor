@@ -15,12 +15,12 @@ class MenuArchivo(Menu):
         }
         items = [
             {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), "icon": Sys.iconos['nuevo'], k: 'Ctrl+N'},
-            {n: 'Abrir', w: lambda: Fo(Sys.open_proyect, Sys.fdProyectos, ft=['.json']), i: incons['abrir'],
+            {n: 'Abrir', w: lambda: Fo(Sys.open_project, Sys.fdProyectos, ft=['.json']), i: incons['abrir'],
              k: 'Ctrl+A'},
-            {n: 'Guardar', c: lambda: Sys.save_proyect(Sys.Guardado), i: Sys.iconos['guardar'], k: 'Ctrl+S'},
-            {n: 'Guardar como', c: lambda: Sys.save_proyect(), k: 'Ctrl+Alt+S'},
+            {n: 'Guardar', c: lambda: Sys.save_project(Sys.Guardado), i: Sys.iconos['guardar'], k: 'Ctrl+S'},
+            {n: 'Guardar como', c: lambda: Sys.save_project(), k: 'Ctrl+Alt+S'},
             {n: 'Exportar', s: cascadas['exportar']},
-            {n: 'Cerrar', c: Sys.close_proyect, k: 'Ctrl+Q'},
+            {n: 'Cerrar', c: Sys.close_project, k: 'Ctrl+Q'},
             {n: 'Salir', c: Sys.salir, k: 'Esc'}]
 
         super().__init__(parent, 'Archivo', items, x, y)

@@ -36,17 +36,10 @@ class Sistema:
         cls.iconos = cls.cargar_iconos()
         cls.capa_actual = LAYER_FONDO
         cls.Portapapeles = Portapapeles()
-        from rundata.menus.menumapa import CuadroMapa
-        from azoe.widgets import FileOpenDialog as Fo
-        cls.key_bindings = {
-            'Ctrl+Q': cls.close_proyect,
-            'Ctrl+A': lambda: Fo(cls.open_proyect, cls.fdProyectos, ft=['.json']),
-            'Ctrl+N': lambda: CuadroMapa('Nuevo Mapa'),
-            'Ctrl+S': cls.save_proyect,
-            'Ctrl+X': cls.cortar,
-            'Ctrl+V': cls.pegar,
-            'Ctrl+C': cls.copiar,
-        }
+        cls.key_bindings = {}
+        keybindings = Resources.abrir_json('config/config.json')['keybindings']
+        for command in keybindings:
+            cls.key_bindings[keybindings[command]] = getattr(Sistema, command)
 
     @staticmethod
     def cargar_iconos():
@@ -76,70 +69,80 @@ class Sistema:
         cls.PROYECTO.script['colisiones'] = ruta
 
     @classmethod
-    def new_proyect(cls, data):
-        cls.close_proyect()
-        cls.referencias.update(data)
-        cls.habilitar_todo(True)
-        cls.PROYECTO = Proyecto(data)
+    def new_project(cls, data=None):
+        from rundata.menus.menumapa import CuadroMapa
+        if data is None:
+            CuadroMapa('Nuevo Mapa')
+        elif cls.PROYECTO is not None:
+            cls.referencias.update(data)
+        else:
+            cls.close_project()
+            cls.referencias.update(data)
+            cls.habilitar_todo(True)
+            cls.PROYECTO = Proyecto(data)
 
     @classmethod
-    def open_proyect(cls, ruta):
-        data = Resources.abrir_json(ruta)
-        cls.PROYECTO = Proyecto(data)
-        cls.PROYECTO.cargar(data)
-
-        for key in data:
-            if key == 'fondo':
-                if data[key] != "":
-                    cls.set_ruta_fondo(data[key])
-            elif key == 'props' or key == 'mobs':
-                widget = EventHandler.get_widget('Grilla.Canvas')
-                for item in data[key]:
-                    nombre = item
-                    _ruta = data['refs'][item]['ruta']
-                    _cols = data['refs'][item]['code']
-
-                    tipo = ''
-                    if key == 'props':
-                        sprite = Resources.cargar_imagen(_ruta)
-                        tipo = 'Prop'
-                    elif key == 'mobs':
-                        sprite = Resources.split_spritesheet(_ruta)
-                        tipo = 'Mob'
-
-                    colision = None
-                    if _cols is not None:
-                        w, h = 0, 0
-                        if key == 'props':
-                            w, h = sprite.get_size()
-                        elif key == 'mobs':
-                            w, h = sprite[0].get_size()
-                        colision = deserialize(decode(descomprimir(_cols)), w, h)
-
-                    idx = -1
-                    for pos in data[key][item]:
-                        rot = pos[3]
-                        if type(sprite) == list:
-                            image = sprite[rot]
-                        else:
-                            image = sprite
-                        if len(pos) != 0:
-                            idx += 1
-                            datos = {"nombre": nombre, "image": image, "tipo": tipo,
-                                     "grupo": key, "ruta": _ruta, "pos": pos,
-                                     "index": idx, "colisiones": colision, 'rot': rot}
-                            widget.add_tile(datos)
-
-            elif key == 'referencias':
-                cls.referencias = data[key]
-        cls.Guardado = ruta
-        cls.habilitar_todo(True)
-
-    @classmethod
-    def save_proyect(cls, ruta=None):
-        from azoe.widgets import FileSaveDialog as Fs
+    def open_project(cls, ruta=None):
+        from azoe.widgets import FileOpenDialog
         if ruta is None:
-            Fs(cls.save_proyect, cls.fdProyectos, ft=['*.json'])
+            FileOpenDialog(cls.open_project, cls.fdProyectos, ft=['.json'])
+        else:
+            data = Resources.abrir_json(ruta)
+            cls.PROYECTO = Proyecto(data)
+            cls.PROYECTO.cargar(data)
+
+            for key in data:
+                if key == 'fondo':
+                    if data[key] != "":
+                        cls.set_ruta_fondo(data[key])
+                elif key == 'props' or key == 'mobs':
+                    widget = EventHandler.get_widget('Grilla.Canvas')
+                    for item in data[key]:
+                        nombre = item
+                        _ruta = data['refs'][item]['ruta']
+                        _cols = data['refs'][item]['code']
+
+                        tipo = ''
+                        if key == 'props':
+                            sprite = Resources.cargar_imagen(_ruta)
+                            tipo = 'Prop'
+                        elif key == 'mobs':
+                            sprite = Resources.split_spritesheet(_ruta)
+                            tipo = 'Mob'
+
+                        colision = None
+                        if _cols is not None:
+                            w, h = 0, 0
+                            if key == 'props':
+                                w, h = sprite.get_size()
+                            elif key == 'mobs':
+                                w, h = sprite[0].get_size()
+                            colision = deserialize(decode(descomprimir(_cols)), w, h)
+
+                        idx = -1
+                        for pos in data[key][item]:
+                            rot = pos[3]
+                            if type(sprite) == list:
+                                image = sprite[rot]
+                            else:
+                                image = sprite
+                            if len(pos) != 0:
+                                idx += 1
+                                datos = {"nombre": nombre, "image": image, "tipo": tipo,
+                                         "grupo": key, "ruta": _ruta, "pos": pos,
+                                         "index": idx, "colisiones": colision, 'rot': rot}
+                                widget.add_tile(datos)
+
+                elif key == 'referencias':
+                    cls.referencias = data[key]
+            cls.Guardado = ruta
+            cls.habilitar_todo(True)
+
+    @classmethod
+    def save_project(cls, ruta=None):
+        from azoe.widgets import FileSaveDialog
+        if ruta is None:
+            FileSaveDialog(cls.save_project, cls.fdProyectos, ft=['*.json'])
         else:
             data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta, data, False)
@@ -147,7 +150,7 @@ class Sistema:
             cls.estado = "Proyecto '" + ruta + "' guardado exitosamente."
 
     @classmethod
-    def close_proyect(cls):
+    def close_project(cls):
         cls.PROYECTO = None
         cls.IMG_FONDO = None
         cls.habilitar_todo(False)

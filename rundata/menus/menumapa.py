@@ -66,11 +66,7 @@ class CuadroMapa(SubVentana):
         for entry in self.entrys:
             data[entry.get_real_name().lower()] = entry.return_text()
 
-        if Sys.PROYECTO is None:
-            Sys.new_proyect(data)
-        else:
-            Sys.referencias.update(data)
-
+        Sys.new_project(data)
         self.cerrar()
 
     def cerrar(self):
