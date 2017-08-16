@@ -27,6 +27,9 @@ class Canvas(BaseWidget):
         self.pintar_fondo_cuadriculado(self.image)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
+
     @staticmethod
     def pintar_fondo_cuadriculado(imagen, c=32):
         try:

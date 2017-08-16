@@ -17,6 +17,9 @@ class BaseScroll(BaseWidget):
         self.image = self._crear(self.w, self.h)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
+
     @staticmethod
     def _crear(w, h):
         imagen = Surface((w, h))

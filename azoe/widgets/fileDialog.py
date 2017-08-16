@@ -39,14 +39,13 @@ class FileDiag(SubVentana):
         self.accion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 16, self.do_cmd, cmd['scr'])
         self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 352 + 16, lista=filetypes)
         self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 320 + 12)
-        self.lblNombre = Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:')
-        self.lblTipo = Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:")
+        Label(self, 'Nombre', x + 4, y + 9 * c + 16, texto='Nombre:')
+        Label(self, 'Tipo', x + 4, y + 10 * c + 12, texto="Tipo:")
 
         self.tipoSeleccinado = self.tipos.ItemActual
         self.carpetaActual = self.carpetas.CarpetaSeleccionada
 
-        self.agregar(self.dir_base, self.carpetas, self.archivos, self.entryNombre, self.accion, self.tipos,
-                     self.BtnCancelar, self.lblTipo, self.lblNombre)
+        self.agregar(self.carpetas, self.archivos)
 
     def titular(self, texto):
         c_text = [255, 255, 255]
@@ -182,8 +181,7 @@ class ListaDeArchivos(Marco):
     def __init__(self, parent, x, y, w, h, permitirmultiple=False):
         self.nombre = parent.nombre + '.ListaDeArchivos'
         super().__init__(x, y, w, h, False, parent)
-        self.ScrollY = ScrollV(self, self.x + self.w - 16, self.y)
-        self.agregar(self.ScrollY)
+        ScrollV(self, self.x + self.w - 16, self.y)
         self.items = LayeredDirty()
         self.Seleccionados = []
         self.SeleccionMultiple = permitirmultiple

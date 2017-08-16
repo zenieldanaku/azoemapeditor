@@ -30,6 +30,9 @@ class Boton(BaseWidget):
         self.image = self.img_uns
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
+
     @staticmethod
     def _crear(scr, color_texto, color_fondo, w, h, fuente):
         _rect = Rect((0, 0), (w, h))

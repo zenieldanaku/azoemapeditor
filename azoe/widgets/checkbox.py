@@ -16,6 +16,9 @@ class Checkbox(BaseWidget):
         self.image = self.img_false
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
+
     @staticmethod
     def _crear(checked):
         lado = 12

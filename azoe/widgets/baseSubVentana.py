@@ -6,7 +6,6 @@ from globales import ANCHO, ALTO
 
 
 class SubVentana(Marco):
-    x, y, w, h = 0, 0, 0, 0
     pressedTitle = False
 
     def __init__(self, w, h, nombre, titular=True):
@@ -17,8 +16,7 @@ class SubVentana(Marco):
         self.px, self.py = self.rect.topleft
         if titular:
             self.titular(nombre)
-        self.btnCerrar = BotonCerrar(self, x + w - 18, y + 3, 13, 15, 'Cerrar', self.cerrar)
-        self.agregar(self.btnCerrar)
+        BotonCerrar(self, x + w - 18, y + 3, 13, 15, 'Cerrar', self.cerrar)
 
     def titular(self, texto):
         fuente = font.SysFont('verdana', 12)

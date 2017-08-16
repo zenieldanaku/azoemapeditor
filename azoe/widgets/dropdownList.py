@@ -27,6 +27,9 @@ class DropDownList(BaseWidget):
         EventHandler.add_widgets(self.entry, self.flecha)
         self.visible = 0
 
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
+
     def crear_lista(self, items):
         lista = []
 

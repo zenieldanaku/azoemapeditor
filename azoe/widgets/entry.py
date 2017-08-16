@@ -46,6 +46,9 @@ class Entry(BaseWidget):
         self.dx = x + 4
         self.set_text(texto)
 
+        if hasattr(self.parent,'agregar'):
+            self.parent.agregar(self)
+
     def get_real_name(self):
         return self._nombre
 

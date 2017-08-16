@@ -23,7 +23,7 @@ class BaseWidget(DirtySprite):
 
     layer = 0
     rect = None
-    x, y = 0, 0
+    x, y, w, h = 0, 0, 0, 0
 
     def __init__(self, parent=None):
         if parent is not None:

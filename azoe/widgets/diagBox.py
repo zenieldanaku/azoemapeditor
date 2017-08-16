@@ -35,15 +35,10 @@ class Alerta(DialogBox):
 
         self.check = Checkbox(self, False, x + 3, y + h + 13)
         self.status = self.check.state
-        lbl = Label(self, 'lblChk', x + 3 + 12 + 3, self.check.y - 2, "No mostrar esto nuevamente", fuente=fuente)
+        Label(self, 'lblChk', x + 3 + 12 + 3, self.check.y - 2, "No mostrar esto nuevamente", fuente=fuente)
 
         self.btnTrue = BotonAceptarCancelar(self, x + w - (62 * 2) - 12, y + h + 30, self.aceptar)
         self.btnFalse = BotonAceptarCancelar(self, x + w - 62 - 4, y + h + 30, self.cancelar, 'Cancelar')
-
-        self.agregar(self.check)
-        self.agregar(lbl)
-        self.agregar(self.btnTrue)
-        self.agregar(self.btnFalse)
 
     def aceptar(self):
         self.accion_true()

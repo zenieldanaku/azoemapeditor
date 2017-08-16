@@ -22,6 +22,9 @@ class Label(BaseWidget):
         else:
             self.set_text(texto)
 
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
+
     def set_text(self, texto, fgcolor=None, bgcolor=None):
         if fgcolor is None:
             fgcolor = color('sysElmText')

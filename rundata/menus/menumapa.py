@@ -58,8 +58,6 @@ class CuadroMapa(SubVentana):
             entry = Entry(self, *items[nombre]['entry'])
             self.labels.append(label)
             self.entrys.append(entry)
-            self.agregar(label, entry)
-        self.agregar(self.btnAceptar, self.btnCancelar)
 
     def aceptar(self):
         data = {}

@@ -15,9 +15,11 @@ class Tree(Marco):
         self.items = LayeredDirty()
         self.crear_lista(walk, actual)
         self.ItemActual = actual  # ruta
-        self.ScrollY = ScrollV(self, self.x + self.w, self.y)
-        self.agregar(self.ScrollY)
+        ScrollV(self, self.x + self.w, self.y)
         self.doc_h = h
+
+        if hasattr(self.parent, 'agregar'):
+            self.parent.agregar(self)
 
     def scroll(self, dy):
         pass
