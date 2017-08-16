@@ -5,6 +5,8 @@
     "open_project":"Ctrl+O",
     "new_project":"Ctrl+N",
     "save_project":"Ctrl+S",
+    "save_project_as":"Ctrl+Alt+S",
+    "exit":"Esc",
     "cortar":"Ctrl+X",
     "copiar":"Ctrl+C",
     "pegar":"Ctrl+V"

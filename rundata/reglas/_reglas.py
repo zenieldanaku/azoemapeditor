@@ -80,14 +80,13 @@ class ReglaH(BaseRegla):
         fuente = font.SysFont('verdana', 8)
         regla = Surface((d, C // 2))
         regla.fill((255, 255, 255), (1, 1, d - 2, 14))
-        j = -1
-        for i in range(1, 33):
-            j += 1
+
+        for numero, i in enumerate(range(1, 33)):
             draw.line(regla, (0, 0, 0), (i * C, 0), (i * C, 16))
-            digitos = [i for i in str(j * C)]
+            digitos = [i for i in str(numero * C)]
             gx = 0
-            for d in range(len(digitos)):
-                render = fuente.render(digitos[d], True, (0, 0, 0), (255, 255, 255))
+            for digito in digitos:
+                render = fuente.render(digito, True, (0, 0, 0), (255, 255, 255))
                 dx = (i - 1) * C + gx + 4
                 regla.blit(render, (dx, 4))
                 gx += 4
@@ -131,14 +130,12 @@ class ReglaV(BaseRegla):
         regla = Surface((C // 2, d))
         regla.fill((255, 255, 255), (1, 1, 14, d - 2))
 
-        j = -1
-        for i in range(1, 33):
-            j += 1
+        for numero, i in enumerate(range(1, 33)):
             draw.line(regla, (0, 0, 0), (0, i * C), (C // 2, i * C))
-            digitos = [i for i in str(j * C)]
+            digitos = [i for i in str(numero * C)]
             gy = 0
-            for d in range(len(digitos)):
-                render = fuente.render(digitos[d], True, (0, 0, 0), (255, 255, 255))
+            for digito in digitos:
+                render = fuente.render(digito, True, (0, 0, 0), (255, 255, 255))
                 dy = (i - 1) * C + gy + 1
                 regla.blit(render, (4, dy))
                 gy += 9

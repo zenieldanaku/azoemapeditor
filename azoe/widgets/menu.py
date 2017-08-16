@@ -94,49 +94,50 @@ class Cascada(BaseWidget):
         self.w = 0
         key_x = 0
 
-        for n in range(len(items)):
-            w = 19 + _fuente.size(items[n]['nom'])[0]  # ancho(icono)+ancho(nombre)
-            if 'win' in items[n]:
-                items[n]['scr'] = '...'
+        for item in items:
+            w = 19 + _fuente.size(item['nom'])[0]  # ancho(icono)+ancho(nombre)
+            if 'win' in item:
+                item['scr'] = '...'
                 w += _fuente.size('...')[0]
-            if 'key' in items[n]:
-                ancho = _fuente.size(items[n]['key'])[0]
+            if 'key' in item:
+                ancho = _fuente.size(item['key'])[0]
                 w += ancho + 30
                 if ancho > key_x:
                     key_x = ancho + 70
-            if 'csc' in items[n]:
-                items[n]['scr'] = 'flecha'
+            if 'csc' in item:
+                item['scr'] = 'flecha'
                 w += 30
-            if 'win' not in items[n] and 'csc' not in items[n]:
-                items[n]['scr'] = None
+            if 'win' not in item and 'csc' not in item:
+                item['scr'] = None
 
             if w > self.w:
                 self.w = w
 
-        h = 19
+        height = 19
         ajuste = 0
-        self.h = h * len(items) + 2
-        _h = 0
-        for n in range(len(items)):
-            _nom = items[n]['nom']
+        self.h = height * len(items) + 2
+        bar_y = 0
+        for index, item in enumerate(items):
+            _nom = item['nom']
             if _nom != 'barra':
-                opcion = OpcionCascada(self, items[n], 1, n * h + ajuste + 1, self.w, key_x)
-                _h = opcion.rect.bottom
-                if 'csc' in items[n]:
+                opcion = OpcionCascada(self, item, 1, index * height + ajuste + 1, self.w, key_x)
+                bar_y = opcion.rect.bottom
+                if 'csc' in item:
                     x = self.x + self.w - 3
-                    y = (n + 1) * h + ajuste - 1
-                    opcion.command = Cascada(self, _nom, items[n]['csc'], x, y)
-                elif 'win' in items[n]:
-                    opcion.command = items[n]['win']
+                    y = (index + 1) * height + ajuste - 1
+                    opcion.command = Cascada(self, _nom, item['csc'], x, y)
+                elif 'win' in item:
+                    opcion.command = item['win']
                 else:
-                    opcion.command = items[n]['cmd']
+                    opcion.command = item['cmd']
                 self.add_to_references(_nom, opcion)
             else:
                 opcion = BaseWidget()
                 opcion.image = self._linea_horizontal(self.w - 1)
-                opcion.rect = opcion.image.get_rect(topleft=(3, _h + 4))
+                opcion.rect = opcion.image.get_rect(topleft=(3, bar_y + 4))
                 ajuste -= 10
             self.componentes.add(opcion)
+
         self.image = Surface((self.w + 5, self.h + ajuste))
         self.image.fill(color('sysMenBack'), (1, 1, self.w + 3, self.h + ajuste - 2))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))

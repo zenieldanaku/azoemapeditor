@@ -14,13 +14,14 @@ class FileDiag(SubVentana):
     nombredeArchivo = ''
     tipoSeleccinado = ''
     carpetaVieja = ''
-    # layer = 10
 
-    def __init__(self, cmd, filetypes=None, permitirmultiple=False, carpeta_actual=''):
+    def __init__(self, cmd, titulo=None, filetypes=None, permitirmultiple=False, carpeta_actual=''):
         c = 32
         self.comando = cmd['cmd']
         self.nombre = 'FileDialog.' + cmd['scr']
-        super().__init__(16 * c, 10 * c + 18 + 22, cmd['scr'])
+        if titulo is None:
+            titulo = cmd['scr']
+        super().__init__(16 * c, 10 * c + 18 + 22, titulo)
         self.SeleccionMultiple = permitirmultiple
         self.carpetaActual = ''
         self.ArchivosSeleccionados = []
@@ -107,9 +108,9 @@ class FileOpenDialog(FileDiag):
 
 
 class FileSaveDialog(FileDiag):
-    def __init__(self, cmd, fd, ft=None):
-        comando = {'scr': 'Guardar', 'cmd': cmd}
-        super().__init__(comando, filetypes=ft, permitirmultiple=False, carpeta_actual=fd)
+    def __init__(self, cmd, fd, name=None, ft=None):
+        comando = {'cmd': cmd, 'scr': 'Guardar'}
+        super().__init__(comando, titulo=name, filetypes=ft, permitirmultiple=False, carpeta_actual=fd)
 
     def do_cmd(self):
         if self.tipoSeleccinado != '' and not self.nombredeArchivo.endswith(self.tipoSeleccinado):
@@ -214,10 +215,9 @@ class ListaDeArchivos(Marco):
         m = self.SeleccionMultiple
         lista = self._filtrar_extensiones(items, ext)
         h = 0
-        for n in range(len(lista)):
-            nom = lista[n][0]
-            ruta = lista[n][1]
-            dy = self.y + (n * h)
+        for i, item in enumerate(lista):
+            nom, ruta = item
+            dy = self.y + (i * h)
             opcion = _Opcion(self, nom, ruta, self.x, dy, self.w - 16, multi=m)
             h = opcion.image.get_height()
             self.items.add(opcion)

@@ -1,7 +1,6 @@
 from globales import Sistema as Sys, C, LAYER_COLISIONES, LAYER_FONDO
-from azoe.widgets import Marco, Boton, DropDownList, FileOpenDialog as Fo, FileSaveDialog as Fs
+from azoe.widgets import Marco, Boton, DropDownList, FileOpenDialog
 from .simbolos import SimboloSimple, SimboloMultiple
-from .menus.menumapa import CuadroMapa
 from azoe import Resources, color
 from pygame.sprite import LayeredDirty
 from pygame import Rect, draw, Surface
@@ -20,20 +19,19 @@ class PanelSimbolos(Marco):
         self.PrevArea = PreviewArea(self, self.x + 3, self.y + 4 * C - 8, self.w - 6, 4 * C)
         n, s, t, c, d, i = 'nom', 'scr', 'tipo', 'cmd', 'des', Sys.iconos  # aliases
         elementos = [
-            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), s: i['nuevo'], d: "Crear un mapa nuevo"},
-            {n: 'Abrir', c: lambda: Fo(Sys.open_project, Sys.fdProyectos, ft=['*.json']),
-             s: i['abrir'], d: "Abrir un mapa existente"},
-            {n: 'Guardar', c: self.guardar, s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
+            {n: 'Nuevo', c: Sys.new_project, s: i['nuevo'], d: "Crear un mapa nuevo"},
+            {n: 'Abrir', c: Sys.open_project, s: i['abrir'], d: "Abrir un mapa existente"},
+            {n: 'Guardar', c: lambda: Sys.save_project(Sys.Guardado),
+             s: [i['guardar'], i['guardar_dis']], d: "Guardar el mapa actual"},
             {n: 'barra'},
             {n: 'Cortar', c: Sys.cortar, s: [i['cortar'], i['cortar_dis']], d: "Cortar"},
             {n: 'Copiar', c: Sys.copiar, s: [i['copiar'], i['copiar_dis']], d: "Copiar"},
             {n: 'Pegar', c: Sys.pegar, s: [i['pegar'], i['pegar_dis']], d: "Pegar"},
             {n: 'barra'},
-            {n: 'SetFondo', c: lambda: Fo(Sys.set_ruta_fondo, Sys.fdAssets, ft=['.png']),
-             s: [i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
-            {n: 'addMob', c: lambda: Fo(self.add_mob, Sys.fdAssets, ft=['.png']),
+            {n: 'SetFondo', c: Sys.set_ruta_fondo, s: [i['fondo'], i['fondo_dis']], d: "Cargar imagen de fondo"},
+            {n: 'addMob', c: lambda: FileOpenDialog(self.add_mob, Sys.fdAssets, ft=['.png']),
              s: [i['mob'], i['mob_dis']], d: "Cargar símbolo de mob"},
-            {n: 'addProp', c: lambda: Fo(self.add_props, Sys.fdAssets, ft=['.png']),
+            {n: 'addProp', c: lambda: FileOpenDialog(self.add_props, Sys.fdAssets, ft=['.png']),
              s: [i['prop'], i['prop_dis']], d: "Cargar símbolo de prop"},
 
             {n: 'delSim', c: self.PrevArea.eliminar_simbolo_actual, s: [i['borrar'], i['borrar_dis']],
@@ -57,13 +55,6 @@ class PanelSimbolos(Marco):
         simbolo = self.PrevArea.get_actual()
         simbolo.renombrar(self.Items.get_item_actual())
         self.PrevArea.simbolo_actual = simbolo.get_real_name()
-
-    @staticmethod
-    def guardar():
-        if not Sys.Guardado:
-            Fs(Sys.save_project, fd=Sys.fdProyectos, ft=['.json'])
-        else:
-            Sys.save_project(Sys.Guardado)
 
     def add_mob(self, ruta):
         sprite = Resources.split_spritesheet(ruta)

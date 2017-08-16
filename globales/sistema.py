@@ -17,6 +17,7 @@ class Sistema:
                    'props': None, 'mobs': None, 'ambiente': None}
     KeyCombinations = []
     key_bindings = None
+    binded_methods = None
     capa_actual = None
     Portapapeles = None
     selected = None
@@ -37,9 +38,16 @@ class Sistema:
         cls.capa_actual = LAYER_FONDO
         cls.Portapapeles = Portapapeles()
         cls.key_bindings = {}
+        cls.binded_methods = {}
         keybindings = Resources.abrir_json('config/config.json')['keybindings']
         for command in keybindings:
-            cls.key_bindings[keybindings[command]] = getattr(Sistema, command)
+            if hasattr(Sistema, command):
+                if command == 'save_project':
+                    cls.key_bindings[keybindings[command]] = lambda: cls.save_project(cls.Guardado)
+                    cls.binded_methods[command] = keybindings[command]
+                else:
+                    cls.key_bindings[keybindings[command]] = getattr(Sistema, command)
+                    cls.binded_methods[command] = keybindings[command]
 
     @staticmethod
     def cargar_iconos():
@@ -51,30 +59,41 @@ class Sistema:
         return Resources.cargar_iconos(nombres, ruta, 19, 17)
 
     @classmethod
-    def set_ruta_fondo(cls, ruta):
-        try:
-            canvas = EventHandler.get_widget('Grilla.Canvas')
-            canvas.set_bg_image(BackgroundImage(ruta))
-            cls.PROYECTO.script["fondo"] = ruta
-            cls.capa_actual = LAYER_FONDO
-            cls.estado = ''
-        except IOError:
-            cls.estado = 'No se ha selecionado una imagen válida'
+    def set_ruta_fondo(cls, ruta=None):
+        from azoe.widgets import FileOpenDialog
+        if ruta is None:
+            FileOpenDialog(cls.set_ruta_fondo, cls.fdAssets, ft=['.png'])
+        else:
+            try:
+                canvas = EventHandler.get_widget('Grilla.Canvas')
+                canvas.set_bg_image(BackgroundImage(ruta))
+                cls.PROYECTO.script["fondo"] = ruta
+                cls.capa_actual = LAYER_FONDO
+                cls.estado = ''
+            except IOError:
+                cls.estado = 'No se ha selecionado una imagen válida'
 
     @classmethod
-    def save_collition_map(cls, ruta):
-        imagen = EventHandler.get_widget('Grilla.Canvas').render()
-        Resources.guardar_imagen(imagen, ruta)
-        cls.estado = 'Imagen ' + ruta + ' guardada exitosamente'
-        cls.PROYECTO.script['colisiones'] = ruta
+    def save_collition_map(cls, ruta=None):
+        from azoe.widgets import FileSaveDialog
+        if ruta is None:
+            FileSaveDialog(cls.save_collition_map, cls.fdExport, ft=['*.png'])
+
+        else:
+            imagen = EventHandler.get_widget('Grilla.Canvas').render()
+            Resources.guardar_imagen(imagen, ruta)
+            cls.estado = 'Imagen ' + ruta + ' guardada exitosamente'
+            cls.PROYECTO.script['colisiones'] = ruta
 
     @classmethod
     def new_project(cls, data=None):
         from rundata.menus.menumapa import CuadroMapa
         if data is None:
             CuadroMapa('Nuevo Mapa')
+
         elif cls.PROYECTO is not None:
             cls.referencias.update(data)
+
         else:
             cls.close_project()
             cls.referencias.update(data)
@@ -86,6 +105,7 @@ class Sistema:
         from azoe.widgets import FileOpenDialog
         if ruta is None:
             FileOpenDialog(cls.open_project, cls.fdProyectos, ft=['.json'])
+
         else:
             data = Resources.abrir_json(ruta)
             cls.PROYECTO = Proyecto(data)
@@ -139,15 +159,20 @@ class Sistema:
             cls.habilitar_todo(True)
 
     @classmethod
-    def save_project(cls, ruta=None):
+    def save_project(cls, ruta=None, nombre=None):
         from azoe.widgets import FileSaveDialog
         if ruta is None:
-            FileSaveDialog(cls.save_project, cls.fdProyectos, ft=['*.json'])
+            FileSaveDialog(cls.save_project, cls.fdProyectos, ft=['*.json'], name=nombre)
+
         else:
             data = cls.PROYECTO.guardar()
             Resources.guardar_json(ruta, data, False)
             cls.Guardado = ruta
             cls.estado = "Proyecto '" + ruta + "' guardado exitosamente."
+
+    @classmethod
+    def save_project_as(cls):
+        cls.save_project(nombre='Guardar como...')
 
     @classmethod
     def close_project(cls):
@@ -159,13 +184,20 @@ class Sistema:
         EventHandler.contents.update()
 
     @classmethod
-    def exportar_mapa(cls, ruta):
-        try:
-            mapa = cls.PROYECTO.exportar_mapa()
-            Resources.guardar_json(ruta, mapa)
-            cls.estado = "Mapa '" + ruta + "' exportado correctamente."
-        except IOError:
-            cls.estado = 'Error: No se pudo exportar el mapa.'
+    def exportar_mapa(cls, ruta=None):
+        from azoe.widgets import FileSaveDialog
+        if ruta is None:
+            FileSaveDialog(cls.exportar_mapa, cls.fdExport, ft=['*.json'])
+
+        else:
+            try:
+                mapa = cls.PROYECTO.exportar_mapa()
+                Resources.guardar_json(ruta, mapa)
+                cls.estado = "Mapa '" + ruta + "' exportado correctamente."
+
+            except IOError as Description:
+                print(Description)
+                cls.estado = 'Error: No se pudo exportar el mapa.'
 
     @staticmethod
     def habilitar_todo(control):
@@ -179,7 +211,7 @@ class Sistema:
                     widget.habilitar(control)
 
     @staticmethod
-    def salir():
+    def exit():
         py_quit()
         sys_exit()
 

@@ -1,27 +1,23 @@
-from azoe.widgets import Menu, FileOpenDialog as Fo, FileSaveDialog as Fs
+from azoe.widgets import Menu
 from globales import Sistema as Sys
-from .menumapa import CuadroMapa
 
 
 class MenuArchivo(Menu):
     def __init__(self, parent, x, y):
+        # aliases
         n, w, c, s, k, i = 'nom', 'win', 'cmd', 'csc', 'key', 'icon'
-        incons = Sys.iconos
-        cascadas = {
-            'exportar': [
-                {n: 'Colisiones', w: lambda: Fs(Sys.save_collition_map, Sys.fdExport, ft=['*.png'])},
-                {n: 'Mapa', w: lambda: Fs(Sys.exportar_mapa, Sys.fdExport, ft=['*.json'])}
-            ],
-        }
+        icons = Sys.iconos
+        binded = Sys.binded_methods
+        save = Sys.save_project
+        # otherwise, line's too long
         items = [
-            {n: 'Nuevo', c: lambda: CuadroMapa('Nuevo Mapa'), "icon": Sys.iconos['nuevo'], k: 'Ctrl+N'},
-            {n: 'Abrir', w: lambda: Fo(Sys.open_project, Sys.fdProyectos, ft=['.json']), i: incons['abrir'],
-             k: 'Ctrl+A'},
-            {n: 'Guardar', c: lambda: Sys.save_project(Sys.Guardado), i: Sys.iconos['guardar'], k: 'Ctrl+S'},
-            {n: 'Guardar como', c: lambda: Sys.save_project(), k: 'Ctrl+Alt+S'},
-            {n: 'Exportar', s: cascadas['exportar']},
-            {n: 'Cerrar', c: Sys.close_project, k: 'Ctrl+Q'},
-            {n: 'Salir', c: Sys.salir, k: 'Esc'}]
+            {n: 'Nuevo', w: Sys.new_project, "icon": icons['nuevo'], k: binded['new_project']},
+            {n: 'Abrir', w: Sys.open_project, i: icons['abrir'], k: binded['open_project']},
+            {n: 'Guardar', c: lambda: save(Sys.Guardado), i: icons['guardar'], k: binded['save_project']},
+            {n: 'Guardar como', w: Sys.save_project_as, k: binded['save_project_as']},
+            {n: 'Exportar', s: [{n: 'Colisiones', w: Sys.save_collition_map}, {n: 'Mapa', w: Sys.exportar_mapa}]},
+            {n: 'Cerrar', c: Sys.close_project, k: binded['close_project']},
+            {n: 'Salir', c: Sys.exit, k: binded['exit']}]
 
         super().__init__(parent, 'Archivo', items, x, y)
 

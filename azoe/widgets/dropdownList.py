@@ -31,14 +31,14 @@ class DropDownList(BaseWidget):
         lista = []
 
         h = 0
-        for n in range(len(items)):
-            nom = items[n]
-            dy = self.h + (n * h) - 19
+        for i, nom in enumerate(items):
+            dy = self.h + (i * h) - 19
             opcion = _Opcion(self, nom, self.x + 4, self.y + dy, self.w - 23)
             # opcion.layer = self.layer + 50
             h = opcion.image.get_height() - 1
 
             lista.append(opcion)
+
         if len(items) != 0:
             self.set_text(items[0])
         return lista

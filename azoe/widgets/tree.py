@@ -25,23 +25,23 @@ class Tree(Marco):
     def crear_lista(self, items, actual):
         h = 0
         parentesco = {}
-        for y in range(len(items)):
-            x = items[y]['x']
+        for y, item in enumerate(items):
+            x = item['x']
             dx = self.x + (x * 16)
             dy = self.y + (y * h)
 
-            item = Item(self, y, dx, dy, items[y])
+            obj = Item(self, y, dx, dy, items[y])
 
-            root = items[y]['root']
+            root = item['root']
             if root not in parentesco:
                 parentesco[root] = []
-            parentesco[root].append(item)
+            parentesco[root].append(obj)
 
-            if item.opcion.path == actual:
-                item.opcion.select()
-            h = item.h
-            self.items.add(item)
-            self.agregar(item)
+            if obj.opcion.path == actual:
+                obj.opcion.select()
+            h = obj.h
+            self.items.add(obj)
+            self.agregar(obj)
 
         for padre in self.items:
             if padre.path in parentesco:
