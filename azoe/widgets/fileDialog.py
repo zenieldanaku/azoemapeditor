@@ -32,10 +32,10 @@ class FileDiag(SubVentana):
 
         x, y, w, h = self.x, self.y, self.w, self.h  # abreviaturas de legibilidad
         # opciones.update({'fontType': 'Tahoma', 'fontSize': 13})
-        self.dir_base = Entry(self, 'IngrsarDireccion',  x + 2, y + 21, w-2, os.getcwd())
+        self.dir_base = Entry(self, 'IngrsarDireccion',  x + 2, y + 21, w-2, texto=os.getcwd())
         self.carpetas = ArbolCarpetas(self, x + 2, y + 43, w // 2 - 2, 8 * c, carpeta_actual)
         self.archivos = ListaDeArchivos(self, x + w // 2, y + 43, w // 2 - 2, 8 * c, self.SeleccionMultiple)
-        self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 9 * c + 15, 11 * c + 16, '')
+        self.entryNombre = Entry(self, 'IngresarRuta', x + 2 * c + 3, y + 9 * c + 15, 11 * c + 16, texto='')
         self.accion = BotonAceptarCancelar(self, x + 14 * c - 8, y + 9 * c + 16, self.do_cmd, cmd['scr'])
         self.tipos = DropDownList(self, 'TipoDeArchivo', x + 2 * c + 3, y + 10 * c + 11, 352 + 16, lista=filetypes)
         self.BtnCancelar = BotonAceptarCancelar(self, x + 14 * c - 8, y + 320 + 12)
