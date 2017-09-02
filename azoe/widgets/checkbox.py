@@ -12,8 +12,10 @@ class Checkbox(BaseWidget):
         self.img_true = self._crear(True)
         self.img_false = self._crear(False)
         self.state = initial_state
-
-        self.image = self.img_false
+        if self.state:
+            self.image = self.img_true
+        else:
+            self.image = self.img_false
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
         if hasattr(self.parent, 'agregar'):

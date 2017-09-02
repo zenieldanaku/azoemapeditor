@@ -6,6 +6,7 @@
     "new_project":"Ctrl+N",
     "save_project":"Ctrl+S",
     "save_project_as":"Ctrl+Alt+S",
+    "set_preferences":"Ctrl+P",
     "exit":"Esc",
     "cortar":"Ctrl+X",
     "copiar":"Ctrl+C",

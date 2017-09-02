@@ -199,6 +199,11 @@ class Sistema:
                 print(Description)
                 cls.estado = 'Error: No se pudo exportar el mapa.'
 
+    @classmethod
+    def set_preferences(cls):
+        from rundata.menus.cuadropreferencias import CuadroPreferencias
+        CuadroPreferencias()
+
     @staticmethod
     def habilitar_todo(control):
         for widget in EventHandler.contents.sprites():

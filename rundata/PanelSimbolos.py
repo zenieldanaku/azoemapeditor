@@ -44,11 +44,9 @@ class PanelSimbolos(Marco):
                 boton = Boton(self, x + 5, y, e['nom'], e['cmd'], e['scr'], tip=e['des'])
                 x = boton.rect.right - 2
                 self.botones[e['nom']] = boton
-                self.agregar(boton)
             else:
                 x = self.x + 4
                 y += 32
-        self.agregar(self.Items)
         self.habilitar(False)
 
     def on_key_down(self, tecla):

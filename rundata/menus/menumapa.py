@@ -1,6 +1,5 @@
 from azoe.widgets import Menu, FileOpenDialog as Fo, SubVentana, Label, Entry, BotonAceptarCancelar
 from globales import Sistema as Sys, C
-from azoe.engine import EventHandler
 from pygame import font
 
 
@@ -23,10 +22,7 @@ class MenuMapa(Menu):
 
 
 class CuadroMapa(SubVentana):
-    value = False
-    labels = []
-    entrys = []
-    # layer = 8
+    entries = []
 
     def __init__(self, nombre):
         self.nombre = 'Nuevo Mapa'
@@ -43,29 +39,27 @@ class CuadroMapa(SubVentana):
                  ['Props', 'Ruta de archivo de datos para Props:', 'props/'],
                  ['Mobs', 'Ruta de archivo de datos para Mobs:', 'mobs/'],
                  ['Ambiente', 'Ambiente (Exterior/Interior):', 'exterior']]
-        for i in range(len(lista)):
-            nombre, txt, ref = lista[i]
-            j = i + 1
-            if Sys.referencias[nombre.lower()] is not None:
+
+        for i, item in enumerate(lista, start=1):
+            name, txt, ref = item
+            if Sys.referencias[name.lower()] is not None:
                 ref = Sys.referencias[nombre.lower()]
-            items[nombre] = {
-                'label': [nombre, x + 2, y + dy * j, txt],
-                'entry': [nombre, x + dx, y - 3 + dy * j, w - dw, ref]
+            items[name] = {
+                'label': [name, x + 2, y + dy * i, txt],
+                'entry': [name, x + dx, y - 3 + dy * i, w - dw, ref]
             }
 
-        for nombre in items:
-            label = Label(self, *items[nombre]['label'], fuente=fuente)
-            entry = Entry(self, *items[nombre]['entry'])
-            self.labels.append(label)
-            self.entrys.append(entry)
+        for name in items:
+            l = items[name]['label']
+            e = items[name]['entry']
+            Label(self, *l[:3], texto=l[3], fuente=fuente)
+            entry = Entry(self, *e[:3], w=e[3], texto=e[4])
+            self.entries.append(entry)
 
     def aceptar(self):
         data = {}
-        for entry in self.entrys:
+        for entry in self.entries:
             data[entry.get_real_name().lower()] = entry.return_text()
 
         Sys.new_project(data)
         self.cerrar()
-
-    def cerrar(self):
-        EventHandler.del_widgets(self)

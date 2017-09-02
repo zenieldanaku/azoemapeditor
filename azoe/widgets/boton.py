@@ -18,6 +18,7 @@ class Boton(BaseWidget):
         self.w, self.h = w, h
         self.nombre = self.parent.nombre + '.Boton.' + nombre
         self.comando = cmd
+        self.scr = nombre
         if tip is not None:
             self.tooltip = ToolTip(self, tip, self.x, self.y)
         else:
@@ -34,7 +35,7 @@ class Boton(BaseWidget):
             self.parent.agregar(self)
 
     @staticmethod
-    def _crear(scr, color_texto, color_fondo, w, h, fuente):
+    def _crear(scr, color_texto, color_fondo, w, h, fuente=None):
         _rect = Rect((0, 0), (w, h))
         render = None
         if type(scr) == Surface:
@@ -121,6 +122,7 @@ class Boton(BaseWidget):
         if self.hasMouseOver and self.enabled:
             self.ser_elegido()
             self.comando()
+        self.presionado = False
 
     def update(self):
         if self.tooltip is not None:
@@ -220,7 +222,6 @@ class BotonAceptarCancelar(Boton):
 
 class BotonCerrar(Boton):
     def __init__(self, parent, x, y, w, h, nombre, cmd):
-
         fg_uns = color('sysElmText')
         fg_dis = color('sysDisText')
         bg = color('sysElmFace')
