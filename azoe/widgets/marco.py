@@ -9,8 +9,10 @@ class Marco(BaseWidget):
     indexes = []
     doc_w = None
     doc_h = None
+    BORDER_STYLE_RAISED = 'raised'
+    BORDER_STYLE_SUNKEN = 'sunken'
 
-    def __init__(self, x, y, w, h, borde='raised', parent=None):
+    def __init__(self, x, y, w, h, borde=BORDER_STYLE_RAISED, parent=None):
         self.contenido = LayeredDirty()
         super().__init__(parent)
         self.w, self.h = w, h
@@ -22,9 +24,9 @@ class Marco(BaseWidget):
         EventHandler.add_widgets(self)
         luz = color('sysElmLight')
         sombra = color('sysElmShadow')
-        if borde == 'raised':
+        if borde == self.BORDER_STYLE_RAISED:
             self.image = self._biselar(self.image, luz, sombra)
-        elif borde == 'sunken':
+        elif borde == self.BORDER_STYLE_SUNKEN:
             self.image = self._biselar(self.image, sombra, luz)
 
     def reubicar_en_ventana(self, dx=0, dy=0):
