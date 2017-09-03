@@ -11,7 +11,6 @@ class CuadroPreferencias(SubVentana):
     def __init__(self):
         super().__init__(10 * C+12, 8 * C + 9, 'Preferencias')
         x, y, w, h = self.x, self.y, self.w, self.h
-        print(x,y,w,h)
         self.paneles = {}
         self.botones = []
         fuente = font.SysFont('Tahoma', 13)

@@ -1,7 +1,7 @@
 from globales import Sistema as Sys, C, LAYER_COLISIONES, LAYER_FONDO
 from azoe.widgets import Marco, Boton, DropDownList, FileOpenDialog
+from azoe import color, cargar_imagen, split_spritesheet
 from .simbolos import SimboloSimple, SimboloMultiple
-from azoe import Resources, color
 from pygame.sprite import LayeredDirty
 from pygame import Rect, draw, Surface
 from os import path
@@ -55,7 +55,7 @@ class PanelSimbolos(Marco):
         self.PrevArea.simbolo_actual = simbolo.get_real_name()
 
     def add_mob(self, ruta):
-        sprite = Resources.split_spritesheet(ruta)
+        sprite = split_spritesheet(ruta)
         nombre = path.split(ruta)[1][0:-4]
         _rect = sprite[0].get_rect(center=self.PrevArea.area.center)
         datos = {'nombre': nombre, 'imagenes': sprite, 'grupo': 'mobs', 'tipo': 'Mob', 'ruta': ruta,
@@ -64,7 +64,7 @@ class PanelSimbolos(Marco):
         self.add_to_prev_area(nombre, simbolo)
 
     def add_props(self, ruta):
-        sprite = Resources.cargar_imagen(ruta)
+        sprite = cargar_imagen(ruta)
         nombre = path.split(ruta)[1][0:-4]
         _rect = sprite.get_rect(center=self.PrevArea.area.center)
         datos = {'nombre': nombre, 'image': sprite, 'grupo': 'props', 'tipo': 'Prop', 'ruta': ruta,

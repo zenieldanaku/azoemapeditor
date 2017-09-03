@@ -1,13 +1,13 @@
 from pygame import Color
-from .resources import Resources
+from .resources import abrir_json
 
 opciones = {}
-config = Resources.abrir_json('config/config.json')
+config = abrir_json('config/config.json')
 try:
     import ctypes
 
     if config['use_colors'] != 'default':
-        opciones.update(Resources.abrir_json(config['use_colors']))
+        opciones.update(abrir_json(config['use_colors']))
 
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms724371%28v=vs.85%29.aspx
     gc = ctypes.windll.user32.GetSysColor

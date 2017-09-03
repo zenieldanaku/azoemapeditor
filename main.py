@@ -1,5 +1,4 @@
 from pygame import display as pantalla, time
-from azoe.engine.resources import Resources
 from azoe import EventHandler, Ventana
 from globales import ANCHO, ALTO
 from globales import Sistema

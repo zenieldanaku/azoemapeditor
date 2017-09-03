@@ -1,11 +1,13 @@
+from azoe.engine import abrir_json, cargar_iconos, guardar_imagen, cargar_imagen, split_spritesheet, guardar_json
 from azoe.engine.RLE import decode, descomprimir, deserialize
-from azoe.engine import Resources, EventHandler, Portapapeles
+from azoe.engine import EventHandler, Portapapeles
 from .constantes import LAYER_FONDO, C
-from pygame import quit as py_quit
 from pygame.sprite import DirtySprite
+from pygame import quit as py_quit
 from sys import exit as sys_exit
-from os import getcwd
 from .mapa import Proyecto
+from os import getcwd
+
 
 __all__ = ['Sistema']
 
@@ -39,7 +41,7 @@ class Sistema:
         cls.Portapapeles = Portapapeles()
         cls.key_bindings = {}
         cls.binded_methods = {}
-        keybindings = Resources.abrir_json('config/config.json')['keybindings']
+        keybindings = abrir_json('config/config.json')['keybindings']
         for command in keybindings:
             if hasattr(Sistema, command):
                 if command == 'save_project':
@@ -56,7 +58,7 @@ class Sistema:
         nombres += 'fondo,fondo_dis'
         nombres = nombres.split(',')
         ruta = getcwd() + '/config/iconos.png'
-        return Resources.cargar_iconos(nombres, ruta, 19, 17)
+        return cargar_iconos(nombres, ruta, 19, 17)
 
     @classmethod
     def set_ruta_fondo(cls, ruta=None):
@@ -81,7 +83,7 @@ class Sistema:
 
         else:
             imagen = EventHandler.get_widget('Grilla.Canvas').render()
-            Resources.guardar_imagen(imagen, ruta)
+            guardar_imagen(imagen, ruta)
             cls.estado = 'Imagen ' + ruta + ' guardada exitosamente'
             cls.PROYECTO.script['colisiones'] = ruta
 
@@ -107,7 +109,7 @@ class Sistema:
             FileOpenDialog(cls.open_project, cls.fdProyectos, ft=['.json'])
 
         else:
-            data = Resources.abrir_json(ruta)
+            data = abrir_json(ruta)
             cls.PROYECTO = Proyecto(data)
             cls.PROYECTO.cargar(data)
 
@@ -124,20 +126,20 @@ class Sistema:
 
                         tipo = ''
                         if key == 'props':
-                            sprite = Resources.cargar_imagen(_ruta)
+                            sprite = cargar_imagen(_ruta)
                             tipo = 'Prop'
                         elif key == 'mobs':
-                            sprite = Resources.split_spritesheet(_ruta)
+                            sprite = split_spritesheet(_ruta)
                             tipo = 'Mob'
 
                         colision = None
                         if _cols is not None:
-                            w, h = 0, 0
-                            if key == 'props':
-                                w, h = sprite.get_size()
-                            elif key == 'mobs':
-                                w, h = sprite[0].get_size()
-                            colision = deserialize(decode(descomprimir(_cols)), w, h)
+                            # w, h = 0, 0
+                            # if key == 'props':
+                            #     w, h = sprite.get_size()
+                            # elif key == 'mobs':
+                            #     w, h = sprite[0].get_size()
+                            colision = deserialize(decode(descomprimir(_cols)))
 
                         idx = -1
                         for pos in data[key][item]:
@@ -166,7 +168,7 @@ class Sistema:
 
         else:
             data = cls.PROYECTO.guardar()
-            Resources.guardar_json(ruta, data, False)
+            guardar_json(ruta, data, False)
             cls.Guardado = ruta
             cls.estado = "Proyecto '" + ruta + "' guardado exitosamente."
 
@@ -192,7 +194,7 @@ class Sistema:
         else:
             try:
                 mapa = cls.PROYECTO.exportar_mapa()
-                Resources.guardar_json(ruta, mapa)
+                guardar_json(ruta, mapa)
                 cls.estado = "Mapa '" + ruta + "' exportado correctamente."
 
             except IOError as Description:
@@ -281,7 +283,7 @@ class Sistema:
 class BackgroundImage(DirtySprite):
     def __init__(self, ruta):
         super().__init__()
-        self.image = Resources.cargar_imagen(ruta)
+        self.image = cargar_imagen(ruta)
         self.rect = self.image.get_rect()
         self._layer = LAYER_FONDO
         if self.rect.w <= C * 15 or self.rect.h < C * 15:
