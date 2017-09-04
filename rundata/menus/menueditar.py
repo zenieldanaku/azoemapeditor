@@ -1,6 +1,4 @@
-from .cuadroEditarSimbolo import EditarSimbolo
-from .cuadroEntradas import CuadroEntrada
-from .cuadropreferencias import CuadroPreferencias
+from .cuadros import EditarSimbolo, CuadroEntrada, CuadroPreferencias
 from globales import Sistema as Sys
 from azoe.widgets import Menu
 

@@ -1,7 +1,7 @@
 from globales import Sistema, C, LAYER_FONDO, LAYER_COLISIONES
 from pygame import transform, Surface, draw, mouse, K_RSHIFT, K_LSHIFT
 from pygame.sprite import LayeredDirty, DirtySprite, Rect
-from .menus.cuadroEntradas import UnaEntrada
+from .menus.cuadros import UnaEntrada
 from azoe.widgets import Canvas, ContextMenu
 from .simbolos import SimboloCNVS
 from azoe import EventHandler
