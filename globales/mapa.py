@@ -1,3 +1,6 @@
+# from os import path
+
+
 class Proyecto:
     rutas = None  # {}
     script = None  # {}
@@ -8,6 +11,7 @@ class Proyecto:
                       'colisiones': data['colisiones'],
                       'props': data['props'],
                       'mobs': data['mobs']}
+
         self.script = {
             "fondo": "",
             "colisiones": "",
@@ -15,27 +19,7 @@ class Proyecto:
             "mobs": {},
             "entradas": {},
             "salidas": {},
-            "refs": {},
-            "ambiente": data['ambiente']
-        }
-        self.mapa = {
-            "capa_background": {
-                "fondo": "",
-                "colisiones": ""
-            },
-            "capa_ground": {
-                "props": {},
-                "mobs": {}
-            },
-            "capa_top": {
-                "props": {}
-            },
-            "entradas": {
-            },
-            "salidas": {
-            },
-            "refs": {},
-            "ambiente": ""
+            "refs": {}
         }
 
     def cargar(self, data):
@@ -95,25 +79,73 @@ class Proyecto:
     def del_item(self, item):
         del self.script[item.grupo][item.get_real_name()][item.index]
 
-    def exportar_mapa(self):
-        from os import path
-        self.mapa['ambiente'] = self.script['ambiente']
-        for layer in ['fondo', 'colisiones']:
-            ruta = self.rutas[layer] + path.split(self.script[layer])[1]
-            self.mapa['capa_background'][layer] = ruta
 
+class Stage:
+    def __init__(self):
+        self.data = {
+            "entradas": {
+                "<nombre>": {
+                    "chunk": "",
+                    "pos": [0, 0]
+                }
+            },
+            "salidas": [{
+                "stage": "",
+                "nombre": "",
+                "rect": [0, 0, 0, 0],
+                "chunk": "",
+                "entrada": "",
+                "direcciones": []}
+            ],
+            "ambiente": "",
+            "amanece": [0, 0],
+            "atardece": [0, 0],
+            "anochece": [0, 0]
+        }
+
+    def exportar(self, data):
+        self.data.clear()
+        for item in ['ambiente', 'amanece', 'atardece', 'anochece']:
+            self.data[item] = data[item]
+
+        for nombre in data['entradas']:
+            self.data['entradas'][nombre] = {}
+            entrada = self.data['entradas'][nombre]
+            entrada['chunk'] = data['entradas'][nombre]['chunk']
+            entrada['pos'] = data['entradas'][nombre]['pos']
+
+        for datos in data['salidas']:
+            # datos = stage, nombre, rect, chunk, entrada, direcciones
+            self.data['salidas'].append(datos)
+
+
+class Chunk:
+    def __init__(self):
+        self.data = {
+            "fondo": "maps/fondos/filename.png",
+            "colisiones": "maps/colisiones/filename.png",
+            "props": {},
+            "mobs": {},
+            "limites": {
+                "izq": None,
+                "der": None,
+                "inf": None,
+                "sup": None
+            },
+            "refs": {}
+        }
+
+    def exportar(self, data):
+        self.data.clear()
+        self.data['fondo'] = data['ruta_fondo']
+        self.data['colisiones'] = data['ruta_colisiones']
         for tipo in ['props', 'mobs']:
-            for item in self.script[tipo]:
-                self.mapa['capa_ground'][tipo][item] = []
-                for x, y, z, r in self.script[tipo][item]:
-                    self.mapa['capa_ground'][tipo][item].append([x, y])
+            for nombre in data[tipo]:
+                self.data[tipo][nombre] = list()
+                lista = self.data[tipo][nombre]
+                for x, y, z, r in data[tipo][nombre]:
+                    lista.append([x, y, z, r])
 
-                ruta = path.split(self.script['refs'][item]['ruta'])[1]
-                self.mapa['refs'][item] = self.rutas[tipo] + ruta
-
-        for nombre in self.script['entradas']:
-            x = self.script['entradas'][nombre]['x']
-            y = self.script['entradas'][nombre]['y']
-            self.mapa['entradas'][nombre] = [int(x), int(y)]
-
-        return self.mapa.copy()
+        for item in ['limites', 'refs']:
+            for limite in data[item]:
+                self.data[item][limite] = data[item][limite]
