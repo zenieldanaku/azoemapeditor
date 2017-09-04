@@ -49,7 +49,6 @@ class SpecialCanvas(Canvas):
 
                     for tile in lista[idx + 1:] + lista[:idx]:
                         tile.mover(dx, dy)
-                self.mover_tiles()
 
     def on_mouse_down(self, button):
         if button == 1 or button == 3:
@@ -74,14 +73,7 @@ class SpecialCanvas(Canvas):
             self.shift = True
         for tile in self.tiles:
             if tile.selected:
-                if tile.on_key_down(event.key, self.shift):  # delete
-                    index = tile.index
-                    self.tiles.remove(tile)
-                    Sistema.selected = None
-                    del Sistema.PROYECTO.script[tile.grupo][tile.get_real_name()][index]
-                    for _tile in self.tiles:
-                        if _tile.index > index:
-                            _tile.index -= 1
+                tile.on_key_down(event.key, self.shift)
 
     def on_key_up(self, event):
         if event.key == K_RSHIFT or event.key == K_LSHIFT:
@@ -104,30 +96,24 @@ class SpecialCanvas(Canvas):
         # self.Th, self.Tw = w, h
         self.dirty = 1
 
-    def pegar(self, item):
-        if type(item) == dict:  # copy
-            self.colocar_tile(item)
-        else:  # cut
-            pos = mouse.get_pos()
-            x, y = self.get_relative_mouse_position()
-            if self.rect.collidepoint(pos):  # Ctrl+V o menu contextual
-                item.rect.center = x, y
-            else:  # Boton "pegar" en panel
-                item.rect.center = self.rect.center
+    def paste(self, cluster):
+        pos = mouse.get_pos()
+        if self.rect.collidepoint(pos):  # Ctrl+V o menu contextual
+            cluster.rect.center = self.get_relative_mouse_position()
+        else:  # Boton "pegar" en panel
+            cluster.rect.center = self.rect.center
 
-            item.x, item.y = item.rect.topleft
-            self.tiles.add(item)
+        for element in cluster.elements:
+            element.paste(*cluster.rect.topleft)
+            if cluster.mode == 'copy':
+                element.item['original'] = False
+                self.colocar_tile(element.item)
+            else:
+                element.item.ser_deselegido()
+                self.tiles.add(element.item)
 
     def colocar_tile(self, datos):
-        pos = mouse.get_pos()
         rect = datos['rect']
-        if self.rect.collidepoint(pos):
-            if datos['original']:
-                rect.center = self.get_relative_mouse_position(*rect.center)
-            else:
-                rect.center = self.get_relative_mouse_position()
-        else:
-            rect.center = self.rect.center
         z = datos['pos'][2]
         datos['pos'] = rect.x, rect.y, z
         datos['index'] = Sistema.PROYECTO.add_item(datos)
@@ -136,6 +122,14 @@ class SpecialCanvas(Canvas):
 
     def add_tile(self, datos):
         self.tiles.add(SimboloCNVS(self, datos))
+
+    def del_tile(self, tile):
+        Sistema.PROYECTO.del_item(tile)
+        self.tiles.remove(tile)
+        index = tile.index
+        for _tile in self.tiles:
+            if _tile.index > index:
+                _tile.index -= 1
 
     def scroll(self, dx=0, dy=0):
         if self.fondo_rect.top + dy > 0 or self.fondo_rect.bottom + dy <= 480:
@@ -163,14 +157,6 @@ class SpecialCanvas(Canvas):
         for tile in self.tiles:
             base.blit(tile.img_cls, tile.rect)
         return base
-
-    def mover_tiles(self):
-        cadena = []
-        for tile in self.tiles:
-            if tile.selected:
-                cadena.insert(tile.index, tile.estado())
-
-        Sistema.estado = ', '.join(cadena)
 
     def habilitar(self, control):
         if not control:

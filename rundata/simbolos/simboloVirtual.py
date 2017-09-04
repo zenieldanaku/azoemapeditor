@@ -45,10 +45,11 @@ class SimboloVirtual(SimboloBase):
                 self.copiar = True
 
     def copy(self):
-        x, y = self.x, self.y
         widget = EventHandler.get_widget('Grilla.Canvas')
+        x, y = widget.get_relative_mouse_position(self.rect.center)
         if widget.rect.collidepoint((x, y)):
             self.datos['rect'] = self.rect.copy()
+            self.datos['rect'].center = x, y
             self.datos['original'] = True
             widget.colocar_tile(self.datos)
             EventHandler.del_widgets(self)

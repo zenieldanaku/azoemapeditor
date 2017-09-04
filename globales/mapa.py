@@ -92,6 +92,9 @@ class Proyecto:
 
         return index
 
+    def del_item(self, item):
+        del self.script[item.grupo][item.get_real_name()][item.index]
+
     def exportar_mapa(self):
         from os import path
         self.mapa['ambiente'] = self.script['ambiente']

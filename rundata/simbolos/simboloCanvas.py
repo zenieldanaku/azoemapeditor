@@ -36,7 +36,6 @@ class SimboloCNVS(SimboloBase):
     def copiar(self):
         datos = self.data.copy()
         datos['rect'] = self.rect.copy()
-        datos['original'] = False
         return datos
 
     def estado(self):
@@ -75,23 +74,23 @@ class SimboloCNVS(SimboloBase):
 
     def on_key_down(self, tecla, shift=False):
         if self.selected:
-            x, y, d = 0, 0, 1
-            if shift:
-                d = 10
+            x, y = 0, 0
 
-            if tecla == K_RIGHT:
-                x = +1 * d
+            if tecla == K_DELETE:
+                self.delete()
+            elif tecla == K_RIGHT:
+                x = +1
             elif tecla == K_LEFT:
-                x = -1 * d
+                x = -1
             elif tecla == K_DOWN:
-                y = +1 * d
+                y = +1
             elif tecla == K_UP:
-                y = -1 * d
-            elif tecla == K_DELETE:
-                return True
+                y = -1
 
+            if shift:
+                x *= 10
+                y *= 10
             self.mover(x, y)
-            return False
 
     def on_key_up(self, tecla):
         if tecla == K_RIGHT or tecla == K_LEFT:
@@ -102,7 +101,11 @@ class SimboloCNVS(SimboloBase):
     def mover(self, dx=0, dy=0):
         self.isMoving = True
         super().mover(dx, dy)
-        Sistema.estado = self.estado()
+
+    def delete(self):
+        self.parent.del_tile(self)
+        if self in Sistema.selected:
+            Sistema.selected.remove(self)
 
     def change_layer(self, mod):
         self.parent.cambiar_layer(self, mod)
@@ -111,13 +114,14 @@ class SimboloCNVS(SimboloBase):
 
     def ser_elegido(self):
         self.selected = True
-        Sistema.selected = self
+        Sistema.selected.append(self)
         self.image = self.img_sel
-        Sistema.estado = self.estado()
+        # Sistema.estado = self.estado()
 
     def ser_deselegido(self):
         self.selected = False
-        Sistema.selected = None
+        if self in Sistema.selected:
+            Sistema.selected.remove(self)
 
     def update(self):
         self.isMoving = False

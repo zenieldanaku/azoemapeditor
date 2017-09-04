@@ -15,15 +15,12 @@ class BarraEstado(Marco):
 
         self._estado = ''
         self.lblEstado = Label(self, 'Estado', self.x + 4, self.y + 3)
-        self.draw_area = Rect(4, 3, self.w - 8, self.h - 8)
         EventHandler.add_widgets(self.lblEstado)
 
     def mostrar_estado(self, mensaje):
         if mensaje != self._estado:
             self._estado = mensaje
-            self.image.fill(color('sysElmFace'), self.draw_area)
             self.lblEstado.set_text(mensaje)
 
     def update(self):
-        msj = Sys.estado
-        self.mostrar_estado(msj)
+        self.mostrar_estado(Sys.estado)

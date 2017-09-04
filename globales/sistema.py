@@ -8,7 +8,6 @@ from sys import exit as sys_exit
 from .mapa import Proyecto
 from os import getcwd
 
-
 __all__ = ['Sistema']
 
 
@@ -21,7 +20,6 @@ class Sistema:
     key_bindings = None
     binded_methods = None
     capa_actual = None
-    Portapapeles = None
     selected = None
     preferencias = {}
     Guardado = None
@@ -38,9 +36,9 @@ class Sistema:
     def init(cls):
         cls.iconos = cls.cargar_iconos()
         cls.capa_actual = LAYER_FONDO
-        cls.Portapapeles = Portapapeles()
         cls.key_bindings = {}
         cls.binded_methods = {}
+        cls.selected = []
         keybindings = abrir_json('config/config.json')['keybindings']
         for command in keybindings:
             if hasattr(Sistema, command):
@@ -224,22 +222,19 @@ class Sistema:
 
     @classmethod
     def cortar(cls):
-        elemento = cls.selected
-        if elemento is not None:
-            parent = EventHandler.get_widget(elemento.parent)
-            cls.Portapapeles.cortar(elemento)
-            parent.tiles.remove(elemento)
+        for elemento in cls.selected:
+            elemento.parent.tiles.remove(elemento)
+        Portapapeles.put('cut', *cls.selected)
 
     @classmethod
     def copiar(cls):
-        elemento = cls.selected
-        if elemento is not None:
-            cls.Portapapeles.copiar(elemento.copiar())
+        copied = [item.copiar() for item in cls.selected]
+        Portapapeles.put('copy', *copied)
 
     @classmethod
     def pegar(cls):
         widget = EventHandler.get_widget('Grilla.Canvas')
-        cls.Portapapeles.pegar(widget)
+        Portapapeles.take(widget)
 
     @classmethod
     def update(cls):
@@ -278,6 +273,9 @@ class Sistema:
                             if widget != cls.DiagBox and widget.parent != cls.DiagBox:
                                 widget.enabled = True
                     cls.DiagMODE = False
+
+        if len(cls.selected):
+            cls.estado = ', '.join([tile.estado() for tile in sorted(cls.selected, key=lambda t: t.index)])
 
 
 class BackgroundImage(DirtySprite):
