@@ -67,7 +67,7 @@ class Sistema:
             try:
                 canvas = EventHandler.get_widget('Grilla.Canvas')
                 canvas.set_bg_image(BackgroundImage(ruta))
-                cls.PROYECTO.script["fondo"] = ruta
+                # cls.PROYECTO.script["fondo"] = ruta
                 cls.capa_actual = LAYER_FONDO
                 cls.estado = ''
             except IOError:
@@ -87,7 +87,7 @@ class Sistema:
 
     @classmethod
     def new_project(cls, data=None):
-        from rundata.menus.menumapa import CuadroMapa
+        from rundata.menus.cuadros import CuadroMapa
         if data is None:
             CuadroMapa('Nuevo Mapa')
 
@@ -98,7 +98,7 @@ class Sistema:
             cls.close_project()
             cls.referencias.update(data)
             cls.habilitar_todo(True)
-            cls.PROYECTO = Proyecto(data)
+            # cls.PROYECTO = Proyecto(data)
 
     @classmethod
     def open_project(cls, ruta=None):
@@ -201,7 +201,7 @@ class Sistema:
 
     @classmethod
     def set_preferences(cls):
-        from rundata.menus.cuadropreferencias import CuadroPreferencias
+        from rundata.menus.cuadros import CuadroPreferencias
         CuadroPreferencias()
 
     @staticmethod
