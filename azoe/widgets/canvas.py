@@ -56,12 +56,7 @@ class Canvas(BaseWidget):
         selected = 0
         if button == 1 or button == 3:
             if hasattr(self, 'tiles'):
-                selected = 0
-                for tile in self.tiles:
-                    if tile.selected:
-                        selected += 1
-                        if selected > 1:
-                            break
+                selected = sum([1 for tile in self.tiles if tile.selected])
 
             if not self.shift:
                 if not self.SeleccionMultiple:
@@ -110,15 +105,14 @@ class Canvas(BaseWidget):
 
             self.eleccion.size = 0, 0
 
-    def get_relative_mouse_position(self, absx=None, absy=None):
-        if absx is None and absy is None:
+    def get_relative_mouse_position(self, absolutes=None):
+        if absolutes is None:
             abs_x, abs_y = mouse.get_pos()
         else:
-            abs_x = absx
-            abs_y = absy
-        off_x, off_y = self.image.get_offset()
-        dx = abs_x + off_x - self.x
-        dy = abs_y + off_y - self.y
+            abs_x, abs_y = absolutes
+
+        dx = abs_x - self.x
+        dy = abs_y - self.y
 
         if dx < 0:
             dx = 0
