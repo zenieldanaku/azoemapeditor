@@ -9,7 +9,7 @@ class CuadroPreferencias(SubVentana):
     botones = None
 
     def __init__(self):
-        super().__init__(10 * C+12, 8 * C + 9, 'Preferencias')
+        super().__init__(10 * C + 12, 8 * C + 9, 'Preferencias')
         x, y, w, h = self.x, self.y, self.w, self.h
         self.paneles = {}
         self.botones = []
@@ -95,15 +95,15 @@ class PanelKeyBindings(BasePanel):
             items[name] = {
                 'check': [True, x + 2, y + (dy * i) + 4],
                 'label': [name, x + 20, y + (dy * i) + 3, name],
-                'entry': [name, x + 170, y + (dy * i), 100, txt]
+                'entry': [name, x + 170, y + (dy * i), 96, txt]
             }
 
         fuente = font.SysFont('Tahoma', 12)
         for name in items:
-            l = items[name]['label']
-            e = items[name]['entry']
+            label = items[name]['label']
+            entry = items[name]['entry']
             Checkbox(self, *items[name]['check'])
-            Label(self, *l[:3], texto=l[3], fuente=fuente)
-            Entry(self, *e[:3], w=e[3], texto=e[4])
+            Label(self, *label[:3], texto=label[3], fuente=fuente)
+            Entry(self, *entry[:3], w=entry[3], texto=entry[4])
 
         self.show()

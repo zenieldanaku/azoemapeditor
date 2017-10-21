@@ -4,9 +4,10 @@ from azoe.engine import color
 
 
 class BaseOpcion(BaseWidget):
-    def __init__(self, parent, nombre, x, y, w=0):
+    def __init__(self, parent, nombre, x, y, w=0, h=14):
         super().__init__(parent)
         self.x, self.y = x, y
+        self.font_h = h
         self.nombre = self.parent.nombre + '.Opcion:' + nombre
         self.img_des = self.crear(nombre, color('sysElmText'), color('sysMenBack'), w)
         self.img_sel = self.crear(nombre, color('sysElmText'), color('sysBoxSelBack'), w)
@@ -15,12 +16,10 @@ class BaseOpcion(BaseWidget):
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
     @staticmethod
-    def crear(nombre, fgcolor, bgcolor, w=0):
-        fuente = font.SysFont('Courier new', 14)
+    def crear(nombre, fgcolor, bgcolor, w=0, h=14):
+        fuente = font.SysFont('Courier new', h)
         if w == 0:
             w, h = fuente.size(nombre)
-        else:
-            h = fuente.get_height()
 
         rect = Rect(0, 0, w, h)
         render = fuente.render(nombre, True, fgcolor, bgcolor)
